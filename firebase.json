@@ -1,0 +1,68 @@
+{
+  "database": {
+    "rules": "database.rules.json"
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "hosting": [
+    {
+      "site": "scioly",
+      "cleanUrls": true,
+      "target": "esing",
+      "public": "esing",
+      "redirects": [
+        {
+          "source": "/:competition-:event-:division",
+          "destination": "https://scioly.web.app/test.html?competition=:competition&event=:event&division=:division",
+          "type": 301
+        },
+        {
+          "source": "/:competition-:event",
+          "destination": "https://scioly.web.app/test.html?competition=:competition&event=:event",
+          "type": 301
+        },
+        {
+          "source": "/feedback/:competition-:event-:division",
+          "destination": "https://scioly.web.app/feedback.html?competition=:competition&event=:event&division=:division",
+          "type": 301
+        },
+        {
+          "source": "/feedback/:competition-:event",
+          "destination": "https://scioly.web.app/feedback.html?competition=:competition&event=:event",
+          "type": 301
+        }
+      ],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    },
+    {
+      "site": "scioly",
+      "cleanUrls": true,
+      "target": "testportal",
+      "public": "portal",
+      "redirects": [
+        {
+          "source": "/portal/:competition-:event",
+          "destination": "https://scioly.web.app/feedback.html?competition=:competition&event=:event",
+          "type": 301
+        }
+      ],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
+    }
+  ],
+  "storage": {
+    "rules": "storage.rules"
+  },
+  "remoteconfig": {
+    "template": "remoteconfig.template.json"
+  }
+}
