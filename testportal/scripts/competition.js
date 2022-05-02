@@ -77,9 +77,9 @@ function loadTest(test) {
                 data[finishedEvent] = test + "!";
 
                 userDoc.set(data, { merge: true }).then(() => {
-                    cssalog(`Successfully locked user in!`, `Event=User locked into test&UID=${user.uid}&Event=${test}`);
+                    sciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${user.uid}&Event=${test}`);
                 }).catch((e) => {
-                    cssalog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${user.uid}&Event=${test}`);
+                    sciolylog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${user.uid}&Event=${test}`);
         
                     alert("Error occurred accessing database, please refresh the page and try again!");
                 });
@@ -284,7 +284,7 @@ function loadTest(test) {
                     testContainer.innerHTML += question;
                     break;
                 default:
-                    alert("An error occurred preparing the test! Please contact crewcssa@gmail.com or join our Discord server at bit.ly/cssa-discord for assistance!");
+                    alert("An error occurred preparing the test! Please contact an officer for assistance!");
             }
         });
     }).then(() => {
@@ -301,7 +301,7 @@ function loadTest(test) {
                 userDoc.collection("answers").doc(currentEvent).set({
                     time: startTime
                 }, { merge: true }).catch((e) => {
-                    cssalog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${user.uid}&Event=${currentEvent}`);
+                    sciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${user.uid}&Event=${currentEvent}`);
                 });
 
                 setTimeout(() => {
@@ -310,7 +310,7 @@ function loadTest(test) {
             }
         });
     }).catch((error) => {
-        cssalog(`Error occurred retrieving test: ${error}`, `Event=Error occurred retrieving test&Error=${error}&UID=${user.uid}&Event=${test}`);
+        sciolylog(`Error occurred retrieving test: ${error}`, `Event=Error occurred retrieving test&Error=${error}&UID=${user.uid}&Event=${test}`);
     });
 }
 
@@ -384,7 +384,7 @@ function saveAnswers(finished = false) {
     });
 
     userDoc.collection("answers").doc(currentEvent).set(data, { merge: true }).then(() => {
-        cssalog(`Saved ${currentEvent} answers`, `Event=Saved answers&UID=${user.uid}&Event=${currentEvent}`);
+        sciolylog(`Saved ${currentEvent} answers`, `Event=Saved answers&UID=${user.uid}&Event=${currentEvent}`);
 
         if (finished) {
             alert(`Successfully submitted the test!`);
@@ -399,7 +399,7 @@ function saveAnswers(finished = false) {
             _("saveStatus").innerHTML = `Saved at ${(new Date(saveTimestamp))}`;
         }
     }).catch((e) => {
-        cssalog(`Error occurred saving ${currentEvent} answers: ${e}`, `Event=Error occurred saving answers&Error=${e}&UID=${user.uid}&Event=${currentEvent}`);
+        sciolylog(`Error occurred saving ${currentEvent} answers: ${e}`, `Event=Error occurred saving answers&Error=${e}&UID=${user.uid}&Event=${currentEvent}`);
 
         alert("Error occurred saving answers, please refresh the page and try again!");
     });
@@ -422,7 +422,7 @@ function submit(confirmed = false) {
 
     saveAnswers(true);
 
-    cssalog(`Submitted ${currentEvent} answers`, `Event=Submitted answers&UID=${user.uid}&Event=${currentEvent}`);
+    sciolylog(`Submitted ${currentEvent} answers`, `Event=Submitted answers&UID=${user.uid}&Event=${currentEvent}`);
 }
 
 function testRedirect(dest) {

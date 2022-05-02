@@ -1,12 +1,12 @@
 firebase.initializeApp({
-    apiKey: "AIzaSyAPTvz8weUBIMyjl6ekC1uegX-j4u2Z1sc",
-    authDomain: "cssa-dev.firebaseapp.com",
-    databaseURL: "https://cssa-dev-default-rtdb.firebaseio.com",
-    projectId: "cssa-dev",
-    storageBucket: "cssa-dev.appspot.com",
-    messagingSenderId: "921024173703",
-    appId: "1:921024173703:web:46f4a35d815964ddf44a22",
-    measurementId: "G-WBN11JNGTN"
+    apiKey: "AIzaSyBVT22t-x2H76119AHG8SgPU0_A0U-N1uA",
+    authDomain: "my-scrap-project.firebaseapp.com",
+    databaseURL: "https://my-scrap-project.firebaseio.com",
+    projectId: "my-scrap-project",
+    storageBucket: "my-scrap-project.appspot.com",
+    messagingSenderId: "334998588870",
+    appId: "1:334998588870:web:6b218e9655ade3a6c536c7",
+    measurementId: "G-66W8QQ9W35"
 });
 
 firebase.analytics();
@@ -30,7 +30,7 @@ function pageLoad(u) {
         window.user = firebase.auth().currentUser;
 
         if (!user) {
-            cssalog("Auth error occurred, pageLoad(true) called even though firebase.auth().currentUser is " + user, "Event=False Auth State Change");
+            sciolylog("Auth error occurred, pageLoad(true) called even though firebase.auth().currentUser is " + user, "Event=False Auth State Change");
 
             pageLoad(false);
         }
@@ -64,38 +64,7 @@ function display(id) {
     $('#' + id).toggle();
 }
 
-function setCookie(name,value,days) {
-    var expires = "";
-
-    if (days) {
-        var date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-}
-
-function getCookie(name) {
-    var nameEQ = name + "=";
-
-    var ca = document.cookie.split(';');
-
-    for (var i = 0; i < ca.length; i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-
-    return null;
-}
-
-function eraseCookie(name) {   
-    document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-}
-
-function cssalog(msg, log = "") {
+function sciolylog(msg, log = "") {
     try {
         var details = "";
 
@@ -106,7 +75,7 @@ function cssalog(msg, log = "") {
         }
 
         var xhttp = new XMLHttpRequest();
-        xhttp.open("GET", `https://cssa-discord-bot.dralientech.repl.co/log?${details}`, true);
+        xhttp.open("GET", `https://scioly-discord-bot.dralientech.repl.co/log?${details}`, true);
         xhttp.send();
     } catch (error) {
         console.error(error);
