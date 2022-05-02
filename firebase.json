@@ -42,7 +42,7 @@
     {
       "site": "sciolytestportal",
       "cleanUrls": true,
-      "public": "portal",
+      "public": "testportal",
       "ignore": [
         "firebase.json",
         "**/.*",
