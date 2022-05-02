@@ -10,7 +10,6 @@
     {
       "site": "scioly",
       "cleanUrls": true,
-      "target": "esing",
       "public": "esing",
       "redirects": [
         {
@@ -41,17 +40,9 @@
       ]
     },
     {
-      "site": "scioly",
+      "site": "sciolytestportal",
       "cleanUrls": true,
-      "target": "testportal",
       "public": "portal",
-      "redirects": [
-        {
-          "source": "/portal/:competition-:event",
-          "destination": "https://scioly.web.app/feedback.html?competition=:competition&event=:event",
-          "type": 301
-        }
-      ],
       "ignore": [
         "firebase.json",
         "**/.*",
