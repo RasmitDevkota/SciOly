@@ -1,0 +1,129 @@
+#content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 5.31%;
+    height: 100%;
+    background-color: #279af1;
+}
+
+#sidebar > a {
+    font-size: 3vw;
+    color: black;
+    text-decoration: none;
+    text-align: center;
+    margin-top: 25%;
+    margin-bottom: 10%;
+}
+
+#sidebar > a:hover {
+    cursor: pointer;
+}
+
+#test {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 91.69%;
+    height: 100%;
+    padding: 1% 2%;
+}
+
+.content-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
+
+#title-row {
+    height: 6%;
+}
+
+#details-row {
+    margin-top: 1%;
+    height: 3%;
+}
+
+#test-row {
+    height: 80%;
+    padding: 1% 0%;
+}
+
+#test-container {
+    width: 60%;
+    height: 100%;
+    overflow: auto;
+    padding: 1% 1.2%;
+    border: 2px solid black;
+}
+
+.answer {
+    margin-top: 1%;
+    margin-left: 1.02%;
+}
+
+.mq-options-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.mq-optionsA {
+    margin-right: 5%;
+}
+
+.mq-input {
+    width: 1.5vw;
+    height: 1.5vw;
+    padding: 2%;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.mq-input:hover, .mq-input:focus {
+    box-shadow: none;
+}
+
+.fitb-answer {
+    margin: 0% 1%;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f100;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+#saveStatus > a {
+    text-decoration: underline;
+}
+
+#saveStatus > a:hover {
+    cursor: pointer;
+}
+
+#submit-row {
+    height: 6%;
+}
+
+#submit {
+    height: 2.02vw;
+    border: none;
+    background-color: #279af1;
+}

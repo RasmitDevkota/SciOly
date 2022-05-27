@@ -40,9 +40,9 @@
       ]
     },
     {
-      "site": "sciolytestportal",
+      "site": "sfscioly",
       "cleanUrls": true,
-      "public": "testportal",
+      "public": "sfscioly",
       "ignore": [
         "firebase.json",
         "**/.*",

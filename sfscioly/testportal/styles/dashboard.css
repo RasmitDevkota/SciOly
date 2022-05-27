@@ -1,0 +1,77 @@
+#content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 5.31%;
+    height: 100%;
+    background-color: #279af1;
+}
+
+#sidebar > a {
+    font-size: 3vw;
+    color: black;
+    text-align: center;
+    margin-top: 25%;
+    margin-bottom: 10%;
+}
+
+#sidebar > a:hover {
+    cursor: pointer;
+}
+
+#dashboard {
+    display: flex;
+    flex-direction: column;
+    width: 91.69%;
+    height: 100%;
+    padding: 2%;
+}
+
+.dashboard-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+#welcome-user {
+    text-align: center;
+    font-size: 3vw;
+    margin-top: 5%;
+}
+
+#competitions {
+    width: 40%;
+    height: min-content;
+    margin-top: 2.1%;
+    padding: 2%;
+    background-color: #b5dfff;
+}
+
+#competitions h2 {
+    margin: 0%;
+    font-size: 1.5vw;
+}
+
+#competitions h4 {
+    margin: 0% 0% 0% 0.5%;
+}
+
+#competitions > div {
+    margin: 0% 0% 1.5% 2%;
+}
+
+#competitions > div > a {
+    color: #172435;
+    text-decoration: none;
+}
+
+#competitions a:hover {
+    cursor: pointer;
+    text-decoration: underline;
+}

@@ -1,0 +1,25 @@
+* {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1vw;
+}
+
+html {
+    overflow: hidden;
+}
+
+body {
+    margin: 0%;
+    padding: 0%;
+}
+
+h1 {
+   font-size: 2vw; 
+}
+
+#main {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
