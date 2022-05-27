@@ -10,7 +10,7 @@
     {
       "site": "scioly",
       "cleanUrls": true,
-      "public": "esing",
+      "public": "es",
       "redirects": [
         {
           "source": "/:competition-:event-:division",
