@@ -5,7 +5,7 @@ window.addEventListener("onload", () => {
 });
 
 function loadQuestion(data) {
-    var questionText = `
+    const questionText = `
         <div id="question${n}" class="question">
             <h2>Question ${n}</h2>
 

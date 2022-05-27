@@ -1,23 +1,27 @@
-firebase.initializeApp({
-    apiKey: "AIzaSyBVT22t-x2H76119AHG8SgPU0_A0U-N1uA",
-    authDomain: "my-scrap-project.firebaseapp.com",
-    databaseURL: "https://my-scrap-project.firebaseio.com",
-    projectId: "my-scrap-project",
-    storageBucket: "my-scrap-project.appspot.com",
-    messagingSenderId: "334998588870",
-    appId: "1:334998588870:web:6b218e9655ade3a6c536c7",
-    measurementId: "G-66W8QQ9W35"
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js'
+import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-analytics.js'
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js'
+import { getFirestore }from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js'
+
+const app = initializeApp({
+    apiKey: "AIzaSyBw7h-5dzK9tcbKCbzWdo35Dlbi1L7It_M",
+    authDomain: "sfhsscioly.firebaseapp.com",
+    projectId: "sfhsscioly",
+    storageBucket: "sfhsscioly.appspot.com",
+    messagingSenderId: "349064681600",
+    appId: "1:349064681600:web:cbc2b49364eec7a5882e65",
+    measurementId: "G-QFKK2189G7"
 });
 
-firebase.analytics();
+console.log(getAnalytics);
 
-var db = firebase.firestore();
+const db = getFirestore(app);
 db.enablePersistence();
 
 const users = db.collection("users");
 const tests = db.collection("tests");
 
-firebase.auth().onAuthStateChanged((u) => {
+auth.auth().onAuthStateChanged(u => {
     if (u != null || u != undefined) {
         pageLoad(true);
     } else {
@@ -44,8 +48,8 @@ function pageLoad(u) {
 
             loadCompetition();
         } else if (window.location.href.includes("test.html")) {
-            var urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
-            var test = urlParams.get('test');
+            const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
+            const test = urlParams.get('test');
 
             loadTest(test);
         }
@@ -74,7 +78,7 @@ function sciolylog(msg, log = "") {
             details = log.replace(/<~/g, msg).replace(/ /g, "__");
         }
 
-        var xhttp = new XMLHttpRequest();
+        const xhttp = new XMLHttpRequest();
         xhttp.open("GET", `https://scioly-discord-bot.dralientech.repl.co/log?${details}`, true);
         xhttp.send();
     } catch (error) {

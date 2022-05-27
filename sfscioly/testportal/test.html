@@ -14,8 +14,6 @@
 
     <script src="https://apis.google.com/js/api:client.js"></script>
 
-    <script src="https://www.gstatic.com/firebasejs/8.2.9/firebase.js"></script>
-
     <script src="scripts/script.js"></script>
     <script src="scripts/auth.js"></script>
     <script src="scripts/competition.js"></script>
@@ -24,6 +22,13 @@
     <link rel="stylesheet" href="styles/test.css">
 
     <link rel="icon" href="images/favicon.ico">
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js'
+        import { analytics } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-analytics.js'
+        import { auth } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js'
+        import { firestore } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js'
+    </script>
   </head>
 
   <body>
