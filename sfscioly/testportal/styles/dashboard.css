@@ -17,8 +17,8 @@
     font-size: 3vw;
     color: black;
     text-align: center;
-    margin-top: 25%;
-    margin-bottom: 10%;
+    margin-top: 3vh;
+    margin-bottom: 1vh;
 }
 
 #sidebar > a:hover {
@@ -45,7 +45,7 @@
     margin-top: 5%;
 }
 
-#competitions {
+#assignments {
     width: 40%;
     height: min-content;
     margin-top: 2.1%;
@@ -53,25 +53,25 @@
     background-color: #b5dfff;
 }
 
-#competitions h2 {
+#assignments h2 {
     margin: 0%;
     font-size: 1.5vw;
 }
 
-#competitions h4 {
+#assignments h4 {
     margin: 0% 0% 0% 0.5%;
 }
 
-#competitions > div {
+#assignments > div {
     margin: 0% 0% 1.5% 2%;
 }
 
-#competitions > div > a {
+#assignments > div > a {
     color: #172435;
     text-decoration: none;
 }
 
-#competitions a:hover {
+#assignments a:hover {
     cursor: pointer;
     text-decoration: underline;
 }

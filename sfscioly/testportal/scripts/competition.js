@@ -1,11 +1,25 @@
-const competition = "Summer Competition 2021";
+import {
+    _,
+    sfsciolylog,
+} from "./script.js";
 
-let currentEvent = "None";
-let time = 3600;
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+} from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
-if (window.location.href.includes("test")) {
+let assignmentId;
+let eventName;
+let assignmentName;
+let assignmentCollection;
+let assignmentSubmissionDoc;
+let time = 3000;
+
+if (window.location.href.includes("testportal/test")) {
     window.addEventListener('beforeunload', (event) => {
-        if (currentEvent != "None") {
+        if (eventName != "None") {
             event.preventDefault();
 
             event.returnValue = "";
@@ -13,88 +27,75 @@ if (window.location.href.includes("test")) {
     });
 }
 
-function loadCompetition() {
-    const localTime = new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
-    const estMonth = Number(localTime.split("/")[0]);
+export function loadAssignments() {
+    getDoc(userDoc).then((doc) => {
+        if (doc.data()["assignments"]) {
+            doc.data()["assignments"].forEach((status, _assignmentId) => {
+                if (status != "Complete") {
+                    const assignmentDetails = _assignmentId.split("~~");
+                    assignmentId = _assignmentId;
+                    eventName = assignmentDetails[0];
+                    assignmentName = assignmentDetails[1];
 
-    if (estMonth == 11) {
-        userDoc.get().then((doc) => {
-            for (let e = 1; e < 5; e++) {
-                var eventE = doc.data()[`event${e}`];
-
-                if (eventE != "None" && !eventE.includes("!")) {
-                    _("competitions").innerHTML += `
-                    <div>
-                        → <a onclick="confirmTest('${eventE}')">${eventE}</a>
-                    </div>
-                `;
+                    _("assignments").innerHTML += `
+                        <div>
+                            → <a onclick="confirmOpenAssignment('${assignmentId}')">${eventName} - ${assignmentName}</a>
+                        </div>
+                    `;
                 }
-            }
-
-            if (doc.data()[`ctf`] != undefined) {
-                if (doc.data()[`ctf`] == true) {
-                    _("competitions").innerHTML += `
-                    <div>
-                        <a onclick="confirmTest('CTFSubmissions')">\> CTF Submissions</a>
-                    </div>
-                `;
-                }
-            }
-        });
-    }
+            });
+        }
+    });
 }
 
-function confirmTest(event) {
-    if (["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(event)) {
-        window.location.href = `test.html?test=${event}`;
-    } else if (confirm("Are you sure you want to begin this event? Once you start, the timer will start and you won't be able to pause or come back later!")) {
-        window.location.href = `test.html?test=${event}`;
+export function confirmOpenAssignment(assignmentId) {
+    // @TODO - Check if test is mandatory
+    if (confirm("Are you sure you want to begin this event? Once you start, the timer will start and you won't be able to pause or come back later!")) {
+        window.location.href = `test.html?test=${assignmentId}`;
     }
 }
 
 var answers = new Map();
 
-function loadTest(test) {
-    if (["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
-        _("submit-row").style.display = "none";
-    }
+export function loadAssignment(_assignmentId) {
+    const assignmentDetails = _assignmentId.split("~~");
+    assignmentId = _assignmentId;
+    eventName = assignmentDetails[0];
+    assignmentName = assignmentDetails[1];
 
-    userDoc.get().then((doc) => {
-        if (test != "CTFSubmissions") {
-            if (Object.values(doc.data()).includes(test + "!")) {
-                alert("Sorry, you already finished this test!");
+    getDoc(userDoc).then((doc) => {
+        const data = doc.data();
 
-                return window.location.href = "dashboard.html";
-            } else if (!Object.values(doc.data()).includes(test)) {
-                alert("Sorry, you don't have this event!");
+        if (data["assignments"][assignmentId] == "Completed") {
+            alert("Sorry, you already finished this assignment!");
 
-                return window.location.href = "dashboard.html";
-            } else if (!["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
-                let data = {};
+            return window.location.href = "dashboard.html";
+        } else if (!data["assignments"].includes(assignmentId)) {
+            alert("Sorry, you don't have this assignment!");
 
-                let finishedEvent = Object.keys(doc.data()).find(key => doc.data()[key] === test);
+            return window.location.href = "dashboard.html";
+        } else {
+            data["assignments"][assignmentId] = "Completed";
 
-                data[finishedEvent] = test + "!";
+            setDoc(userDoc, data, { merge: true }).then(() => {
+                sfsciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${auth.currentUser.uid}&Event=${test}`);
+            }).catch((e) => {
+                sfsciolylog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${auth.currentUser.uid}&Event=${test}`);
 
-                userDoc.set(data, { merge: true }).then(() => {
-                    sciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${user.uid}&Event=${test}`);
-                }).catch((e) => {
-                    sciolylog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${user.uid}&Event=${test}`);
-        
-                    alert("Error occurred accessing database, please refresh the page and try again!");
-                });
-            }
+                alert("Error occurred accessing database, please refresh the page and try again!");
+            });
         }
     });
 
-    currentEvent = test;
+    collection(db, "assignments", eventName, assignmentName)
+    assignmentSubmissionDoc = doc(db, "users", auth.currentUser.id, "assignments", assignmentId);
 
-    _("title").innerHTML = test;
-    _("details").innerHTML = `UID: ${user.uid} | Time Remaining: 60 minutes and 0 seconds`;
+    _("title").innerHTML = assignmentName;
+    _("details").innerHTML = `UID: ${auth.currentUser.uid} | Time Remaining: 50 minutes and 0 seconds`;
 
     var testContainer = _("test-container");
 
-    tests.doc(test).collection(competition).get().then((querySnapshot) => {
+    getDocs(assignmentCollection).then((querySnapshot) => {
         var docs = [];
 
         querySnapshot.forEach((doc) => {
@@ -288,20 +289,21 @@ function loadTest(test) {
             }
         });
     }).then(() => {
-        userDoc.collection("answers").doc(test).get().then((answersDoc) => {
-            if (answersDoc.exists && ["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(test)) {
-                _("details").innerHTML = `UID: ${user.uid} | Deadline: November ${ test == "Capture The Flag" ? "15th" : "10th" }, 11:59 PM`;
+        getDoc(assignmentSubmissionDoc).then((submissionDoc) => {
+            if (submissionDoc.exists) {
+                // @TODO - Display deadline
+                _("details").innerHTML = `UID: ${auth.currentUser.uid}`;
 
-                for (var a = 0; a < Object.keys(answersDoc.data()).length; a++) {
-                    document.getElementById(`question${a + 1}-response`).value = answersDoc.data()[`question${a + 1}`];
+                for (var a = 0; a < Object.keys(submissionDoc.data()).length; a++) {
+                    document.getElementById(`question${a + 1}-response`).value = submissionDoc.data()[`question${a + 1}`];
                 }
             } else {
                 let startTime = (new Date()).getTime();
 
-                userDoc.collection("answers").doc(currentEvent).set({
+                setDoc(assignmentSubmissionDoc, {
                     time: startTime
                 }, { merge: true }).catch((e) => {
-                    sciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${user.uid}&Event=${currentEvent}`);
+                    sfsciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}}`);
                 });
 
                 setTimeout(() => {
@@ -310,7 +312,7 @@ function loadTest(test) {
             }
         });
     }).catch((error) => {
-        sciolylog(`Error occurred retrieving test: ${error}`, `Event=Error occurred retrieving test&Error=${error}&UID=${user.uid}&Event=${test}`);
+        sfsciolylog(`Error occurred retrieving test: ${error}`, `Event=Error occurred retrieving test&Error=${error}&UID=${auth.currentUser.uid}&Event=${test}`);
     });
 }
 
@@ -320,7 +322,7 @@ function timer() {
 
     var timeText = `${minutes} minute${(minutes == 1) ? "" : "s"} and ${seconds} second${(seconds == 1) ? "" : "s"}`;
     
-    _("details").innerHTML = `UID: ${user.uid} | Time Remaining: ${timeText}`;
+    _("details").innerHTML = `UID: ${auth.currentUser.uid} | Time Remaining: ${timeText}`;
 
     if (time % 90 == 0) {
         saveAnswers();
@@ -338,7 +340,7 @@ function timer() {
 var saved = false;
 var saveTimestamp = 0;
 
-function answer(id, answer) {
+export function answer(id, answer) {
     if (id.includes("optionA")) {
         var answerList;
 
@@ -376,20 +378,22 @@ function answer(id, answer) {
     _("saveStatus").innerHTML = `Not Saved | <a onclick="manualSave()">Save</a>`;
 }
 
-function saveAnswers(finished = false) {
+export function saveAnswers(finished = false) {
     const data = {};
 
     answers.forEach((answer, question) => {
         data[question] = answer.toString();
     });
 
-    userDoc.collection("answers").doc(currentEvent).set(data, { merge: true }).then(() => {
-        sciolylog(`Saved ${currentEvent} answers`, `Event=Saved answers&UID=${user.uid}&Event=${currentEvent}`);
+    setDoc(assignmentSubmissionDoc, { merge: true }).then(() => {
+        sfsciolylog(`Saved ${assignmentId} answers`, `Event=Saved answers&UID=${auth.currentUser.uid}&AssignmentId=${assignmentId}`);
 
         if (finished) {
             alert(`Successfully submitted the test!`);
 
-            currentEvent = "None";
+            assignmentId = "";
+            eventName = "";
+            assignmentName = "";
 
             window.location.href = "dashboard.html";
         } else {
@@ -399,13 +403,14 @@ function saveAnswers(finished = false) {
             _("saveStatus").innerHTML = `Saved at ${(new Date(saveTimestamp))}`;
         }
     }).catch((e) => {
-        sciolylog(`Error occurred saving ${currentEvent} answers: ${e}`, `Event=Error occurred saving answers&Error=${e}&UID=${user.uid}&Event=${currentEvent}`);
+        sfsciolylog(`Error occurred saving ${assignmentId} answers: ${e}`, `Event=Error occurred saving answers&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId
+}`);
 
         alert("Error occurred saving answers, please refresh the page and try again!");
     });
 }
 
-function manualSave() {
+export function manualSave() {
     if ((new Date()).getTime() - saveTimestamp > 30000) {
         saveAnswers();
     } else {
@@ -413,8 +418,8 @@ function manualSave() {
     }
 }
 
-function submit(confirmed = false) {
-    if (!confirmed || ["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(currentEvent)) {
+export function submit(confirmed = false) {
+    if (!confirmed) {
         if (!confirm("Are you sure you want to submit the test? You won't be able to access it again!")) {
             return;
         }
@@ -422,32 +427,18 @@ function submit(confirmed = false) {
 
     saveAnswers(true);
 
-    sciolylog(`Submitted ${currentEvent} answers`, `Event=Submitted answers&UID=${user.uid}&Event=${currentEvent}`);
+    sfsciolylog(`Submitted ${assignmentId} answers`, `Event=Submitted answers&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}`);
 }
 
-function testRedirect(dest) {
-    if (["Capture The Flag", "Website Design", "Tech Support", "Programming Challenges", "Golf", "Web Scraping"].includes(currentEvent)) {
+export function testRedirect(dest) {
+    if (confirm("Are you sure you want to exit the test? If you do, your answers will be saved and submitted!")) {
         submit(true);
 
         if (dest == "dashboard") {
             window.location.href = "dashboard.html";
         } else {
-            if (firebase.auth().currentUser != null) {
-                firebase.auth().signOut();
-            }
-    
-            if (!window.location.href.includes("index.html") || window.location.href != "") {
-                window.location.href = "index.html";
-            }
-        }
-    } else if (confirm("Are you sure you want to exit the test? If you do, your answers will be saved and submitted!")) {
-        submit(true);
-
-        if (dest == "dashboard") {
-            window.location.href = "dashboard.html";
-        } else {
-            if (firebase.auth().currentUser != null) {
-                firebase.auth().signOut();
+            if (auth.currentUser != null) {
+                signOut();
             }
     
             if (!window.location.href.includes("index.html") || window.location.href != "") {

@@ -1,7 +1,24 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js'
-import { getAnalytics } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-analytics.js'
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js'
-import { getFirestore }from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js'
+import {
+    initializeApp
+} from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js";
+
+import {
+    getAnalytics
+} from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-analytics.js';
+
+import {
+    getFirestore,
+    collection,
+    doc,
+    enableIndexedDbPersistence
+} from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
+
+import {
+    getAuth,
+    setPersistence,
+    browserSessionPersistence,
+    onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js';
 
 const app = initializeApp({
     apiKey: "AIzaSyBw7h-5dzK9tcbKCbzWdo35Dlbi1L7It_M",
@@ -13,40 +30,54 @@ const app = initializeApp({
     measurementId: "G-QFKK2189G7"
 });
 
-console.log(getAnalytics);
+const analytics = getAnalytics(app);
 
-const db = getFirestore(app);
-db.enablePersistence();
+export const db = getFirestore(app);
 
-const users = db.collection("users");
-const tests = db.collection("tests");
+enableIndexedDbPersistence(db).catch((error) => {
+    if (error.code == 'failed-precondition') {
+        console.log("Other tabs open, cannot enable Indexed DB Persistence");
+    } else if (error.code == 'unimplemented') {
+        console.log("Browser does not support Indexed DB Persistence");
+    }
+});
 
-auth.auth().onAuthStateChanged(u => {
-    if (u != null || u != undefined) {
+export const users = collection(db, "users");
+export const tests = collection(db, "tests");
+
+window.userDoc = null;
+
+export const auth = getAuth(app);
+setPersistence(auth, browserSessionPersistence);
+
+export function test() {
+    console.log(auth.currentUser.uid);
+}
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
         pageLoad(true);
     } else {
         pageLoad(false);
     }
 });
 
-function pageLoad(u) {
-    if (u) {
-        window.user = firebase.auth().currentUser;
-
-        if (!user) {
-            sciolylog("Auth error occurred, pageLoad(true) called even though firebase.auth().currentUser is " + user, "Event=False Auth State Change");
+function pageLoad(user) {
+    if (user) {
+        if (!auth.currentUser) {
+            sfsciolylog("Auth error occurred, pageLoad(true) called even though auth.currentUser is " + auth.currentUser, "Event=False Auth State Change");
 
             pageLoad(false);
         }
 
-        window.userDoc = users.doc(user.uid);
+        userDoc = doc(db, "users", auth.currentUser.uid);
 
         if (window.location.href.includes("index.html")) {
             window.location.href = "dashboard.html";
         } else if (window.location.href.includes("dashboard.html")) {
-            _("welcome-user").innerHTML = `Welcome, ${getCookie("username")}!`;
+            _("welcome-user").innerHTML = `Welcome, ${auth.currentUser.displayName ?? "User"}!`;
 
-            loadCompetition();
+            loadAssignments();
         } else if (window.location.href.includes("test.html")) {
             const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
             const test = urlParams.get('test');
@@ -54,21 +85,17 @@ function pageLoad(u) {
             loadTest(test);
         }
     } else {
-        if (!window.location.href.includes("index.html") && window.location.href != "") {
+        if (window.location.href.includes("dashboard.html") || window.location.href.includes("test.html")) {
             window.location.href = "index.html";
         }
     }
 }
 
-function _(id) {
+export function _(id) {
     return document.getElementById(id);
 }
 
-function display(id) {
-    $('#' + id).toggle();
-}
-
-function sciolylog(msg, log = "") {
+export function sfsciolylog(msg, log = "") {
     try {
         var details = "";
 
@@ -79,10 +106,10 @@ function sciolylog(msg, log = "") {
         }
 
         const xhttp = new XMLHttpRequest();
-        xhttp.open("GET", `https://scioly-discord-bot.dralientech.repl.co/log?${details}`, true);
+        xhttp.open("GET", `https://sfscioly-discord-bot.dralientech.repl.co/log?${details}`, true);
         xhttp.send();
     } catch (error) {
-        console.error(error);
+        console.error("Logging error:", error);
     } finally {
         console.log(msg);
     }

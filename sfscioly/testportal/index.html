@@ -8,13 +8,22 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://apis.google.com/js/api:client.js"></script>
 
-    <script type="module" src="testportal/scripts/script.js"></script>
-    <script type="module" src="testportal/scripts/auth.js"></script>
+    <script type="module">
+      import {
+        authenticate as _authenticate,
+        signUp as _signUp,
+        googleAuth as _googleAuth
+      } from "./scripts/auth.js";
 
-    <link rel="stylesheet" href="testportal/styles/style.css">
-    <link rel="stylesheet" href="testportal/styles/index.css">
+      window.authenticate = _authenticate;
+      window.signUp = _signUp;
+      window.googleAuth = _googleAuth;
+    </script>
 
-    <link rel="icon" href="images/favicon.ico">
+    <link rel="stylesheet" href="./styles/style.css">
+    <link rel="stylesheet" href="./styles/index.css">
+
+    <link rel="icon" href="./images/favicon.ico">
   </head>
 
   <body>
@@ -36,11 +45,14 @@
               </div>
 
               <div class="auth-row">
-                <a onclick="alert('@TODO');">Don't have an account? Sign up!</a>
+                <a onclick="
+                  document.getElementById('signin').style.display='none';
+                  document.getElementById('signup').style.display='flex';
+                  ">Don't have an account? Sign up!</a>
               </div>
 
               <div class="auth-row">
-                <button onclick="auth();">Sign in</button>
+                <button onclick="authenticate()">Sign in</button>
               </div>
             </div>
 
@@ -56,23 +68,26 @@
               </div>
 
               <div class="auth-row">
-                <input id="su-pwd" placeholder="Password" type="password">
-                <input id="su-confirmpwd" placeholder="Confirm Password" type="password">
+                <input id="su-password" placeholder="Password" type="password">
+                <input id="su-confirmpassword" placeholder="Confirm Password" type="password">
               </div>
 
               <div class="auth-row">
-                <a onclick="display('signin'); display('signup');">Already have an account? Sign in!</a>
+                <a onclick="
+                  document.getElementById('signin').style.display='flex';
+                  document.getElementById('signup').style.display='none';
+                  ">Already have an account? Sign in!</a>
               </div>
 
               <div class="auth-row">
-                <button onclick="signUp();">Sign up</button>
+                <button onclick="signUp()">Sign up</button>
               </div>
             </div>
 
             <hr>
 
             <div id="google-row">
-
+              <button onclick="googleAuth()">Google</button>
             </div>
             <br>
           </div>

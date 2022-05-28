@@ -10,21 +10,26 @@
     <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://apis.google.com/js/api:client.js"></script>
 
-    <script src="scripts/script.js"></script>
-    <script src="scripts/auth.js"></script>
-    <script src="scripts/competition.js"></script>
+    <script type="module">
+      import {
+        unAuthenticate as _unAuthenticate
+      } from "./scripts/auth.js";
+
+      window.unAuthenticate = _unAuthenticate;
+
+      import {
+        loadAssignments as _loadAssignments,
+        confirmOpenAssignment as _confirmOpenAssignment
+      } from "./scripts/competition.js";
+
+      window.loadAssignments = _loadAssignments;
+      window.confirmOpenAssignment = _confirmOpenAssignment;
+    </script>
 
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/dashboard.css">
 
     <link rel="icon" href="images/favicon.ico">
-
-    <script type="module">
-      import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-app.js'
-      import { analytics } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-analytics.js'
-      import { auth } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-auth.js'
-      import { firestore } from 'https://www.gstatic.com/firebasejs/9.8.1/firebase-firestore.js'
-    </script>
   </head>
 
   <body>
@@ -33,9 +38,9 @@
         <div id="sidebar">
           <a class="material-icons">home</a>
 
-          <a class="material-icons" href="testwriting.html">drive_file_rename_outline</a>
+          <a class="material-icons" href="testwriting.html" style="text-decoration: none;">drive_file_rename_outline</a>
 
-          <a class="material-icons" onclick="unauth();">logout</a>
+          <a class="material-icons" onclick="unAuthenticate()">logout</a>
         </div>
 
         <div id="dashboard">
@@ -44,8 +49,8 @@
           </div>
 
           <div class="dashboard-row">
-            <div id="competitions">
-              <h2>My Competitions</h2>
+            <div id="assignments">
+              <h2>My Assignments</h2>
             </div>
           </div>
         </div>
