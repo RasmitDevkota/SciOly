@@ -19,8 +19,12 @@ let assignmentName;
 let assignmentSpecifier;
 let assignmentCollection;
 let assignmentSubmissionDoc;
+
 const questions = new Array();
+
 let time = 3000;
+
+const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 if (window.location.href.includes("testportal/test")) {
     window.addEventListener('beforeunload', (event) => {
@@ -228,7 +232,7 @@ export async function loadAssignment(_assignmentId) {
                     for (let i in data.optionsB) {
                         question += `
                                     <div class="form-check">
-                                        ${Number(i) + 1}. ${data.optionsB[i]}
+                                        ${alphabet[Number(i)]}. ${data.optionsB[i]}
                                     </div>
                         `;
                     }
