@@ -19,6 +19,7 @@ let assignmentName;
 let assignmentSpecifier;
 let assignmentCollection;
 let assignmentSubmissionDoc;
+const questions = new Array();
 let time = 3000;
 
 if (window.location.href.includes("testportal/test")) {
@@ -103,15 +104,13 @@ export async function loadAssignment(_assignmentId) {
     var testContainer = _("test-container");
 
     getDocs(assignmentCollection).then((querySnapshot) => {
-        var docs = [];
-
         querySnapshot.forEach((doc) => {
-            docs[Number(doc.id.split("question")[1]) - 1] = doc;
+            questions[Number(doc.id.split("question")[1])] = doc;
         });
 
-        var q = 0;
+        let q = 0;
 
-        docs.forEach((doc) => {
+        questions.forEach((doc) => {
             if (q != 0) {
                 testContainer.innerHTML += `<hr>`;
             }
@@ -299,24 +298,61 @@ export async function loadAssignment(_assignmentId) {
         getDoc(assignmentSubmissionDoc).then((submissionDoc) => {
             if (submissionDoc.exists() && Object.keys(submissionDoc.data()).length > 1) {
                 // @TODO - Display deadline
-                _("details").innerHTML = `UID: ${auth.currentUser.uid}`;
 
-                for (let a = 0; a < Object.keys(submissionDoc.data()).length; a++) {
-                    document.getElementById(`question${a + 1}-response`).value = submissionDoc.data()[`question${a + 1}`];
+                const submissionResponses = submissionDoc.data();
+                const submissionResponsesQ = Object.keys(submissionResponses);
+                const submissionResponsesA = Object.values(submissionResponses);
+
+                // @TODO - Refactor wtih question outputter forEach
+                for (let r = 0; r < submissionResponsesQ.length; r++) {
+                    if (submissionResponsesQ[r].includes("question")) {
+                        const q = submissionResponsesQ[r].split("question")[1];
+                        const answer = submissionResponsesA[r];
+
+                        answers.set(submissionResponsesQ[r], answer);
+
+                        const qDoc = questions[q]
+
+                        switch (qDoc.data().type) {
+                            case "mcq":
+                                const o = qDoc.data().options.indexOf(answer)
+                                document.getElementById(`question${q}-option${o}`).checked = true
+                                break;
+                            case "msq":
+                                for (let o in answer) {
+                                    const optionNumber = qDoc.data().options.indexOf(answer)
+                                    document.getElementById(`question${q}-moption${o}`).checked = true
+                                }
+                                break;
+                            case "mq":
+                                for (let o in answer) {
+                                    document.getElementById(`question${q}-optionA${o}`).value = answer[o]
+                                }
+                                break;
+                            case "lrq":
+                                document.getElementById(`question${q}-response`).value = answer;
+                                break;
+                            case "fitb":
+                                document.getElementById(`question${q}-blank`).value = answer;
+                                break;
+                        }
+                    }
                 }
-            } else {
-                let startTime = (new Date()).getTime();
-
-                setDoc(assignmentSubmissionDoc, {
-                    time: startTime
-                }).catch((e) => {
-                    sfsciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}}`);
-                });
-
-                setTimeout(() => {
-                    timer();
-                }, 1000);
             }
+
+            // @TODO - Don't display time information if time is unlimited
+
+            let startTime = (new Date()).getTime();
+
+            setDoc(assignmentSubmissionDoc, {
+                time: startTime
+            }).catch((e) => {
+                sfsciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}}`);
+            });
+
+            setTimeout(() => {
+                timer();
+            }, 1000);
         });
     }).catch((error) => {
         sfsciolylog(`Error occurred retrieving test: ${error}`, `Event=Error occurred retrieving test&Error=${error}&UID=${auth.currentUser.uid}&Event=${test}`);
@@ -349,23 +385,30 @@ var saveTimestamp = 0;
 
 export function answer(id, answer) {
     if (id.includes("optionA")) {
-        var answerList;
+        var answerList = new Array();
 
-        if (answers.get(id.substr(0, id.indexOf("-"))) == undefined) {
-            var answerList = [];
-        } else {
-            var answerList = answers.get(id.substr(0, id.indexOf("-")));
+        if (answers.get(id.substr(0, id.indexOf("-"))) != undefined) {
+            answerList = answers.get(id.substr(0, id.indexOf("-")));
         }
+
+        console.log(id, answer);
 
         answerList[id.split("optionA")[1]] = answer;
 
+        let a = 0;
+        for (let unsafeAnswer of answerList) {
+            if (typeof unsafeAnswer == "undefined") {
+                answerList[a] = "";
+            }
+
+            a++;
+        }
+
         answers.set(id.substr(0, id.indexOf("-")), answerList);
     } else if (id.includes("moption")) {
-        var answerlist;
+        var answerList = new Array();
 
-        if (answers.get(id.substr(0, id.indexOf("-"))) == undefined) {
-            answerList = [];
-        } else {
+        if (answers.get(id.substr(0, id.indexOf("-"))) != undefined) {
             answerList = answers.get(id.substr(0, id.indexOf("-")));
         }
 
@@ -380,6 +423,8 @@ export function answer(id, answer) {
         answers.set(id.substr(0, id.indexOf("-")), answer);
     }
 
+    console.log("answered", answers);
+
     saved = false;
 
     _("saveStatus").innerHTML = `Not Saved | <a onclick="manualSave()">Save</a>`;
@@ -389,10 +434,10 @@ export function saveAnswers(finished = false) {
     const data = {};
 
     answers.forEach((answer, question) => {
-        data[question] = answer.toString();
+        data[question] = answer; // NOTE: Possible type error when saving/retrieving
     });
 
-    setDoc(assignmentSubmissionDoc, { merge: true }).then(() => {
+    setDoc(assignmentSubmissionDoc, data, { merge: true }).then(() => {
         sfsciolylog(`Saved ${assignmentId} answers`, `Event=Saved answers&UID=${auth.currentUser.uid}&AssignmentId=${assignmentId}`);
 
         if (finished) {
@@ -410,8 +455,7 @@ export function saveAnswers(finished = false) {
             _("saveStatus").innerHTML = `Saved at ${(new Date(saveTimestamp))}`;
         }
     }).catch((e) => {
-        sfsciolylog(`Error occurred saving ${assignmentId} answers: ${e}`, `Event=Error occurred saving answers&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId
-}`);
+        sfsciolylog(`Error occurred saving ${assignmentId} answers: ${e}`, `Event=Error occurred saving answers&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}`);
 
         alert("Error occurred saving answers, please refresh the page and try again!");
     });
