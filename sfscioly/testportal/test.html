@@ -25,26 +25,21 @@
         loadAssignment as _loadAssignment,
         answer as _answer,
         manualSave as _manualSave,
-        submit as _submit
-      } from "/scripts/competition.js";
+        submit as _submit,
+        testRedirect as _testRedirect
+      } from "./scripts/competition.js";
 
       window.loadAssignment = _loadAssignment;
       window.answer = _answer;
       window.manualSave = _manualSave;
       window.submit = _submit;
+      window.testRedirect = _testRedirect;
     </script>
 
     <link rel="stylesheet" href="styles/style.css">
     <link rel="stylesheet" href="styles/test.css">
 
     <link rel="icon" href="images/favicon.ico">
-
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js'
-        import { analytics } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-analytics.js'
-        import { auth } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js'
-        import { firestore } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js'
-    </script>
   </head>
 
   <body>

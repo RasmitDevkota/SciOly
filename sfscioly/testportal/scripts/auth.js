@@ -143,8 +143,10 @@ export function googleAuth() {
                         console.error("Error writing document: ", error);
                     });
                 } else {
-                    console.log("Emails doc already exists, skipped writing.");
+                    console.log("Docs already exist, skipped writing.");
                 }
+            }).then(() => {
+                window.location.href = "dashboard.html";
             });
         });
     }).catch((error) => {

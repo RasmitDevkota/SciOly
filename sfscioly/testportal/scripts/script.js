@@ -82,7 +82,7 @@ function pageLoad(user) {
             const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
             const test = urlParams.get('test');
 
-            loadTest(test);
+            loadAssignment(test);
         }
     } else {
         if (window.location.href.includes("dashboard.html") || window.location.href.includes("test.html")) {

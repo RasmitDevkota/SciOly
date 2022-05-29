@@ -1,4 +1,6 @@
 import {
+    auth,
+    db,
     _,
     sfsciolylog,
 } from "./script.js";
@@ -8,11 +10,13 @@ import {
     doc,
     getDoc,
     getDocs,
+    setDoc
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
 let assignmentId;
 let eventName;
 let assignmentName;
+let assignmentSpecifier;
 let assignmentCollection;
 let assignmentSubmissionDoc;
 let time = 3000;
@@ -30,7 +34,9 @@ if (window.location.href.includes("testportal/test")) {
 export function loadAssignments() {
     getDoc(userDoc).then((doc) => {
         if (doc.data()["assignments"]) {
-            doc.data()["assignments"].forEach((status, _assignmentId) => {
+            Object.keys(doc.data()["assignments"]).forEach((_assignmentId) => {
+                const status = doc.data()["assignments"][_assignmentId];
+
                 if (status != "Complete") {
                     const assignmentDetails = _assignmentId.split("~~");
                     assignmentId = _assignmentId;
@@ -57,11 +63,12 @@ export function confirmOpenAssignment(assignmentId) {
 
 var answers = new Map();
 
-export function loadAssignment(_assignmentId) {
+export async function loadAssignment(_assignmentId) {
     const assignmentDetails = _assignmentId.split("~~");
     assignmentId = _assignmentId;
     eventName = assignmentDetails[0];
     assignmentName = assignmentDetails[1];
+    assignmentSpecifier = assignmentDetails[2];
 
     getDoc(userDoc).then((doc) => {
         const data = doc.data();
@@ -70,12 +77,12 @@ export function loadAssignment(_assignmentId) {
             alert("Sorry, you already finished this assignment!");
 
             return window.location.href = "dashboard.html";
-        } else if (!data["assignments"].includes(assignmentId)) {
+        } else if (!Object.keys(data["assignments"]).includes(assignmentId)) {
             alert("Sorry, you don't have this assignment!");
 
             return window.location.href = "dashboard.html";
         } else {
-            data["assignments"][assignmentId] = "Completed";
+            // data["assignments"][assignmentId] = "Completed";
 
             setDoc(userDoc, data, { merge: true }).then(() => {
                 sfsciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${auth.currentUser.uid}&Event=${test}`);
@@ -87,8 +94,8 @@ export function loadAssignment(_assignmentId) {
         }
     });
 
-    collection(db, "assignments", eventName, assignmentName)
-    assignmentSubmissionDoc = doc(db, "users", auth.currentUser.id, "assignments", assignmentId);
+    assignmentCollection = collection(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`);
+    assignmentSubmissionDoc = doc(db, "users", auth.currentUser.uid, "assignments", assignmentId);
 
     _("title").innerHTML = assignmentName;
     _("details").innerHTML = `UID: ${auth.currentUser.uid} | Time Remaining: 50 minutes and 0 seconds`;
@@ -121,7 +128,7 @@ export function loadAssignment(_assignmentId) {
 
                     question += `
                             <div class="question-text">
-                                ${q}. (${data.value} point${(data.value > 1) ? "s" : ""}) ${data.text}
+                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                     `;
 
@@ -129,7 +136,7 @@ export function loadAssignment(_assignmentId) {
                             <div class="answer mcq-options">
                     `;
 
-                    for (i in data.options) {
+                    for (let i in data.options) {
                         question += `
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="${doc.id}" id="${doc.id}-option${i}" value="${data.options[i]}" onchange="answer(this.id, this.value)">
@@ -155,7 +162,7 @@ export function loadAssignment(_assignmentId) {
 
                     question += `
                             <div class="question-text">
-                                ${q}. (${data.value} point${(data.value > 1) ? "s" : ""}) ${data.text}
+                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                     `;
 
@@ -163,7 +170,7 @@ export function loadAssignment(_assignmentId) {
                             <div class="answer msq-options">
                     `;
 
-                    for (i in data.options) {
+                    for (let i in data.options) {
                         question += `
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="${doc.id}option${i}" id="${doc.id}-moption${i}" value="${data.options[i]}" onchange="answer(this.id, this.value)">
@@ -189,7 +196,7 @@ export function loadAssignment(_assignmentId) {
 
                     question += `
                             <div class="question-text">
-                                ${q}. (${data.value} point${(data.value > 1) ? "s" : ""}) ${data.text}
+                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                     `;
 
@@ -201,7 +208,7 @@ export function loadAssignment(_assignmentId) {
                                 <div class="mq-optionsA">
                     `;
 
-                    for (i in data.optionsA) {
+                    for (let i in data.optionsA) {
                         question += `
                                     <div class="form-check">
                                         <input class="form-check-input mq-input" type="text" name="${doc.id}optionA${i}" id="${doc.id}-optionA${i}" maxlength="1" onchange="answer(this.id, this.value)">
@@ -219,7 +226,7 @@ export function loadAssignment(_assignmentId) {
                                 <div class="mq-optionsB">
                     `;
 
-                    for (i in data.optionsB) {
+                    for (let i in data.optionsB) {
                         question += `
                                     <div class="form-check">
                                         ${Number(i) + 1}. ${data.optionsB[i]}
@@ -242,7 +249,7 @@ export function loadAssignment(_assignmentId) {
 
                     question += `
                             <div class="question-text">
-                                ${q}. (${data.value} point${(data.value > 1) ? "s" : ""}) ${data.text}
+                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                     `;
 
@@ -270,7 +277,7 @@ export function loadAssignment(_assignmentId) {
 
                     question += `
                             <div>
-                                ${q}. (${data.value} point${(data.value > 1) ? "s" : ""})
+                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""})
                                 &nbsp;
                                 <label>${data.text.split("|~~~~|")[0]}</label>
                                 <input type="text" class="fitb-answer" style="height: 30px" id="${doc.id}-blank" onchange="answer(this.id, this.value)">
@@ -290,11 +297,11 @@ export function loadAssignment(_assignmentId) {
         });
     }).then(() => {
         getDoc(assignmentSubmissionDoc).then((submissionDoc) => {
-            if (submissionDoc.exists) {
+            if (submissionDoc.exists() && Object.keys(submissionDoc.data()).length > 1) {
                 // @TODO - Display deadline
                 _("details").innerHTML = `UID: ${auth.currentUser.uid}`;
 
-                for (var a = 0; a < Object.keys(submissionDoc.data()).length; a++) {
+                for (let a = 0; a < Object.keys(submissionDoc.data()).length; a++) {
                     document.getElementById(`question${a + 1}-response`).value = submissionDoc.data()[`question${a + 1}`];
                 }
             } else {
@@ -302,7 +309,7 @@ export function loadAssignment(_assignmentId) {
 
                 setDoc(assignmentSubmissionDoc, {
                     time: startTime
-                }, { merge: true }).catch((e) => {
+                }).catch((e) => {
                     sfsciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}}`);
                 });
 

@@ -8,40 +8,7 @@
   },
   "hosting": [
     {
-      "site": "scioly",
-      "cleanUrls": true,
-      "public": "es",
-      "redirects": [
-        {
-          "source": "/:competition-:event-:division",
-          "destination": "https://scioly.web.app/test.html?competition=:competition&event=:event&division=:division",
-          "type": 301
-        },
-        {
-          "source": "/:competition-:event",
-          "destination": "https://scioly.web.app/test.html?competition=:competition&event=:event",
-          "type": 301
-        },
-        {
-          "source": "/feedback/:competition-:event-:division",
-          "destination": "https://scioly.web.app/feedback.html?competition=:competition&event=:event&division=:division",
-          "type": 301
-        },
-        {
-          "source": "/feedback/:competition-:event",
-          "destination": "https://scioly.web.app/feedback.html?competition=:competition&event=:event",
-          "type": 301
-        }
-      ],
-      "ignore": [
-        "firebase.json",
-        "**/.*",
-        "**/node_modules/**"
-      ]
-    },
-    {
       "site": "sfscioly",
-      "cleanUrls": true,
       "public": "sfscioly",
       "ignore": [
         "firebase.json",
