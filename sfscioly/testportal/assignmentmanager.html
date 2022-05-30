@@ -1,0 +1,112 @@
+<html>
+
+<head>
+    <title>SciOly Test Portal</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"        integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"        crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+
+    <script src="https://apis.google.com/js/api:client.js"></script>
+
+    <script type="module">
+        import {
+            unAuthenticate as _unAuthenticate
+        } from "./scripts/auth.js";
+
+        window.unAuthenticate = _unAuthenticate;
+
+        import {
+            createAssignment as _createAssignment,
+            manageAssignment as _manageAssignment,
+            previewAssignment as _previewAssignment,
+            deleteAssignment as _deleteAssignment
+        } from "./scripts/assignmentmanager.js";
+
+        window.createAssignment = _createAssignment;
+        window.manageAssignment = _manageAssignment;
+        window.previewAssignment = _previewAssignment;
+        window.deleteAssignment = _deleteAssignment;
+    </script>
+
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/assignmentmanager.css">
+
+    <link rel="icon" href="images/favicon.ico">
+</head>
+
+<body>
+    <div id="main">
+        <div id="content">
+            <div id="sidebar">
+                <a class="material-icons" href="dashboard.html">home</a>
+
+                <a class="material-icons" href="assignmentmanager.html">drive_file_rename_outline</a>
+
+                <a class="material-icons" onclick="unAuthenticate()">logout</a>
+            </div>
+
+            <div id="assignmentManager">
+                <div class="assignment-manager-row">
+                    <h1 id="assignmentManagerHeader">Assignment Manager</h1>
+                </div>
+
+                <div class="assignment-manager-row">
+                    <div id="createAssignment" class="">
+                        <div>
+                            <h2>Create New Assignment</h2>
+                        </div>
+
+                        <button onclick="createAssignment('blank')">
+                            Create Blank Assignment
+                        </button>
+
+                        <button onclick="createAssignment('test')">
+                            Create Test Assignment
+                        </button>
+
+                        <button onclick="createAssignment('reading')">
+                            Create Reading Assignment
+                        </button>
+
+                        <button onclick="createAssignment('build')">
+                            Create Build Assignment
+                        </button>
+
+                        <button onclick="createAssignment('duplicateExisting')">
+                            Duplicate Existing Assignment
+                        </button>
+                    </div>
+                </div>
+
+                <div class="assignment-manager-row">
+                    <div id="editAssignments">
+                        <div>
+                            <h2>Manage Existing Assignments</h2>
+                        </div>
+
+                        <div class="assignment">
+                            <div>
+                                <a>Astronomy - Math</a>
+                            </div>
+
+                            <div>
+                                <a class="material-icons" onclick="manageAssignment('Astronomy~~Math~~12345')">drive_file_rename_outline</a>
+                                <a class="material-icons" onclick="previewAssignment('Astronomy~~Math~~12345')">visibility</a>
+                                <a class="material-icons" onclick="deleteAssignment('Astronomy~~Math~~12345')">delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

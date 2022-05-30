@@ -1,0 +1,91 @@
+html {
+    overflow: scroll;
+}
+
+body {
+    background: #ECEFF1;
+    color: rgba(0, 0, 0, 0.87);
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#content {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+}
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 5.31%;
+    height: 100%;
+    background-color: #279af1;
+}
+
+#sidebar > a {
+    font-size: 3vw;
+    color: black;
+    text-align: center;
+    margin-top: 3vh;
+    margin-bottom: 1vh;
+}
+
+#sidebar > a:hover {
+    cursor: pointer;
+}
+
+#assignmentManager {
+    display: flex;
+    flex-direction: column;
+    width: 91.69%;
+    height: 100%;
+    padding: 2%;
+}
+
+#assignmentManagerHeader {
+    text-align: center;
+    font-size: 3vw;
+    margin-top: 5%;
+}
+
+.assignment-manager-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    margin: 0.5vh;
+}
+
+.assignment-manager-row > div {
+    width: 40%;
+    height: min-content;
+    margin-top: 0.5vh;
+    padding: 2.5vh 2vw;
+    background-color: #b5dfff;
+}
+
+.assignment-manager-row > div > h2 {
+    margin: 0%;
+    font-size: 1.5vw;
+}
+
+.assignment {
+    display: flex;
+    justify-content: space-between;
+}
+
+.assignment > div {
+    margin: 2vh 0vw 0vh 0vw;
+}
+
+.assignment > div > a {
+    color: #172435;
+    text-decoration: none;
+}
+
+.assignment a:hover {
+    cursor: pointer;
+    background-color: #17243583;
+}

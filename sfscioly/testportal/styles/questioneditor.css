@@ -1,0 +1,33 @@
+html {
+    overflow: scroll;
+}
+
+#questionEditor {
+    width: 50vw;
+}
+
+.question {
+    display: none;
+    flex-direction: column;
+}
+
+div.form-check-label {
+    display: flex;
+    flex-direction: row;
+    justify-items: baseline;
+}
+
+#mqOptions {
+    display: flex;
+    flex-direction: row;
+}
+
+#mqOptionsA, #mqOptionsB {
+    display: flex;
+    flex-direction: column;
+}
+
+label > .material-icons {
+    font-size: 2vw;
+}
+
