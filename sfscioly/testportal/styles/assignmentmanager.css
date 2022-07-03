@@ -74,6 +74,7 @@ body {
 .assignment {
     display: flex;
     justify-content: space-between;
+    padding: 0.5vh 0.5vw;
 }
 
 .assignment > div {
@@ -85,7 +86,16 @@ body {
     text-decoration: none;
 }
 
-.assignment a:hover {
+.assignment:hover {
     cursor: pointer;
-    background-color: #17243583;
+    background-color: #6f7eba96;
+}
+
+.editAssignmentControls > a {
+    padding: 0.2vh 0.2vw;
+}
+
+.editAssignmentControls a:hover {
+    cursor: pointer;
+    background-color: #1b2e7896;
 }

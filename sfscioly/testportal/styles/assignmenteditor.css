@@ -89,3 +89,16 @@ body {
     cursor: pointer;
     background-color: #17243583;
 }
+
+.question-list-item {
+    line-height: 100%;
+}
+
+.question-list-item > * {
+    margin: 0%;
+    vertical-align: middle;
+}
+
+.question-list-item > button {
+    padding: 2%;
+}

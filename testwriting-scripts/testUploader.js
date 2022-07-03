@@ -8,7 +8,7 @@ const firebase = admin.initializeApp({
 
 const db = firebase.firestore();
 
-function main() {
+async function main() {
     const eventName = "Astronomy";
     const assignmentName = "Math~~12345"
     const payload = [
@@ -139,16 +139,31 @@ function main() {
         }
     ];
 
+    const questionOrder = [];
+
     if (payload.length > 0) {
         for (let d = 0; d < payload.length; d++) {
-            const docRef = db.doc(`assignments/${eventName}/${assignmentName}/question${d}`);
+            const questionId = new Date().valueOf().toString();
+            const docRef = db.doc(`assignments/${eventName}/${assignmentName}/${questionId}`);
 
-            docRef.set(payload[d]).then(() => {
+            await docRef.set(payload[d]).then(() => {
                 console.log(`Added question #${d}!`);
             }).catch((e) => {
                 console.error(e);
             });
+
+            questionOrder.push(questionId);
         }
+
+        const metadataDocRef = db.doc(`assignments/${eventName}/${assignmentName}/metadata`);
+
+        metadataDocRef.set({
+            questionOrder: questionOrder
+        }).then(() => {
+            console.log("Set metadata document!");
+        }).catch((e) => {
+            console.error(e);
+        });
     }
 }
 

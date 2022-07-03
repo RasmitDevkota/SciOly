@@ -26,6 +26,7 @@ let time = 3000;
 
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+// @TODO - This piece of code likely does not run, needs to be verified
 if (window.location.href.includes("testportal/test")) {
     window.addEventListener('beforeunload', (event) => {
         if (eventName != "None") {
@@ -107,21 +108,33 @@ export async function loadAssignment(_assignmentId) {
 
     var testContainer = _("test-container");
 
+    let metadata;
+    let questionOrder;
+
     getDocs(assignmentCollection).then((querySnapshot) => {
+        const documents = new Map();
+
         querySnapshot.forEach((doc) => {
-            questions[Number(doc.id.split("question")[1])] = doc;
+            documents.set(doc.id, doc);
         });
 
-        let q = 0;
+        metadata = documents.get("metadata").data();
+        questionOrder = metadata.questionOrder;
 
-        questions.forEach((doc) => {
-            if (q != 0) {
+        for (let questionIdN in questionOrder) {
+            const questionId = questionOrder[questionIdN];
+            questions.push(documents.get(questionId));
+        }
+
+        for (const questionIndex in questions) {
+            if (questionIndex != 0) {
                 testContainer.innerHTML += `<hr>`;
             }
 
-            q++;
-
+            const doc = questions[questionIndex];
             const data = doc.data();
+
+            const questionNumber = Number(questionIndex) + 1;
 
             switch (data.type) {
                 case "mcq":
@@ -131,7 +144,7 @@ export async function loadAssignment(_assignmentId) {
 
                     question += `
                             <div class="question-text">
-                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
+                                ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                     `;
 
@@ -142,9 +155,9 @@ export async function loadAssignment(_assignmentId) {
                     for (let i in data.options) {
                         question += `
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="${doc.id}" id="${doc.id}-option${i}" value="${data.options[i]}" onchange="answer(this.id, this.value)">
+                                    <input class="form-check-input" type="radio" name="${doc.id}" id="question${questionIndex}-option${i}" value="${data.options[i]}" onchange="answer(this.id, this.value)">
 
-                                    <label class="form-check-label" for="${doc.id}-option${i}">
+                                    <label class="form-check-label" for="question${questionIndex}-option${i}">
                                         ${data.options[i]}
                                     </label>
                                 </div>
@@ -165,7 +178,7 @@ export async function loadAssignment(_assignmentId) {
 
                     question += `
                             <div class="question-text">
-                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
+                                ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                     `;
 
@@ -176,9 +189,9 @@ export async function loadAssignment(_assignmentId) {
                     for (let i in data.options) {
                         question += `
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="${doc.id}option${i}" id="${doc.id}-moption${i}" value="${data.options[i]}" onchange="answer(this.id, this.value)">
+                                    <input class="form-check-input" type="checkbox" name="question${questionIndex}option${i}" id="${doc.id}-moption${i}" value="${data.options[i]}" onchange="answer(this.id, this.value)">
 
-                                    <label class="form-check-label" for="${doc.id}-moption${i}">
+                                    <label class="form-check-label" for="question${questionIndex}-moption${i}">
                                         ${data.options[i]}
                                     </label>
                                 </div>
@@ -199,7 +212,7 @@ export async function loadAssignment(_assignmentId) {
 
                     question += `
                             <div class="question-text">
-                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
+                                ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                     `;
 
@@ -214,9 +227,9 @@ export async function loadAssignment(_assignmentId) {
                     for (let i in data.optionsA) {
                         question += `
                                     <div class="form-check">
-                                        <input class="form-check-input mq-input" type="text" name="${doc.id}optionA${i}" id="${doc.id}-optionA${i}" maxlength="1" onchange="answer(this.id, this.value)">
+                                        <input class="form-check-input mq-input" type="text" name="question${questionIndex}optionA${i}" id="${doc.id}-optionA${i}" maxlength="1" onchange="answer(this.id, this.value)">
 
-                                        <label class="form-check-label" for="${doc.id}-optionA${i}">
+                                        <label class="form-check-label" for="question${questionIndex}-optionA${i}">
                                             &nbsp;${data.optionsA[i]}
                                         </label>
                                     </div>
@@ -252,7 +265,7 @@ export async function loadAssignment(_assignmentId) {
 
                     question += `
                             <div class="question-text">
-                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
+                                ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                     `;
 
@@ -262,14 +275,14 @@ export async function loadAssignment(_assignmentId) {
 
                     question += `
                                 <div class="form-group">
-                                    <textarea class="form-control" id="${doc.id}-response" rows="5" onchange="answer(this.id, this.value)"></textarea>
+                                    <textarea class="form-control" id="question${questionIndex}-response" rows="5" onchange="answer(this.id, this.value)"></textarea>
                                 </div>
                     `;
                     
                     question += `
                             </div>
                         </div>
-                    `;  
+                    `;
 
                     testContainer.innerHTML += question;
                     break;
@@ -280,14 +293,14 @@ export async function loadAssignment(_assignmentId) {
 
                     question += `
                             <div>
-                                ${q}. (${data.value} point${(data.value != 1) ? "s" : ""})
+                                ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""})
                                 &nbsp;
                                 <label>${data.text.split("|~~~~|")[0]}</label>
-                                <input type="text" class="fitb-answer" style="height: 30px" id="${doc.id}-blank" onchange="answer(this.id, this.value)">
+                                <input type="text" class="fitb-answer" style="height: 30px" id="question${questionIndex}-blank" onchange="answer(this.id, this.value)">
                                 <label>${data.text.split("|~~~~|")[1]}</label>
                             </div>
                     `;
-                    
+
                     question += `
                         </div>
                     `;
@@ -297,7 +310,7 @@ export async function loadAssignment(_assignmentId) {
                 default:
                     alert("An error occurred preparing the test! Please contact an officer for assistance!");
             }
-        });
+        }
     }).then(() => {
         getDoc(assignmentSubmissionDoc).then((submissionDoc) => {
             if (submissionDoc.exists() && Object.keys(submissionDoc.data()).length > 1) {
@@ -309,28 +322,29 @@ export async function loadAssignment(_assignmentId) {
 
                 // @TODO - Refactor wtih question outputter forEach
                 for (let r = 0; r < submissionResponsesQ.length; r++) {
-                    if (submissionResponsesQ[r].includes("question")) {
-                        const q = submissionResponsesQ[r].split("question")[1];
-                        const answer = submissionResponsesA[r];
+                    if (!["time"].includes(submissionResponsesQ[r])) {
+                        const questionId = submissionResponsesQ[r];
+                        const q = questionOrder.indexOf(questionId);
 
+                        const answer = submissionResponsesA[r];
                         answers.set(submissionResponsesQ[r], answer);
 
-                        const qDoc = questions[q]
+                        const qDoc = questions[q];
 
                         switch (qDoc.data().type) {
                             case "mcq":
-                                const o = qDoc.data().options.indexOf(answer)
-                                document.getElementById(`question${q}-option${o}`).checked = true
+                                const o = qDoc.data().options.indexOf(answer);
+                                document.getElementById(`question${q}-option${o}`).checked = true;
                                 break;
                             case "msq":
                                 for (let o in answer) {
-                                    const optionNumber = qDoc.data().options.indexOf(answer)
-                                    document.getElementById(`question${q}-moption${o}`).checked = true
+                                    const optionNumber = qDoc.data().options.indexOf(answer);
+                                    document.getElementById(`question${q}-moption${o}`).checked = true;
                                 }
                                 break;
                             case "mq":
                                 for (let o in answer) {
-                                    document.getElementById(`question${q}-optionA${o}`).value = answer[o]
+                                    document.getElementById(`question${q}-optionA${o}`).value = answer[o];
                                 }
                                 break;
                             case "lrq":
@@ -359,6 +373,7 @@ export async function loadAssignment(_assignmentId) {
             }, 1000);
         });
     }).catch((error) => {
+        console.error(error);
         sfsciolylog(`Error occurred retrieving test: ${error}`, `Event=Error occurred retrieving test&Error=${error}&UID=${auth.currentUser.uid}&Event=${test}`);
     });
 }

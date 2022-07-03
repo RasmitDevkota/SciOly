@@ -20,6 +20,10 @@ import {
     onAuthStateChanged
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js';
 
+import {
+    loadAssignmentsToManage
+} from "./assignmentmanager.js";
+
 const app = initializeApp({
     apiKey: "AIzaSyBw7h-5dzK9tcbKCbzWdo35Dlbi1L7It_M",
     authDomain: "sfhsscioly.firebaseapp.com",
@@ -50,10 +54,6 @@ window.userDoc = null;
 export const auth = getAuth(app);
 setPersistence(auth, browserSessionPersistence);
 
-export function test() {
-    console.log(auth.currentUser.uid);
-}
-
 onAuthStateChanged(auth, (user) => {
     if (user) {
         pageLoad(true);
@@ -72,20 +72,22 @@ function pageLoad(user) {
 
         userDoc = doc(db, "users", auth.currentUser.uid);
 
-        if (window.location.href.includes("index.html")) {
+        if (window.location.href.includes("testportal/index")) {
             window.location.href = "dashboard.html";
         } else if (window.location.href.includes("dashboard.html")) {
             _("welcome-user").innerHTML = `Welcome, ${auth.currentUser.displayName ?? "User"}!`;
 
             loadAssignments();
-        } else if (window.location.href.includes("test.html")) {
+        } else if (window.location.href.includes("testportal/test")) {
             const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
             const test = urlParams.get('test');
 
             loadAssignment(test);
+        } else if (window.location.href.includes("testportal/assignmentmanager")) {
+            loadAssignmentsToManage();
         }
     } else {
-        if (window.location.href.includes("dashboard.html") || window.location.href.includes("test.html")) {
+        if (window.location.href.includes("testportal/dashboard") || window.location.href.includes("testportal/test")) {
             window.location.href = "index.html";
         }
     }

@@ -28,10 +28,12 @@
 
         import {
             loadAssignmentToManage as _loadAssignmentToManage,
+            addQuestion as _addQuestion,
             openQuestionEditorWindow as _openQuestionEditorWindow
         } from "./scripts/assignmentmanager.js";
 
         window.loadAssignmentToManage = _loadAssignmentToManage;
+        window.addQuestion = _addQuestion;
         window.openQuestionEditorWindow = _openQuestionEditorWindow;
 
         const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
@@ -63,7 +65,15 @@
                 </div>
 
                 <div class="assignment-editor-row">
-                    <div id="questionsContainer">
+                    <div id="controlsContainer">
+                        <button onclick="addQuestion()">
+                            Add Question
+                        </button>
+                    </div>
+                </div>
+
+                <div class="assignment-editor-row">
+                    <div id="questionsContainer" class="list-group">
 
                     </div>
                 </div>
