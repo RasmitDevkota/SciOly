@@ -64,6 +64,7 @@ let assignmentSpecifier;
 let assignmentCollection;
 
 const questions = new Array();
+let questionOrder;
 
 export function loadAssignmentsToManage(filter = new Array()) {
     getDoc(doc(db, "users", auth.currentUser.uid)).then((doc) => {
@@ -115,62 +116,70 @@ export async function loadAssignmentToManage(_assignmentId) {
         });
 
         const metadata = documents.get("metadata").data();
-        const questionOrder = metadata.questionOrder;
-
-        console.log(documents.keys());
-        console.log(questionOrder);
+        questionOrder = metadata.questionOrder;
 
         for (let questionIdN in questionOrder) {
             const questionId = questionOrder[questionIdN];
             questions.push(documents.get(questionId));
         }
 
+        console.log(questions);
+
         for (const questionIndexStr in questions) {
             const questionIndex = Number(questionIndexStr);
+            const questionId = questionOrder[questionIndex];
 
-            const doc = questions[questionIndex];
-            const data = doc.data();
+            questions[questionIndex].index = questionIndex;
+
+            document.getElementById("questionNumbersContainer").innerHTML += `
+                <div class="question-number list-group-item" style="border: 1px solid black;">
+                        ${Number(questionIndex) + 1}.
+                </div>
+            `;
+
+            const questionPreview = questions[questionIndex].data().text
+                .substring(0, 90).replace(/ /g, "&nbsp;");
 
             questionsContainer.innerHTML += `
                 <div class="question-list-item list-group-item" style="border: 1px solid black;">
                     <span class="material-icons question-reorder">reorder</span>
-                    <button id="editQuestion${questionIndex}Button"
-                            onclick="openQuestionEditorWindow(${questionIndex})">
-                        Edit Question #${questionIndex + 1}
-                    </button>
+
+                    <div class="question-preview">
+                        ${questionPreview}
+                    </div>
+
+                    <div class="question-controls-container">
+                        <a class="material-icons question-control"
+                           onclick="openQuestionEditorWindow(${questionId})">
+                            drive_file_rename_outline
+                        </a>
+
+                        <a class="material-icons question-control"
+                           onclick="deleteQuestion(${questionId})">
+                            delete
+                        </a>
+                    </div>
                 </div>
             `;
         }
 
         const sortableQuestions = Sortable.create(questionsContainer, {
             handle: ".question-reorder",
-            animation: 150,
+            animation: 200,
             onEnd: (event) => {
                 if (event.oldIndex != event.newIndex) {
-                    const updatedQuestionNumber = questionOrder.splice(event.oldIndex, 1);
-                    questionOrder.splice(event.newIndex, 0, updatedQuestionNumber[0]);
+                    const oldIndex = event.oldIndex;
+                    const newIndex = event.newIndex;
 
-                    const updatedQuestion = questions.splice(event.oldIndex, 1);
-                    questions.splice(event.newIndex, 0, updatedQuestion[0]);
+                    const updatedQuestionNumber = questionOrder.splice(oldIndex, 1)[0];
+                    questionOrder.splice(newIndex, 0, updatedQuestionNumber);
+
+                    const updatedQuestion = questions.splice(oldIndex, 1);
+                    questions.splice(newIndex, 0, updatedQuestion[0]);
 
                     setDoc(metadataDoc, {
                         questionOrder: questionOrder
                     }, { merge: true });
-
-                    document.getElementById(`editQuestion${event.oldIndex}Button`).onclick =
-                                            `openQuestionEditorWindow(${event.newIndex})`;
-
-                    document.getElementById(`editQuestion${event.newIndex}Button`).onclick =
-                                            `openQuestionEditorWindow(${event.oldIndex})`;
-
-                    document.getElementById(`editQuestion${event.oldIndex}Button`).id =
-                                            `MOVING_editQuestion${event.newIndex}`;
-
-                    document.getElementById(`editQuestion${event.newIndex}Button`).id =
-                                            `editQuestion${event.oldIndex}`;
-
-                    document.getElementById(`MOVING_editQuestion${event.newIndex}Button`).id =
-                                            `editQuestion${event.newIndex}`;
                 }
             }
         });
@@ -181,7 +190,7 @@ export function addQuestion() {
 
 }
 
-export function openQuestionEditorWindow(n) {
+export function openQuestionEditorWindow(id) {
     const questionEditorWindowSettings =
         `height=${window.innerHeight * 0.75},` +
         `width=${window.innerWidth * 0.75},` +
@@ -192,11 +201,11 @@ export function openQuestionEditorWindow(n) {
 
     const popupWindow = window.open("./questioneditor.html", 'popUpWindow', questionEditorWindowSettings);
 
-    popupWindow.window.question = questions[n];
+    popupWindow.window.question = questions[questionOrder.indexOf(id)];
 }
 
 export function loadQuestionEditor() {
-    document.getElementById("questionTitle").innerHTML += `${Number(question.id.split("question")[1]) + 1}`;
+    document.getElementById("questionTitle").innerHTML += `${Number(question.index) + 1}`;
 
     window.questionData = new Map();
 
@@ -287,7 +296,6 @@ export function removeOption(n) {
     document.getElementById(`${questionData.type}Options`).removeChild(document.getElementById(`question${n}`));
 }
 
-
 export function saveQuestion() {
     switch (questionData.type) {
         case "mcq":
@@ -322,7 +330,7 @@ export function saveQuestion() {
             break;
     }
 
-    setDoc(doc(db, "assignments", question.event, "Math~~12345"), data, { merge: true }).then(() => {
+    setDoc(doc(db, ...question.ref.path.split("/")), questionData, { merge: true }).then(() => {
         console.log(`Successfully added card ${name} of type ${type}!`);
 
         return alert(`Successfully added card ${name} of type ${type}!`);

@@ -1,48 +1,10 @@
-html {
-    overflow: scroll;
-}
-
-body {
-    background: #ECEFF1;
-    color: rgba(0, 0, 0, 0.87);
-    font-family: Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-#content {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-}
-
-#sidebar {
-    display: flex;
-    flex-direction: column;
-    width: 5.31%;
-    height: 100%;
-    background-color: #279af1;
-}
-
-#sidebar > a {
-    font-size: 3vw;
-    color: black;
-    text-align: center;
-    margin-top: 3vh;
-    margin-bottom: 1vh;
-}
-
-#sidebar > a:hover {
-    cursor: pointer;
-}
-
 #assignmentManager {
     display: flex;
     flex-direction: column;
-    width: 91.69%;
+    width: 100%;
     height: 100%;
-    padding: 2%;
+    margin-left: 3%;
+    padding-top: 2%;
 }
 
 #assignmentManagerHeader {
@@ -55,7 +17,7 @@ body {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin: 0.5vh;
+    margin: 0.5vh 0vw 0.5vh 0vw;
 }
 
 .assignment-manager-row > div {

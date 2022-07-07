@@ -1,48 +1,10 @@
-html {
-    overflow: scroll;
-}
-
-body {
-    background: #ECEFF1;
-    color: rgba(0, 0, 0, 0.87);
-    font-family: Roboto, Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
-
-#content {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-}
-
-#sidebar {
-    display: flex;
-    flex-direction: column;
-    width: 5.31%;
-    height: 100%;
-    background-color: #279af1;
-}
-
-#sidebar > a {
-    font-size: 3vw;
-    color: black;
-    text-align: center;
-    margin-top: 3vh;
-    margin-bottom: 1vh;
-}
-
-#sidebar > a:hover {
-    cursor: pointer;
-}
-
 #assignmentEditor {
     display: flex;
     flex-direction: column;
-    width: 91.69%;
+    width: 100%;
     height: 100%;
-    padding: 2%;
+    margin-left: 3%;
+    padding-top: 2%;
 }
 
 #assignmentEditorHeader {
@@ -61,7 +23,7 @@ body {
 .assignment-editor-row > div {
     width: 40%;
     height: min-content;
-    margin-top: 0.5vh;
+    margin: 0.5vh 0vw 2vh 0vw;
     padding: 2.5vh 2vw;
     background-color: #b5dfff;
 }
@@ -90,15 +52,68 @@ body {
     background-color: #17243583;
 }
 
-.question-list-item {
-    line-height: 100%;
+#questionNumbersContainer {
+    display: flex;
+    flex-direction: column;
+    width: max-content;
+    padding: 2.5vh 0vw 2vh 1.5vw;
 }
 
-.question-list-item > * {
-    margin: 0%;
+#questionsContainer {
+    padding: 2.5vh 1.5vw 2vh 0vw;
+}
+
+.question-number {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    padding: 0%;
+    width: 5vw;
+    height: 7vh;
+    font-size: 1.5vw;
+    text-align: center;
     vertical-align: middle;
 }
 
-.question-list-item > button {
-    padding: 2%;
+.question-list-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+    padding: 1vh 0.5vw;
+    width: 100%;
+    height: 7vh;
+    /* line-height: 100%; */
+}
+
+.question-list-item * {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    height: 100%;
+}
+
+.question-preview {
+    width: 70%;
+    margin: 0vh 1vw;
+    word-wrap: normal;
+    overflow: hidden;
+}
+
+.question-controls-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+}
+
+.question-control {
+    color: #172435;
+    text-decoration: none;
+}
+
+.question-control:hover {
+    cursor: pointer;
+    color: #1b2e7896;
 }

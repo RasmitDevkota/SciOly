@@ -1,36 +1,10 @@
-#content {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100%;
-}
-
-#sidebar {
-    display: flex;
-    flex-direction: column;
-    width: 5.31%;
-    height: 100%;
-    background-color: #279af1;
-}
-
-#sidebar > a {
-    font-size: 3vw;
-    color: black;
-    text-align: center;
-    margin-top: 3vh;
-    margin-bottom: 1vh;
-}
-
-#sidebar > a:hover {
-    cursor: pointer;
-}
-
 #dashboard {
     display: flex;
     flex-direction: column;
-    width: 91.69%;
+    width: 100%;
     height: 100%;
-    padding: 2%;
+    margin-left: 3%;
+    padding-top: 2%;
 }
 
 .dashboard-row {

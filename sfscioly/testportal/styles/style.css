@@ -4,26 +4,60 @@
 }
 
 html {
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: scroll;
 }
 
 body {
     margin: 0%;
     padding: 0%;
+    width: 100%;
 }
 
 h1 {
-   font-size: 2vw; 
+    font-size: 2vw;
 }
 
 #main {
     display: flex;
     flex-direction: row;
-    justify-content: center;
+    /* justify-content: center; */
     width: 100%;
     height: 100%;
 }
 
+#content {
+    width: 100%;
+    margin-left: 0vw;
+    padding: 0%;
+}
+
+#sidebar {
+    z-index: 1;
+    position: fixed;
+    width: 100%;
+}
+
 #sidebar > a {
     text-decoration: none;
+}
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    width: 5%;
+    height: 100%;
+    background-color: #279af1;
+}
+
+#sidebar > a {
+    font-size: 3vw;
+    color: black;
+    text-align: center;
+    margin-top: 3vh;
+    margin-bottom: 1vh;
+}
+
+#sidebar > a:hover {
+    cursor: pointer;
 }
