@@ -83,6 +83,9 @@
     padding: 10px;
     border-radius: 50%;
     border: 3px solid lightgrey;
+}
+
+#google-row img:hover {
     cursor: pointer;
 }
 

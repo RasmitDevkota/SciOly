@@ -10,7 +10,8 @@ import {
     doc,
     getDoc,
     getDocs,
-    setDoc
+    setDoc,
+    deleteDoc
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
 import { Sortable as Sortable } from '../modules/sortable.core.esm.js';
@@ -62,9 +63,13 @@ let eventName;
 let assignmentName;
 let assignmentSpecifier;
 let assignmentCollection;
+let metadataDoc;
 
 const questions = new Array();
 let questionOrder;
+
+let questionNumbersContainer;
+let questionsContainer;
 
 export function loadAssignmentsToManage(filter = new Array()) {
     getDoc(doc(db, "users", auth.currentUser.uid)).then((doc) => {
@@ -104,9 +109,10 @@ export async function loadAssignmentToManage(_assignmentId) {
     assignmentSpecifier = assignmentDetails[2];
 
     assignmentCollection = collection(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`);
-    const metadataDoc = doc(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`, "metadata");
+    metadataDoc = doc(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`, "metadata");
 
-    const questionsContainer = document.getElementById("questionsContainer");
+    questionsContainer = document.getElementById("questionsContainer");
+    questionNumbersContainer = document.getElementById("questionNumbersContainer");
 
     getDocs(assignmentCollection).then(async (querySnapshot) => {
         const documents = new Map();
@@ -123,44 +129,12 @@ export async function loadAssignmentToManage(_assignmentId) {
             questions.push(documents.get(questionId));
         }
 
-        console.log(questions);
-
         for (const questionIndexStr in questions) {
             const questionIndex = Number(questionIndexStr);
-            const questionId = questionOrder[questionIndex];
 
             questions[questionIndex].index = questionIndex;
 
-            document.getElementById("questionNumbersContainer").innerHTML += `
-                <div class="question-number list-group-item" style="border: 1px solid black;">
-                        ${Number(questionIndex) + 1}.
-                </div>
-            `;
-
-            const questionPreview = questions[questionIndex].data().text
-                .substring(0, 90).replace(/ /g, "&nbsp;");
-
-            questionsContainer.innerHTML += `
-                <div class="question-list-item list-group-item" style="border: 1px solid black;">
-                    <span class="material-icons question-reorder">reorder</span>
-
-                    <div class="question-preview">
-                        ${questionPreview}
-                    </div>
-
-                    <div class="question-controls-container">
-                        <a class="material-icons question-control"
-                           onclick="openQuestionEditorWindow(${questionId})">
-                            drive_file_rename_outline
-                        </a>
-
-                        <a class="material-icons question-control"
-                           onclick="deleteQuestion(${questionId})">
-                            delete
-                        </a>
-                    </div>
-                </div>
-            `;
+            loadQuestionUI(questionIndex);
         }
 
         const sortableQuestions = Sortable.create(questionsContainer, {
@@ -187,21 +161,81 @@ export async function loadAssignmentToManage(_assignmentId) {
 }
 
 export function addQuestion() {
+    const questionId = (new Date()).valueOf().toString();
 
+    setDoc(doc(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`, questionId), questionJson["lrq"], { merge: true }).then(() => {
+        getDoc(doc(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`, questionId)).then((doc) => {
+            questions.push(doc);
+            questionOrder.push(questionId);
+
+            loadQuestionUI(questionOrder.length - 1);
+
+            console.log(questionOrder);
+
+            setDoc(metadataDoc, { questionOrder: questionOrder }, { merge: true });
+
+            openQuestionEditorWindow(questionId);
+        });
+    });
 }
 
-export function openQuestionEditorWindow(id) {
+export function deleteQuestion(questionId) {
+    const questionIndex = questionOrder.indexOf(questionId);
+
+    questionOrder.splice(questionIndex, 1);
+    setDoc(metadataDoc, { questionOrder: questionOrder }, { merge: true });
+
+    deleteDoc(questions[questionIndex].ref);
+    questions.splice(questionIndex, 1);
+}
+
+function loadQuestionUI(questionIndex) {
+    const questionId = questionOrder[questionIndex];
+
+    questionNumbersContainer.innerHTML += `
+        <div class="question-number list-group-item" style="border: 1px solid black;">
+                ${Number(questionIndex) + 1}.
+        </div>
+    `;
+
+    const questionPreview = questions[questionIndex].data().text
+        .substring(0, 90).replace(/ /g, "&nbsp;");
+
+    questionsContainer.innerHTML += `
+        <div class="question-list-item list-group-item" style="border: 1px solid black;">
+            <span class="material-icons question-reorder">reorder</span>
+
+            <div class="question-preview">
+                ${questionPreview}
+            </div>
+
+            <div class="question-controls-container">
+                <a class="material-icons question-control"
+                    onclick="openQuestionEditorWindow('${questionId}')">
+                    drive_file_rename_outline
+                </a>
+
+                <a class="material-icons question-control"
+                    onclick="deleteQuestion('${questionId}')">
+                    delete
+                </a>
+            </div>
+        </div>
+    `;
+}
+
+export function openQuestionEditorWindow(questionId) {
     const questionEditorWindowSettings =
-        `height=${window.innerHeight * 0.75},` +
-        `width=${window.innerWidth * 0.75},` +
-        `left=${window.innerWidth * 0.25},` +
-        `top=${window.innerWidth * 0.25},` +
+        `height=${window.innerHeight * 0.6},` +
+        `width=${window.innerWidth * 0.6},` +
+        `left=${window.innerWidth * 0.3},` +
+        `top=${window.innerWidth * 0.3},` +
         `resizable = yes, scrollbars = yes, toolbar = yes, menubar = no, location = no, directories = no, status = yes`
     ;
 
     const popupWindow = window.open("./questioneditor.html", 'popUpWindow', questionEditorWindowSettings);
 
-    popupWindow.window.question = questions[questionOrder.indexOf(id)];
+    popupWindow.window.question = questions[questionOrder.indexOf(questionId)];
 }
 
 export function loadQuestionEditor() {
@@ -209,9 +243,89 @@ export function loadQuestionEditor() {
 
     window.questionData = new Map();
 
-    console.log(question);
+    questionData = question.data();
 
-    // @TODO - Load question data if existing question
+    document.getElementById("questionText").value = questionData.text;
+    document.getElementById("questionValue").value = questionData.value;
+
+    switch (questionData.type) {
+        case "mcq":
+            document.getElementById("questionType").selectedIndex = 1;
+
+            for (let i in questionData.options) {
+                if (i > 4) {
+                    document.getElementById("mcqOptions").innerHTML += `
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="mcq" id="mcq-option${i}">
+
+                            <label class="form-check-label" for="mcq-option${i}">
+                                <input type="text">
+                            </label>
+                        </div>
+                    `;
+                }
+
+                document.getElementById(`mcq-option${i}`).value = questionData.options[i];
+            }
+
+            break;
+        case "msq":
+            document.getElementById("questionType").selectedIndex = 2;
+
+            for (let i in questionData.options) {
+                if (i > 4) {
+                    document.getElementById("msqOptions").innerHTML += `
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="msq" id="msq-moption${i}">
+
+                            <label class="form-check-label" for="msq-moption${i}">
+                                <input type="text">
+                            </label>
+                        </div>
+                    `;
+                }
+
+                document.getElementById(`msq-moption${i}`).value = questionData.options[i];
+            }
+
+            break;
+        case "mq":
+            document.getElementById("questionType").selectedIndex = 3;
+
+            for (let i in questionData.optionsA) {
+                if (i > 4) {
+                    document.getElementById("mqOptionsA").innerHTML += `
+                        <div>
+                            <input class="form-control mq-input" type="text" name="mq-optionA${i}" id="mq-optionA${i}">
+                        </div>
+                    `;
+                }
+
+                document.getElementById(`mq-optionA${i}`).value = questionData.optionsA[i];
+            }
+
+            for (let i in questionData.optionsB) {
+                if (i > 4) {
+                    document.getElementById("mqOptionsB").innerHTML += `
+                        <div class="form-control">
+                            <input id="mq-optionB${i}" type="text">
+                        </div>
+                    `;
+                }
+
+                document.getElementById(`mq-optionB${i}`).value = questionData.optionsB[i];
+            }
+
+            break;
+        case "lrq":
+            document.getElementById("questionType").selectedIndex = 0;
+
+            break;
+        case "fitb":
+            document.getElementById("questionType").selectedIndex = 4;
+
+            break;
+    }
 }
 
 export function setQuestionType() {
@@ -331,20 +445,16 @@ export function saveQuestion() {
     }
 
     setDoc(doc(db, ...question.ref.path.split("/")), questionData, { merge: true }).then(() => {
-        console.log(`Successfully added card ${name} of type ${type}!`);
 
-        return alert(`Successfully added card ${name} of type ${type}!`);
     }).catch((e) => {
         console.log(e);
-
-        return alert("Error occurred! Please contact a developer!");
     });
 }
 
 export function createAssignment(preset = "blank") {
     switch (preset) {
         case "blank":
-
+            setDoc(doc(db, ), {}, { merge: true });
             break;
         default:
             alert(`Assignment creation preset "${preset}" implemented yet!`);

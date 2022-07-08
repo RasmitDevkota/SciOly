@@ -29,12 +29,14 @@
         import {
             loadAssignmentToManage as _loadAssignmentToManage,
             addQuestion as _addQuestion,
-            openQuestionEditorWindow as _openQuestionEditorWindow
+            openQuestionEditorWindow as _openQuestionEditorWindow,
+            deleteQuestion as _deleteQuestion
         } from "./scripts/assignmentmanager.js";
 
         window.loadAssignmentToManage = _loadAssignmentToManage;
         window.addQuestion = _addQuestion;
         window.openQuestionEditorWindow = _openQuestionEditorWindow;
+        window.deleteQuestion = _deleteQuestion;
 
         const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
         const assignmentId = urlParams.get('assignmentId');
