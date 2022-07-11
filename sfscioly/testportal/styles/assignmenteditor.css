@@ -13,17 +13,24 @@
     margin-top: 2vh;
 }
 
-.assignment-editor-row {
+.assignment-editor-row  {
     display: flex;
     flex-direction: row;
     justify-content: center;
-    margin: 0.5vh;
+}
+
+#assignmentControlsContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin: 0vh 0vw 2vh 0vw;
 }
 
 .assignment-editor-row > div {
     width: 40%;
     height: min-content;
-    margin: 0.5vh 0vw 2vh 0vw;
+    margin: 0.5vh 0vw 0vh 0vw;
     padding: 2.5vh 2vw;
     background-color: #b5dfff;
 }
@@ -31,25 +38,6 @@
 .assignment-editor-row > div > h2 {
     margin: 0%;
     font-size: 1.5vw;
-}
-
-.assignment {
-    display: flex;
-    justify-content: space-between;
-}
-
-.assignment > div {
-    margin: 2vh 0vw 0vh 0vw;
-}
-
-.assignment > div > a {
-    color: #172435;
-    text-decoration: none;
-}
-
-.assignment a:hover {
-    cursor: pointer;
-    background-color: #17243583;
 }
 
 #questionNumbersContainer {
@@ -96,7 +84,7 @@
 }
 
 .question-preview {
-    width: 70%;
+    width: 50%;
     margin: 0vh 1vw;
     word-wrap: normal;
     overflow: hidden;
@@ -105,7 +93,7 @@
 .question-controls-container {
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: space-between;
 }
 
 .question-control {
@@ -116,4 +104,20 @@
 .question-control:hover {
     cursor: pointer;
     color: #1b2e7896;
+}
+
+#addQuestionButtonContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    padding: 0%;
+    width: max-content;
+}
+
+#addQuestionButtonContainer > button {
+    padding: 1vh 1vw;
+    width: 100%;
+    border: none;
+    background: none;
+    font-size: 1.5vw;
 }

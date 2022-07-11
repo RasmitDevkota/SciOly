@@ -77,19 +77,18 @@
     margin-top: 10px;
 }
 
-#google-row img {
+#google-row button {
     width: 27px;
     background-color: white;
-    padding: 10px;
-    border-radius: 50%;
+    padding: 1vh 1vw;
     border: 3px solid lightgrey;
 }
 
-#google-row img:hover {
+#google-row button:hover {
     cursor: pointer;
+    background-color: rgb(200, 200, 200);
 }
 
 #auth-wrapper button {
     width: 30%;
 }
-

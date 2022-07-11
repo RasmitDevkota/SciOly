@@ -83,9 +83,7 @@ export function loadAssignmentsToManage(filter = new Array()) {
                             <a>${editableAssignment.split("~~")[0]} - ${editableAssignment.split("~~")[1]}</a>
                         </div>
 
-                        <div id="editAssignmentControls${editableAssignment}"
-                            class="editAssignmentControls"
-                            onclick="manageAssignment('${editableAssignment}')">
+                        <div id="editAssignmentControls${editableAssignment}" class="editAssignmentControls">
                             <a class="material-icons" onclick="manageAssignment('${editableAssignment}')">drive_file_rename_outline</a>
                             <a class="material-icons" onclick="previewAssignment('${editableAssignment}')">visibility</a>
                             <a class="material-icons" onclick="deleteAssignment('${editableAssignment}')">delete</a>
@@ -411,6 +409,18 @@ export function removeOption(n) {
 }
 
 export function saveQuestion() {
+    if (questionData.text.includes("|~~~|") && questionData.type != "fitb") {
+        if (!confirm("Are you sure you don't want this question to be a Fill-in-the-Blank?"
+                + " The blank filler '|~~~|' is in the queston text, but it won't be"
+                + " replaced with a blank unless 'Question Type' is set to"
+                + " 'Fill-in-the-Blank'!\n"
+
+                + " Select 'OK' to continue and save the question or press 'Cancel' to"
+                + " cancel the save and set the question type to 'Fill-in-the-Blank'.")) {
+            return;
+        }
+    }
+
     switch (questionData.type) {
         case "mcq":
             if (questionData.options.length < 2) {
@@ -461,16 +471,13 @@ export function createAssignment(preset = "blank") {
     }
 }
 
-// @TODO - Test locking and timing functionality needs to be overriden when mode=preview
-//         and preview permissions need to be verified
-//       - Possibilities: 1. Check userDoc editableAssignments (database costs)
-//                        2. Check hash in URL using library such as argon2
-export function previewAssignment(assignmentId) {
-    window.location.href = `test.html?test=${assignmentId}&mode=preview`;
+export async function previewAssignment(assignmentId) {
+    return window.location.href = `test.html?test=${assignmentId}&mode=preview`;
 }
 
 export function manageAssignment(assignmentId) {
-    window.location.href = `assignmenteditor.html?assignmentId=${assignmentId}`;
+    console.log("hi")
+    return window.location.href = `assignmenteditor.html?assignmentId=${assignmentId}`;
 }
 
 // @TODO - Allow for restore functionality within a given time period
@@ -478,4 +485,20 @@ export function deleteAssignment() {
     if (!confirm("Are you sure you want to delete this assignment? This action cannot be undone.")) {
 
     }
+}
+
+export function manageAssignmentSettings() {
+
+}
+
+export function viewSubmissions(params) {
+
+}
+
+export function autogradeSubmission(submission, key) {
+    const scoreReport = new Map();
+
+    submission.forEach((response, question) => {
+        
+    });
 }

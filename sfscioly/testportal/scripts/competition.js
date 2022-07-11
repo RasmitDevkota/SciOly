@@ -26,6 +26,8 @@ let time = 3000;
 
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
+let mode = "";
+
 // @TODO - This piece of code likely does not run, needs to be verified
 if (window.location.href.includes("testportal/test")) {
     window.addEventListener('beforeunload', (event) => {
@@ -49,11 +51,27 @@ export function loadAssignments() {
                     eventName = assignmentDetails[0];
                     assignmentName = assignmentDetails[1];
 
-                    _("assignments").innerHTML += `
-                        <div>
-                            → <a onclick="confirmOpenAssignment('${assignmentId}')">${eventName} - ${assignmentName}</a>
-                        </div>
-                    `;
+                    if (status == "Active") {
+                        // @TODO - Display deadline if applicable
+                        document.getElementById("assignments").innerHTML += `
+                            <div>
+                                → <a onclick="confirmOpenAssignment('${assignmentId}')">${eventName} - ${assignmentName}</a>
+                            </div>
+                        `;
+                    } else if (status == "Upcoming") {
+                        // @TODO - Display opening time
+                        document.getElementById("assignmentsUpcoming").innerHTML += `
+                            <div>
+                                → <a onclick="alert('This assignment is not open yet! If the opening time has passed already, you'll have to refresh the page to access it.');">${eventName} - ${assignmentName}</a>
+                            </div>
+                        `;
+                    } else if (status == "Graded") {
+                        document.getElementById("assignmentsGraded").innerHTML += `
+                            <div>
+                                → <a onclick="openGradedAssignment('${assignmentId}')">${eventName} - ${assignmentName}</a>
+                            </div>
+                        `;
+                    }
                 }
             });
         }
@@ -76,10 +94,41 @@ export async function loadAssignment(_assignmentId) {
     assignmentName = assignmentDetails[1];
     assignmentSpecifier = assignmentDetails[2];
 
-    getDoc(userDoc).then((doc) => {
-        const data = doc.data();
+    const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
+    mode = urlParams.get('mode') ?? "";
 
-        if (data["assignments"][assignmentId] == "Completed") {
+    getDoc(userDoc).then(async (doc) => {
+        const data = await doc.data();
+
+        if (!["admin", "preview"].includes(mode)) {
+            if (!data.editableAssignments || !data.editableAssignments.includes(assignmentId)) {
+                alert(`Sorry, you don't have permission to be in ${mode} mode!`);
+
+                return window.location.href = "dashboard.html";
+            } else {
+                if (["admin", "preview"].includes(mode)) {
+                    let attempts = 3;
+                    while (attempts > 0) {
+                        const key = prompt(`Please enter the admin key to enter ${mode} mode!`);
+                        const keyEncoded = new TextEncoder().encode(key);
+
+                        const keyHashed = await crypto.subtle.digest('SHA-512', keyEncoded);
+
+                        if (keyHashed == "23fa162648b894edfcc95b7405ac44f79c1654fb052dcda4777ae0024cf55f9c465b6a560550e7dea47dcbcfeb3608eb74a3b9117508b4bef7fc962019ea04e0") {
+                            return;
+                        } else {
+                            alert(`Key '${key}' incorrect! You have ${--attempts} remaining!`);
+                        }
+                    }
+
+                    if (attempts <= 0) {
+                        alert(`Too many incorrect attempts to access ${mode} mode! Please try again later.`);
+
+                        return window.location.href = "dashboard.html";
+                    }
+                }
+            }
+        } else if (data["assignments"][assignmentId] == "Completed") {
             alert("Sorry, you already finished this assignment!");
 
             return window.location.href = "dashboard.html";
@@ -88,7 +137,7 @@ export async function loadAssignment(_assignmentId) {
 
             return window.location.href = "dashboard.html";
         } else {
-            // data["assignments"][assignmentId] = "Completed";
+            data["assignments"][assignmentId] = "Completed";
 
             setDoc(userDoc, data, { merge: true }).then(() => {
                 sfsciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${auth.currentUser.uid}&Event=${test}`);
@@ -278,7 +327,7 @@ export async function loadAssignment(_assignmentId) {
                                     <textarea class="form-control" id="question${questionIndex}-response" rows="5" onchange="answer(this.id, this.value)"></textarea>
                                 </div>
                     `;
-                    
+
                     question += `
                             </div>
                         </div>
@@ -311,8 +360,12 @@ export async function loadAssignment(_assignmentId) {
                     alert("An error occurred preparing the test! Please contact an officer for assistance!");
             }
         }
-    }).then(() => {
-        getDoc(assignmentSubmissionDoc).then((submissionDoc) => {
+    }).then(async () => {
+        if (["admin", "preview"].includes(mode)) {
+            return;
+        }
+
+        await getDoc(assignmentSubmissionDoc).then((submissionDoc) => {
             if (submissionDoc.exists() && Object.keys(submissionDoc.data()).length > 1) {
                 // @TODO - Display deadline
 
@@ -383,7 +436,7 @@ function timer() {
     var seconds = time % 60;
 
     var timeText = `${minutes} minute${(minutes == 1) ? "" : "s"} and ${seconds} second${(seconds == 1) ? "" : "s"}`;
-    
+
     _("details").innerHTML = `UID: ${auth.currentUser.uid} | Time Remaining: ${timeText}`;
 
     if (time % 90 == 0) {
@@ -484,7 +537,7 @@ export function manualSave() {
     if ((new Date()).getTime() - saveTimestamp > 30000) {
         saveAnswers();
     } else {
-        alert(`Sorry, please wait ${Math.ceil((30000 - ((new Date()).getTime() - saveTimestamp))/1000)} more seconds before manually saving again!`);
+        alert(`Sorry, please wait ${Math.ceil((30000 - ((new Date()).getTime() - saveTimestamp)) / 1000)} more seconds before manually saving again!`);
     }
 }
 
@@ -510,7 +563,7 @@ export function testRedirect(dest) {
             if (auth.currentUser != null) {
                 signOut();
             }
-    
+
             if (!window.location.href.includes("index.html") || window.location.href != "") {
                 window.location.href = "index.html";
             }

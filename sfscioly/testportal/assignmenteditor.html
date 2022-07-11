@@ -30,13 +30,18 @@
             loadAssignmentToManage as _loadAssignmentToManage,
             addQuestion as _addQuestion,
             openQuestionEditorWindow as _openQuestionEditorWindow,
-            deleteQuestion as _deleteQuestion
+            deleteQuestion as _deleteQuestion,
+            manageAssignmentSettings as _manageAssignmentSettings,
+            viewSubmissions as _viewSubmissions,
         } from "./scripts/assignmentmanager.js";
 
         window.loadAssignmentToManage = _loadAssignmentToManage;
         window.addQuestion = _addQuestion;
         window.openQuestionEditorWindow = _openQuestionEditorWindow;
         window.deleteQuestion = _deleteQuestion;
+        window.openQuestionEditorWindow = _openQuestionEditorWindow;
+        window.manageAssignmentSettings = _manageAssignmentSettings;
+        window.viewSubmissions = _viewSubmissions;
 
         const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
         const assignmentId = urlParams.get('assignmentId');
@@ -67,22 +72,54 @@
                 </div>
 
                 <div class="assignment-editor-row">
-                    <div id="controlsContainer">
+                    <div id="assignmentControlsContainer">
                         <button onclick="addQuestion()">
-                            Add Question
+                            Questions
+                        </button>
+
+                        <button onclick="manageAssignmentSettings()">
+                            Assignment Settings
+                        </button>
+
+                        <button onclick="viewSubmissions()">
+                            Submissions
+                        </button>
+
+                        <button onclick="previewAssignment()">
+                            Preview
                         </button>
                     </div>
                 </div>
 
-                <div class="assignment-editor-row">
-                    <div id="questionNumbersContainer">
+                <div id="questionEditor" >
+                    <div class="assignment-editor-row">
+                        <div class="questions-container" id="questionNumbersContainer">
 
+                        </div>
+
+                        <div class="questions-container" id="questionsContainer" class="list-group">
+
+                        </div>
                     </div>
 
-                    <div id="questionsContainer" class="list-group">
-
+                    <div class="assignment-editor-row">
+                        <div id="addQuestionButtonContainer">
+                            <button onclick="addQuestion()">
+                                Add Question
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                <div id="assignmentSettings">
+                    <div class="assignment-editor-row">
+                        <div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <br>
             </div>
         </div>
     </div>

@@ -19,7 +19,7 @@
     margin-top: 5%;
 }
 
-#assignments {
+.assignment-box {
     width: 40%;
     height: min-content;
     margin-top: 2.1%;
@@ -27,25 +27,25 @@
     background-color: #b5dfff;
 }
 
-#assignments h2 {
+.assignment-box h2 {
     margin: 0%;
     font-size: 1.5vw;
 }
 
-#assignments h4 {
+.assignment-box h4 {
     margin: 0% 0% 0% 0.5%;
 }
 
-#assignments > div {
+.assignment-box > div {
     margin: 2vh 0vw 0vh 0vw;
 }
 
-#assignments > div > a {
+.assignment-box > div > a {
     color: #172435;
     text-decoration: none;
 }
 
-#assignments a:hover {
+.assignment-box a:hover {
     cursor: pointer;
     text-decoration: underline;
 }
