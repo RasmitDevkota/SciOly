@@ -487,18 +487,156 @@ export function deleteAssignment() {
     }
 }
 
-export function manageAssignmentSettings() {
+export function editQuestions() {
+    document.getElementById("questionEditor").style.display = "flex";
 
+    document.getElementById("assignmentSettings").style.display = "none";
+    document.getElementById("submissionsViewer").style.display = "none";
+}
+
+export function manageAssignmentSettings() {
+    document.getElementById("assignmentSettings").style.display = "flex";
+
+    document.getElementById("questionEditor").style.display = "none";
+    document.getElementById("submissionsViewer").style.display = "none";
+
+    loadSettings();
+}
+
+const assignmentSettings = {
+    "opening": new Date().getTime(),
+    "closing": new Date().getTime() + 86400000,
+    "timeLimit": "0:50:0",
+    "oobTracker": true
+}
+
+export function loadSettings() {
+    getDoc(metadataDoc).then((doc) => {
+        Object.entries(doc.data()).forEach((settingValue, settingField) => {
+            assignmentSettings[settingField] = settingValue;
+        });
+    });
+}
+
+export function cancelSettingsChanges() {
+    const opening = assignmentSettings.open.split(" ");
+
+    document.getElementById("openingDateInput").value = opening[0];
+    document.getElementById("openingTimeInput").value = opening[1];
+
+    const closing = assignmentSettings.close.split(" ");
+    document.getElementById("closingDateInput").value = closing[0];
+    document.getElementById("closingTimeInput").value = closing[1];
+
+    const timeLimit = assignmentSettings.timeLimit.split(":");
+    document.getElementById("timeLimitHoursInput").value = Number(timeLimit[0]);
+    document.getElementById("timeLimitMinutesInput").value = Number(timeLimit[1]);
+    document.getElementById("timeLimitSecondsInput").value = Number(timeLimit[2]);
+
+    document.getElementById("toggleOOBTrackerButton").innerHTML = assignmentSettings.oobTracker ? "ON" : "OFF";
+}
+
+export function saveSettingsChanges() {
+    const newAssignmentSettings = assignmentSettings;
+
+    const openingDate =
+        document.getElementById("openingDateInput").value + " " +
+        document.getElementById("openingTimeInput").value;
+
+    const closingDate =
+        document.getElementById("closingDateInput").value + " " +
+        document.getElementById("closingTimeInput").value;
+
+    if (new Date(closingDate).getTime() < new Date(openingDate).getTime()) {
+        return alert("Make sure the Closing Date is after the Opening Date!\n\n"
+                   + "If you would like for the assignment to last indefinitely, "
+                   + "you can set the Closing Date to a very distant date.");
+    }
+
+    if (
+        document.getElementById("timeLimitHoursInput").value < 0 ||
+        document.getElementById("timeLimitMinutesInput").value < 0 ||
+        document.getElementById("timeLimitSecondsInput").value < 0
+    ) {
+        return alert("Make sure the time limit values are all positive integers!");
+    }
+
+    newAssignmentSettings.opening = openingDate;
+    newAssignmentSettings.closing = closingDate;
+
+    newAssignmentSettings.timeLimit =
+        document.getElementById("timeLimitHoursInput").value + ":" +
+        document.getElementById("timeLimitMinutesInput").value + ":" +
+        document.getElementById("timeLimitSecondsInput").value;
+
+    newAssignmentSettings.oobTracker = document.getElementById("toggleOOBTrackerButton").innerHTML == "ON";
+
+    console.log(newAssignmentSettings);
+}
+
+export function toggleOOBTracker() {
+    const oobTrackerCurrentState = document.getElementById("toggleOOBTrackerButton").innerHTML == "ON";
+    document.getElementById("toggleOOBTrackerButton").innerHTML = oobTrackerCurrentState ? "OFF" : "ON";
 }
 
 export function viewSubmissions(params) {
+    document.getElementById("submissionsViewer").style.display = "flex";
 
+    document.getElementById("questionEditor").style.display = "none";
+    document.getElementById("assignmentSettings").style.display = "none";
 }
 
-export function autogradeSubmission(submission, key) {
-    const scoreReport = new Map();
+export function autogradeSubmission(submission) {
+    getDoc(doc(db, "keys", `${assignmentId}~~key`)).then((doc) => {
+        const key = doc.data();
 
-    submission.forEach((response, question) => {
-        
+        const scoreReport = new Map();
+        let totalPoints = 0;
+
+        submission.forEach((response, question) => {
+            let pointsEarned = 0;
+
+            const correctResponses = key[question]["answer"];
+            const responses = response.split(",");
+
+            switch (key[question]["type"]) {
+                case "mcq":
+                    pointsEarned = key[question]["value"];
+                    break;
+                case "msq":
+                    pointsEarned = Math.max(
+                    (
+                        responses.reduce((pointsEarnedTemp, currentAnswer) => {
+                            return pointsEarnedTemp +
+                                (correctResponses.includes(currentAnswer) ? 1 : -1);
+                        }, 0)
+                    ), 0);
+                    break;
+                case "mq":
+
+                    break;
+                case "fitb":
+
+                    break;
+            }
+
+            correctResponses.forEach((correctAnswer, optionIndex) => {
+                if (responses[optionIndex] == correctAnswer) {
+
+                } else {
+                    switch (key[question]["type"]) {
+                        case "msq": case "mq":
+                            pointsEarned = Math.max(pointsEarned - 1, 0);
+                            break;
+                        case "fitb":
+
+                            break;
+                    }
+                }
+            });
+
+            scoreReport.set(question, pointsEarned);
+            totalPoints += pointsEarned;
+        });
     });
 }

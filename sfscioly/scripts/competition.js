@@ -29,7 +29,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 let mode = "";
 
 // @TODO - This piece of code likely does not run, needs to be verified
-if (window.location.href.includes("testportal/test")) {
+if (window.location.href.includes("sfscioly.web.app/test")) {
     window.addEventListener('beforeunload', (event) => {
         if (eventName != "None") {
             event.preventDefault();
@@ -559,7 +559,7 @@ export function testRedirect(dest) {
 
         if (dest == "dashboard") {
             window.location.href = "dashboard.html";
-        } else {
+        } else { // @TODO - Branch off for public-facing index and private-facing pages
             if (auth.currentUser != null) {
                 signOut();
             }

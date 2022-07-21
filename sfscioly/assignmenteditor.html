@@ -33,6 +33,9 @@
             deleteQuestion as _deleteQuestion,
             manageAssignmentSettings as _manageAssignmentSettings,
             viewSubmissions as _viewSubmissions,
+            toggleOOBTracker as _toggleOOBTracker,
+            cancelSettingsChanges as _cancelSettingsChanges,
+            saveSettingsChanges as _saveSettingsChanges
         } from "./scripts/assignmentmanager.js";
 
         window.loadAssignmentToManage = _loadAssignmentToManage;
@@ -42,11 +45,23 @@
         window.openQuestionEditorWindow = _openQuestionEditorWindow;
         window.manageAssignmentSettings = _manageAssignmentSettings;
         window.viewSubmissions = _viewSubmissions;
+        window.toggleOOBTracker = _toggleOOBTracker;
+        window.cancelSettingsChanges = _cancelSettingsChanges;
+        window.saveSettingsChanges = _saveSettingsChanges;
 
         const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
         const assignmentId = urlParams.get('assignmentId');
 
         loadAssignmentToManage(assignmentId);
+
+        window.displayToggleOOBHint = () => {
+            alert(
+                "The OOB (Out-of-Browser) tracker detects whenever the cursor leaves the test" +
+                "page or browser during the test in order to detect cheating.\n\n" +
+                "It is highly recommended that you disable this if you do not need to detect " +
+                "such activity or if external resources are allowed in order to save resources."
+            );
+        }
     </script>
 
     <link rel="stylesheet" href="styles/style.css">
@@ -73,7 +88,7 @@
 
                 <div class="assignment-editor-row">
                     <div id="assignmentControlsContainer">
-                        <button onclick="addQuestion()">
+                        <button onclick="editQuestions()">
                             Questions
                         </button>
 
@@ -91,7 +106,7 @@
                     </div>
                 </div>
 
-                <div id="questionEditor" >
+                <div id="questionEditor">
                     <div class="assignment-editor-row">
                         <div class="questions-container" id="questionNumbersContainer">
 
@@ -113,8 +128,70 @@
 
                 <div id="assignmentSettings">
                     <div class="assignment-editor-row">
-                        <div>
+                        <h2 id="assignmentSettingsHeader"></h2>
 
+                        <div id="settingsFieldsContainer">
+                            <div id="opening" class="settings-field">
+                                <label for="openingInput">Assignment Opening Date</label>
+
+                                <p id="openingValue" class="settings-value">
+                                    <input id="openingDateInput" class="settings-input" type="date">
+                                    <input id="openingTimeInput" class="settings-input" type="time" value="00:00">
+                                </p>
+                            </div>
+
+                            <div id="closing" class="settings-field">
+                                <label for="closingInput">Assignment Closing Date</label>
+
+                                <p id="openValue" class="settings-value">
+                                    <input id="closingDateInput" class="settings-input" type="date">
+                                    <input id="closingTimeInput" class="settings-input" type="time" value="23:59">
+                                </p>
+                            </div>
+
+                            <div id="timeLimit" class="settings-field">
+                                <label for="timeLimitInput">Time Limit</label>
+
+                                <p id="timeLimitValue" class="settings-value">
+                                    <input id="timeLimitHoursInput" class="settings-input" type="number" min="0" max="24" placeholder="HH">
+                                    <input id="timeLimitMinutesInput" class="settings-input" type="number" min="0" max="59" placeholder="MM">
+                                    <input id="timeLimitSecondsInput" class="settings-input" type="number" min="0" max="59" placeholder="SS">
+                                </p>
+                            </div>
+
+                            <div id="toggleOOB" class="settings-field">
+                                <div>
+                                    <label for="toggleOOBTrackerButton">
+                                        OOB Tracker
+                                    </label>
+
+                                    <sup>
+                                        <a class="material-icons" id="toggleOOBHint" onclick="displayToggleOOBHint()">help</a>
+                                    </sup>
+                                </div>
+
+                                <p id="toggleOOBValue" class="settings-value">
+                                    <button id="toggleOOBTrackerButton" onclick="toggleOOBTracker()">ON</button>
+                                </p>
+                            </div>
+
+                            <!-- <p>
+                                Note: Changes are saved on your device but it is recommended to refresh the page in order to make sure all
+                                changes take place.
+                            </p> -->
+
+                            <div id="settingsControlsContainer">
+                                <button id="cancelSettingsChanges" onclick="cancelSettingsChanges()">Cancel</button>
+                                <button id="saveSettingsChanges" onclick="saveSettingsChanges()">Save</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="submissionsViewer">
+                    <div class="assignment-editor-row">
+                        <div>
+                
                         </div>
                     </div>
                 </div>

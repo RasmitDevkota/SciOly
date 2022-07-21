@@ -10,6 +10,13 @@
     {
       "site": "sfscioly",
       "public": "sfscioly",
+      "redirects": [
+        {
+          "source": "/join",
+          "destination": "/index.html#join",
+          "type": 301
+        }
+      ],
       "ignore": [
         "firebase.json",
         "**/.*",

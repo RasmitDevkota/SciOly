@@ -72,22 +72,22 @@ function pageLoad(user) {
 
         userDoc = doc(db, "users", auth.currentUser.uid);
 
-        if (window.location.href.includes("testportal/index")) {
+        if (window.location.href.includes("sfscioly.web.app/auth")) {
             window.location.href = "dashboard.html";
-        } else if (window.location.href.includes("dashboard.html")) {
+        } else if (window.location.href.includes("sfscioly") && window.location.href.includes("dashboard")) {
             _("welcome-user").innerHTML = `Welcome, ${auth.currentUser.displayName ?? "User"}!`;
 
             loadAssignments();
-        } else if (window.location.href.includes("testportal/test")) {
+        } else if (window.location.href.includes("sfscioly") && window.location.href.includes("test")) {
             const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
             const test = urlParams.get('test');
 
             loadAssignment(test);
-        } else if (window.location.href.includes("testportal/assignmentmanager")) {
+        } else if (window.location.href.includes("sfscioly") && window.location.href.includes("assignmentmanager")) {
             loadAssignmentsToManage();
         }
     } else {
-        if (window.location.href.includes("testportal/dashboard") || window.location.href.includes("testportal/test")) {
+        if (window.location.href.includes("dashboard") || window.location.href.includes("test")) {
             window.location.href = "index.html";
         }
     }
