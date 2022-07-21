@@ -6,9 +6,9 @@
     z-index: 1;
     position: fixed;
     width: 100%;
-    padding: 1vh 1vw;
+    padding: 3vh 1vw;
     text-align: center;
-    background-color: #279af1;
+    background-color: #0B3954;
 }
 
 #nav > a {
@@ -18,17 +18,19 @@
     font-size: 3vh;
     font-weight: 900;
     text-decoration: none;
+    border: 1px solid black;
+    background-color: #FFC857;
 }
 
 #nav > a:hover {
-    border: 1px solid black;
+    background-color: #f4b639;
 }
 
 #content {
     display: flex;
     flex-direction: column;
     width: 100%;
-    padding: 5.5vh 0vw;
+    padding: 9vh 0vw 0vh 0vw;
 }
 
 .sub-content {
@@ -41,10 +43,10 @@
 #welcome {
     flex-direction: column;
     align-items: center;
-    width: 98%;
-    background-color: #e9ff1fa2;
-    border: 1vw solid #279af1;
-    border-width: 1vh 1vw 3vh 1vw;
+    width: 96vw;
+    background-color: #FFC857;
+    border: 1vw solid #0B3954;
+    border-width: 1vh 2vw 3vh 2vw;
 }
 
 #welcomeHeader1 {
@@ -57,18 +59,26 @@
     margin: 1vh 0vw;
 }
 
-#aboutus, #join, #bulletinboardPublic {
+#aboutus, #bulletinboardPublic, #join {
     display: flex;
     flex-direction: column;
     align-items: center;
     text-align: center;
     width: 98vw;
-    background-color: #e9ff1fa2;
-    border: 1vw solid #279af1;
-    border-width: 1vh 1vw 3vh 1vw;
+    background-color: #FFC857;
+    border: 1vw solid #0B3954;
+    border-width: 1vh 2vw 3vh 2vw;
 }
 
-.aboutus-text, .aboutus-text *, .join-text, .join-text *, .bulletinboard-text, .bulletinboard-text * {
+#aboutus > h1,
+#bulletinboardPublic > h1,
+#join > h1 {
+    margin-bottom: 0%;
+}
+
+.aboutus-text, .aboutus-text *,
+.bulletinboard-text, .bulletinboard-text *,
+.join-text, .join-text * {
     width: 60vw;
     font-size: 1.5vw;
 }
@@ -80,5 +90,6 @@
 
 .bulletin-board-item {
     margin-bottom: 2vh;
+    padding: 0vh 1vw 2vh 1vw;
     border: 2px solid black;
 }
