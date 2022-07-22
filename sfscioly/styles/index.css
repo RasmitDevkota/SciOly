@@ -23,6 +23,7 @@
 }
 
 #nav > a:hover {
+    cursor: pointer;
     background-color: #f4b639;
 }
 
@@ -81,6 +82,14 @@
 .join-text, .join-text * {
     width: 60vw;
     font-size: 1.5vw;
+}
+
+.bulletinboard-text > a {
+    text-decoration: underline;
+}
+
+.bulletinboard-text > a:hover {
+    cursor: pointer;
 }
 
 #bulletinboardPublicItemContainer {

@@ -11,6 +11,12 @@
     <script src="https://apis.google.com/js/api:client.js"></script>
 
     <script type="module">
+        import {
+            googleAuth as _googleAuth
+        } from "./scripts/auth.js";
+
+        window.googleAuth = _googleAuth;
+
 		import {
 			loadBulletinBoard as _loadBulletinBoard
 		} from "./scripts/dashboard.js";
@@ -35,7 +41,7 @@
             <a href="#aboutus">About Us</a>
             <a href="#bulletinboardPublic">Bulletin Board</a>
             <a href="#join">Join</a>
-            <a href="auth.html">Login</a>
+            <a onclick="googleAuth()">Login</a>
         </nav>
 
         <div id="content">
@@ -50,49 +56,19 @@
                     <h1>About Us</h1>
 
                     <p class="aboutus-text">
-                        We are South Forsyth Science Olympiad, one of the top
-                        Science Olympiad teams in the state.
-
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna
-                        aliqua. Et malesuada fames ac turpis egestas maecenas pharetra convallis. Vitae suscipit tellus mauris a diam. Orci
-                        nulla pellentesque dignissim enim sit amet venenatis urna cursus. Tortor condimentum lacinia quis vel eros donec ac.
-                        Fames ac turpis egestas sed tempus urna et. Molestie nunc non blandit massa enim nec. Eget magna fermentum iaculis eu
-                        non diam. Purus sit amet luctus venenatis lectus magna fringilla urna porttitor. Commodo nulla facilisi nullam vehicula
-                        ipsum a arcu cursus vitae. Tristique magna sit amet purus gravida. Venenatis a condimentum vitae sapien pellentesque
-                        habitant. Metus aliquam eleifend mi in nulla posuere sollicitudin aliquam. Non arcu risus quis varius quam quisque id
-                        diam vel.
-
-                        Commodo viverra maecenas accumsan lacus vel facilisis volutpat. Accumsan sit amet nulla facilisi morbi tempus iaculis
-                        urna. Neque convallis a cras semper auctor neque. Euismod lacinia at quis risus sed vulputate odio ut enim. Duis
-                        tristique sollicitudin nibh sit amet commodo nulla. Purus non enim praesent elementum. Quis hendrerit dolor magna eget
-                        est. Lacus sed viverra tellus in hac habitasse platea dictumst vestibulum. Curabitur gravida arcu ac tortor dignissim
-                        convallis aenean et. Faucibus in ornare quam viverra orci sagittis eu volutpat odio. Duis at tellus at urna condimentum
-                        mattis pellentesque id. Quam quisque id diam vel. Leo vel fringilla est ullamcorper eget. Ut tellus elementum sagittis
-                        vitae et leo. Ac feugiat sed lectus vestibulum mattis ullamcorper velit sed. Quam quisque id diam vel quam. Venenatis
-                        tellus in metus vulputate eu. Urna duis convallis convallis tellus id interdum velit laoreet id. Metus dictum at tempor
-                        commodo ullamcorper a lacus vestibulum. Odio eu feugiat pretium nibh ipsum consequat nisl.
-                        
-                        Commodo odio aenean sed adipiscing diam donec adipiscing tristique. Pretium aenean pharetra magna ac placerat vestibulum
-                        lectus. Diam maecenas sed enim ut. Vel facilisis volutpat est velit egestas. Augue neque gravida in fermentum. Elit sed
-                        vulputate mi sit amet mauris commodo quis imperdiet. Dolor purus non enim praesent elementum facilisis leo vel
-                        fringilla. Aliquam id diam maecenas ultricies mi. Placerat vestibulum lectus mauris ultrices eros in cursus. Consectetur
-                        libero id faucibus nisl tincidunt eget nullam non nisi. Tellus molestie nunc non blandit massa enim.
-                        
-                        Bibendum ut tristique et egestas quis. Parturient montes nascetur ridiculus mus mauris vitae ultricies. Amet tellus cras
-                        adipiscing enim eu turpis egestas pretium aenean. Erat velit scelerisque in dictum non consectetur. At tellus at urna
-                        condimentum mattis pellentesque id. Diam sit amet nisl suscipit adipiscing bibendum est ultricies integer. Pellentesque
-                        habitant morbi tristique senectus et. Sit amet luctus venenatis lectus magna. Ornare arcu odio ut sem nulla pharetra.
-                        Ipsum dolor sit amet consectetur adipiscing elit duis tristique sollicitudin. Facilisis magna etiam tempor orci eu.
-                        Viverra tellus in hac habitasse platea. Molestie ac feugiat sed lectus vestibulum mattis ullamcorper. Quam elementum
-                        pulvinar etiam non quam. Sit amet porttitor eget dolor morbi non arcu risus quis. In fermentum posuere urna nec
-                        tincidunt praesent. Tincidunt nunc pulvinar sapien et ligula. Nisi est sit amet facilisis magna etiam tempor orci eu.
-                        Sed vulputate mi sit amet. Urna et pharetra pharetra massa massa ultricies mi quis.
-                        
-                        Aliquam nulla facilisi cras fermentum. Id venenatis a condimentum vitae sapien pellentesque. Risus viverra adipiscing at
-                        in tellus integer feugiat. Enim nunc faucibus a pellentesque sit. Nam aliquam sem et tortor consequat id. Est
-                        pellentesque elit ullamcorper dignissim cras tincidunt. Velit sed ullamcorper morbi tincidunt ornare massa. Luctus
-                        venenatis lectus magna fringilla urna porttitor rhoncus dolor purus. Proin nibh nisl condimentum id venenatis a. Lorem
-                        donec massa sapien faucibus et molestie ac. Diam maecenas ultricies mi eget mauris.
+                        The South Forsyth High Science Olympiad Team has remained in competition since 2011. From 18th at Regionals to 4th at
+                        State, these past few years have seen massive growth for the club and its members. South Forsyth has cemented itself as
+                        a Top 5 Georgia team, and remains a serious contender for National bids this upcoming season. Their motto, <i>morior
+                        invictus</i>, death before defeat, burns in the heart of every team member. Through their shared passion for science,
+                        competition, and pineapple pizza, veterans have become akin to family. Rain or shine, meetings are held every Wednesday
+                        in "The Aerie", their affectionate term for home base. Members test builds, take practice tests, and attend various
+                        event workshops. Students are expected to contribute time both in-school and at-home into improving at their respective
+                        events. The team generally participates in 6 to 7 invitationals every season, ending with Regionals, State, and the
+                        National Tournament. And yet, year after year, South has been denied a National bid, forced to end their competition
+                        season on a loss. They face tough competition, teams that have been nationally-ranked for decades before. But the
+                        members of South Forsyth struggle to take "No" for an answer. As the 2023 season ramps up, rumors of a "new era" have
+                        begun circulating on campus. The War Eagles are hungry for redemption, and they wish to prove themselves on the national
+                        stage.
                     </p>
                 </div>
             </div>
@@ -102,7 +78,7 @@
                     <h1>Public Bulletin Board</h1>
 
                     <p class="bulletinboard-text">
-                        <a href="auth.html">Log in</a> to access the team dashboard (members only)
+                        <a onclick="googleAuth()">Log in</a> to access the team dashboard (members only)
                     </p>
 
                     <div id="bulletinboardPublicItemContainer" class="bulletinboard-text">
@@ -116,10 +92,24 @@
                     <h1>Join</h1>
 
                     <p class="join-text">
-                        Kickoff meeting: TBD
+                        <b><u>Important Dates:</u></b>
                         <br>
-                        Tryouts: TBD
+                        Kickoff Meeting: 9/17/2022 @ Dining Hall (<span id="daysUntilKickoffMeeting"></span> days remaining)
+                        <br>
+                        Tryouts: 10/14/2022 @ Dining Hall (<span id="daysUntilTryouts"></span> days remaining)
                     </p>
+
+                    <script>
+                        const dateNow = new Date();
+
+                        const dateKickoffMeeting = new Date("08/17/2022");
+                        var daysUntilKickoffMeeting = Math.round((dateKickoffMeeting.getTime() - dateNow.getTime()) / (1000 * 60 * 60 * 24));
+                        document.getElementById("daysUntilKickoffMeeting").innerHTML = daysUntilKickoffMeeting;
+
+                        const dateTryouts = new Date("09/14/2022");
+                        var daysUntilTryouts = Math.round((dateTryouts.getTime() - dateNow.getTime()) / (1000 * 60 * 60 * 24));
+                        document.getElementById("daysUntilTryouts").innerHTML = daysUntilTryouts;
+                    </script>
                 </div>
             </div>
         </div>

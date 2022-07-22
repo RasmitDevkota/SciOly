@@ -72,22 +72,22 @@ function pageLoad(user) {
 
         userDoc = doc(db, "users", auth.currentUser.uid);
 
-        if (window.location.href.includes("sfscioly.web.app/auth")) {
+        if (window.location.href.split("?")[0].includes("index")) {
             window.location.href = "dashboard.html";
-        } else if (window.location.href.includes("sfscioly") && window.location.href.includes("dashboard")) {
+        } else if (window.location.href.includes("dashboard")) {
             _("welcome-user").innerHTML = `Welcome, ${auth.currentUser.displayName ?? "User"}!`;
 
             loadAssignments();
-        } else if (window.location.href.includes("sfscioly") && window.location.href.includes("test")) {
+        } else if (window.location.href.split("?")[0].includes("test")) {
             const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
             const test = urlParams.get('test');
 
             loadAssignment(test);
-        } else if (window.location.href.includes("sfscioly") && window.location.href.includes("assignmentmanager")) {
+        } else if (window.location.href.split("?")[0].includes("assignmentmanager")) {
             loadAssignmentsToManage();
         }
     } else {
-        if (window.location.href.includes("dashboard") || window.location.href.includes("test")) {
+        if (window.location.href.split("?")[0].includes("dashboard") || window.location.href.split("?")[0].includes("test")) {
             window.location.href = "index.html";
         }
     }
