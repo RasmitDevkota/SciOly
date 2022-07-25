@@ -17,15 +17,13 @@
 
         window.googleAuth = _googleAuth;
 
-		import {
-			loadBulletinBoard as _loadBulletinBoard
-		} from "./scripts/dashboard.js";
+        import {
+            loadBulletinBoard as _loadBulletinBoard
+        } from "./scripts/dashboard.js";
 
-		window.loadBulletinBoard = _loadBulletinBoard;
+        window.loadBulletinBoard = _loadBulletinBoard;
 
-        window.addEventListener("load", () => {
-            loadBulletinBoard("public");
-        });
+        loadBulletinBoard();
     </script>
 
     <link rel="stylesheet" href="./styles/style.css">
@@ -40,6 +38,7 @@
             <a href="#">Home</a>
             <a href="#aboutus">About Us</a>
             <a href="#bulletinboardPublic">Bulletin Board</a>
+            <a href="#qna">QnA</a>
             <a href="#join">Join</a>
             <a onclick="googleAuth()">Login</a>
         </nav>
@@ -52,10 +51,10 @@
             </div>
 
             <div class="sub-content">
-                <div id="aboutus">
+                <div id="aboutus" class="public-page-section">
                     <h1>About Us</h1>
 
-                    <p class="aboutus-text">
+                    <p class="aboutus-text public-page-text">
                         The South Forsyth High Science Olympiad Team has remained in competition since 2011. From 18th at Regionals to 4th at
                         State, these past few years have seen massive growth for the club and its members. South Forsyth has cemented itself as
                         a Top 5 Georgia team, and remains a serious contender for National bids this upcoming season. Their motto, <i>morior
@@ -74,26 +73,83 @@
             </div>
 
             <div class="sub-content">
-                <div id="bulletinboardPublic">
-                    <h1>Public Bulletin Board</h1>
+                <div id="bulletinboard" class="public-page-section">
+                    <h1>Bulletin Board</h1>
 
-                    <p class="bulletinboard-text">
+                    <p class="bulletinboard-text public-page-text">
                         <a onclick="googleAuth()">Log in</a> to access the team dashboard (members only)
                     </p>
 
-                    <div id="bulletinboardPublicItemContainer" class="bulletinboard-text">
+                    <div id="bulletinboardItemContainer" class="bulletinboard-text public-page-text">
 
                     </div>
                 </div>
             </div>
 
             <div class="sub-content">
-                <div id="join">
+                <div id="qna" class="public-page-section">
+                    <h1>QnA</h1>
+
+                    <p class="qna-text public-page-text">
+                        Got any questions? Read the QnA's below to see if your question
+                        has been answered already! If not, you can submit a question using
+                        the form below the QnA's. You can also contact us through our email
+                        at <a href="mailto:southforsyth.scioly@gmail.com" target="_blank">
+                        southforsyth.scioly@gmail.com</a>!
+                    </p>
+
+                    <div id="qnaItemContainer" class="qna-text public-page-text">
+                        <div class="qna-item">
+                            <p>
+                                What is the process for team selection at tryouts?
+                            </p>
+
+                            <p>
+                                Team selection is based on a short application, performance
+                                at tryouts, and, for veteran members only, past performance.
+                            </p>
+
+                            <hr>
+                        </div>
+
+                        <div class="qna-item">
+                            <p>
+                                How much does it cost to join the team?
+                            </p>
+
+                            <p>
+                                Joining the team costs $75, paid through MyPaymentsPlus at
+                                the beginning of the year once you are selected for the team.
+                                This one-time due covers everything from competitions to the
+                                team shirt.
+                            </p>
+                        </div>
+
+                        <div class="qna-item">
+                            <p>
+                                How much does it cost to join the team?
+                            </p>
+                            
+                            <p>
+                                Joining the team costs $75, paid through MyPaymentsPlus at
+                                the beginning of the year once you are selected for the team.
+                                This one-time due covers everything from competitions to the
+                                team shirt.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sub-content">
+                <div id="join" class="public-page-section">
                     <h1>Join</h1>
 
-                    <p class="join-text">
+                    <p class="join-text public-page-text">
                         In order to join the team, you must pass tryouts in mid-September. It is also highly recommended
                         that you attend the kickoff meeting. Specific dates may vary from year to year, see below.
+                        <br>
+                        Those who are selected through tryouts then
                         <br>
                         <br>
                         <b><u>Important Dates:</u></b>

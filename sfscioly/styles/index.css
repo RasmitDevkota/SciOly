@@ -60,7 +60,7 @@
     margin: 1vh 0vw;
 }
 
-#aboutus, #bulletinboardPublic, #join {
+.public-page-section {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -71,15 +71,11 @@
     border-width: 1vh 2vw 3vh 2vw;
 }
 
-#aboutus > h1,
-#bulletinboardPublic > h1,
-#join > h1 {
+.public-page-section > h1 {
     margin-bottom: 0%;
 }
 
-.aboutus-text, .aboutus-text *,
-.bulletinboard-text, .bulletinboard-text *,
-.join-text, .join-text * {
+.public-page-text, .public-page-text * {
     width: 60vw;
     font-size: 1.5vw;
 }
@@ -92,7 +88,7 @@
     cursor: pointer;
 }
 
-#bulletinboardPublicItemContainer {
+#bulletinboardItemContainer {
     display: flex;
     flex-direction: column;
 }
@@ -101,4 +97,12 @@
     margin-bottom: 2vh;
     padding: 0vh 1vw 2vh 1vw;
     border: 2px solid black;
+}
+
+#qnaItemContainer {
+    border: 1px solid black;
+}
+
+.qna-item {
+    width: 60%;
 }
