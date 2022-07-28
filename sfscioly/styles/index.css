@@ -103,6 +103,28 @@
     border: 1px solid black;
 }
 
-.qna-item {
-    width: 60%;
+#qnaItemContainer > div * {
+    margin: 2vh 0vw 2vh 0vw;
+    text-align: center;
+}
+
+#mailingListForm {
+    padding: 0vh 1vw 2vh 1vw;
+    border: 2px solid black;
+}
+
+#mailingListForm > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#mailingListForm input{
+    width: 50%;
+    margin: 0.5vh 0vw;
+}
+
+#mailingListForm button {
+    width: 30%;
+    margin: 1vh 0vw;
 }

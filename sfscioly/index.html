@@ -10,6 +10,8 @@
         integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
     <script src="https://apis.google.com/js/api:client.js"></script>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+
     <script type="module">
         import {
             googleAuth as _googleAuth
@@ -18,10 +20,12 @@
         window.googleAuth = _googleAuth;
 
         import {
-            loadBulletinBoard as _loadBulletinBoard
+            loadBulletinBoard as _loadBulletinBoard,
+            joinMailingList as _joinMailingList
         } from "./scripts/dashboard.js";
 
         window.loadBulletinBoard = _loadBulletinBoard;
+        window.joinMailingList = _joinMailingList;
 
         loadBulletinBoard();
     </script>
@@ -58,13 +62,13 @@
                         The South Forsyth High Science Olympiad Team has remained in competition since 2011. From 18th at Regionals to 4th at
                         State, these past few years have seen massive growth for the club and its members. South Forsyth has cemented itself as
                         a Top 5 Georgia team, and remains a serious contender for National bids this upcoming season. Their motto, <i>morior
-                        invictus</i>, death before defeat, burns in the heart of every team member. Through their shared passion for science,
+                        invictus</i>, "death before defeat", burns in the heart of every team member. Through their shared passion for science,
                         competition, and pineapple pizza, veterans have become akin to family. Rain or shine, meetings are held every Wednesday
                         in "The Aerie", their affectionate term for home base. Members test builds, take practice tests, and attend various
                         event workshops. Students are expected to contribute time both in-school and at-home into improving at their respective
                         events. The team generally participates in 6 to 7 invitationals every season, ending with Regionals, State, and the
                         National Tournament. And yet, year after year, South has been denied a National bid, forced to end their competition
-                        season on a loss. They face tough competition, teams that have been nationally-ranked for decades before. But the
+                        season on a loss. They face tough competition, teams that have been nationally-ranked for decades. But the
                         members of South Forsyth struggle to take "No" for an answer. As the 2023 season ramps up, rumors of a "new era" have
                         begun circulating on campus. The War Eagles are hungry for redemption, and they wish to prove themselves on the national
                         stage.
@@ -88,12 +92,12 @@
 
             <div class="sub-content">
                 <div id="qna" class="public-page-section">
-                    <h1>QnA</h1>
+                    <h1>Q&A</h1>
 
                     <p class="qna-text public-page-text">
-                        Got any questions? Read the QnA's below to see if your question
+                        Got any questions? Read the Q&A's below to see if your question
                         has been answered already! If not, you can submit a question using
-                        the form below the QnA's. You can also contact us through our email
+                        the form below the Q&A's. You can also contact us through our email
                         at <a href="mailto:southforsyth.scioly@gmail.com" target="_blank">
                         southforsyth.scioly@gmail.com</a>!
                     </p>
@@ -108,33 +112,66 @@
                                 Team selection is based on a short application, performance
                                 at tryouts, and, for veteran members only, past performance.
                             </p>
-
                             <hr>
                         </div>
 
-                        <div class="qna-item">
+                        <div>
                             <p>
-                                How much does it cost to join the team?
+                            Do you need past experience or prior knowledge?
                             </p>
 
                             <p>
-                                Joining the team costs $75, paid through MyPaymentsPlus at
-                                the beginning of the year once you are selected for the team.
-                                This one-time due covers everything from competitions to the
-                                team shirt.
+                            You don't need any academic knowledge or previous experience in Science Olympiad, just dedication to learning!
                             </p>
+                            <hr>
                         </div>
 
-                        <div class="qna-item">
+                        <div>
                             <p>
-                                How much does it cost to join the team?
+                            How many people will get selected from the tryouts?
                             </p>
-                            
+
                             <p>
-                                Joining the team costs $75, paid through MyPaymentsPlus at
-                                the beginning of the year once you are selected for the team.
-                                This one-time due covers everything from competitions to the
-                                team shirt.
+                            Out of the 100-150 of the people that typically try out, we select roughly 60-70 people to be on the team. However, this
+                            may vary depending on how many people try out.
+                            </p>
+                            <hr>
+                        </div>
+
+                        <div>
+                            <p>
+                            If selected, how much does it cost to join?
+                            </p>
+
+                            <p>
+                            The membership fee is $75 which includes expenses ranging from t-shirts to registration costs for competitions. You do
+                            NOT have to pay anything to try out! This one-time due covers everything from competitions to the
+                            team shirt.
+                            </p>
+                            <hr>
+                        </div>
+
+                        <div>
+                            <p>
+                            How many competitions will there be throughout the year?
+                            </p>
+
+                            <p>
+                            We typically attend 6-8 invitationals throughout the year, including regionals and state. Whether or not a team member
+                            is able to compete, however, is determined by a variety of factors including meeting attendance, performance at previous
+                            competitions, and commitment.
+                            </p>
+                            <hr>
+                        </div>
+
+                        <div>
+                            <p>
+                            When and where do competitions take place?
+                            </p>
+
+                            <p>
+                            Competitions are held on Saturdays at colleges like Georgia Tech and other high schools (transportation is provided), as
+                            well as some virtual competitions which we participate in at our school
                             </p>
                         </div>
                     </div>
@@ -170,6 +207,25 @@
                         var daysUntilTryouts = Math.round((dateTryouts.getTime() - dateNow.getTime()) / (1000 * 60 * 60 * 24));
                         document.getElementById("daysUntilTryouts").innerHTML = daysUntilTryouts;
                     </script>
+
+                    <div id="mailingListForm" class="public-page-text">
+
+                        <h1>Join our mailing list to receive all important updates!</h1>
+
+                        <div class="form-group">
+                            <label for="mailingListEmailInput">Email address</label>
+                            <input type="email" class="form-control" id="mailingListEmailInput" placeholder="Email">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="mailingListNameInput">Name (optional)</label>
+                            <input type="name" class="form-control" id="mailingListNameInput" placeholder="Name">
+                        </div>
+
+                        <button class="btn btn-primary" type="submit" onclick="joinMailingList()">Submit</button>
+                    </div>
+
+                    <br>
                 </div>
             </div>
         </div>

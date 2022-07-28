@@ -1,19 +1,19 @@
 import {
     db,
     _,
-    sfsciolylog,
+    sfsciolylog
 } from "./script.js";
 
 import {
-    collection,
-    getDocs,
+    doc,
+    setDoc
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
 import {
     getDatabase,
     ref,
     child,
-    get,
+    get
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-database.js';
 
 const rtdb = getDatabase();
@@ -40,5 +40,19 @@ export function loadBulletinBoard() {
         }
     }).catch((error) => {
         console.error(error);
+    });
+}
+
+export function joinMailingList() {
+    const email = _("mailingListEmailInput").value;
+    const name = _("mailingListNameInput").value;
+
+    setDoc(doc(db, "userlists", "mailinglist"), {
+        email: email,
+        name: name
+    }).then(() => {
+        alert("Hooray! You're now in our mailing list!");
+    }).catch((error) => {
+        console.error("Error writing document: ", error);
     });
 }
