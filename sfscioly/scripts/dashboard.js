@@ -47,7 +47,7 @@ export function joinMailingList() {
     const email = _("mailingListEmailInput").value;
     const name = _("mailingListNameInput").value;
 
-    setDoc(doc(db, "userlists", "mailinglist"), {
+    setDoc(doc(db, "userlists", email), {
         email: email,
         name: name
     }).then(() => {
