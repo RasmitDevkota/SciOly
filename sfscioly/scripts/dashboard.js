@@ -47,12 +47,14 @@ export function joinMailingList() {
     const email = _("mailingListEmailInput").value;
     const name = _("mailingListNameInput").value;
 
-    setDoc(doc(db, "userlists", email), {
+    setDoc(doc(db, "mailinglist", email), {
         email: email,
         name: name
     }).then(() => {
         alert("Hooray! You're now in our mailing list!");
     }).catch((error) => {
         console.error("Error writing document: ", error);
+
+        alert("Sorry, an error occurred so we couldn't add you to our mailing list. Please try again later!");
     });
 }
