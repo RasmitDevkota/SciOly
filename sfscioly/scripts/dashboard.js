@@ -52,6 +52,9 @@ export function joinMailingList() {
         name: name
     }).then(() => {
         alert("Hooray! You're now in our mailing list!");
+
+        document.getElementById("mailingListEmailInput").value = "";
+        document.getElementById("mailingListNameInput").value = "";
     }).catch((error) => {
         console.error("Error writing document: ", error);
 
