@@ -62,7 +62,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-function pageLoad(user) {
+export function pageLoad(user) {
     if (user) {
         if (!auth.currentUser) {
             sfsciolylog("Auth error occurred, pageLoad(true) called even though auth.currentUser is " + auth.currentUser, "Event=False Auth State Change");
@@ -74,7 +74,7 @@ function pageLoad(user) {
 
         if (window.location.href.split("?")[0].includes("index")) {
             window.location.href = "dashboard.html";
-        } else if (window.location.href.includes("dashboard")) {
+        } else if (window.location.href.split("?")[0].includes("dashboard")) {
             _("welcome-user").innerHTML = `Welcome, ${auth.currentUser.displayName ?? "User"}!`;
 
             loadAssignments();

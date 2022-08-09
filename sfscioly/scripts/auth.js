@@ -18,7 +18,7 @@ import {
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
 export function googleAuth() {
-    return alert("Sorry, this functionality isn't available at this time!");
+    // return alert("Sorry, this functionality isn't available at this time!");
 
     signInWithPopup(auth, new GoogleAuthProvider()).then((result) => {
         sfsciolylog("Signed in!", `Event=User authenticated with Google&UID=${auth.currentUser.uid}`);

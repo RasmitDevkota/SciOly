@@ -1,0 +1,78 @@
+<html>
+
+<head>
+    <title>SciOly Test Portal</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://apis.google.com/js/api:client.js"></script>
+
+    <script type="module">
+        import {
+            unAuthenticate as _unAuthenticate
+        } from "./scripts/auth.js";
+
+        window.unAuthenticate = _unAuthenticate;
+
+        import {
+            db,
+        } from "./scripts/script.js";
+
+        import {
+            collection,
+            getDocs
+        } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
+
+        window.addEventListener('load', () => {
+            getDocs(collection(db, "mailinglist")).then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    document.getElementById("public").innerHTML += `${doc.id} `;
+                });
+            });
+        });
+    </script>
+
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+
+    <link rel="icon" href="images/favicon.ico">
+</head>
+
+<body>
+    <div id="main">
+        <div id="content">
+            <div id="sidebar">
+                <a class="material-icons">home</a>
+
+                <a class="material-icons" href="plaza.html">forum</a>
+
+                <a class="material-icons" href="assignmentmanager.html">drive_file_rename_outline</a>
+
+                <a class="material-icons" onclick="unAuthenticate()">logout</a>
+            </div>
+
+            <div id="dashboard">
+                <div class="dashboard-row">
+                    <h1 id="welcome-user">Admin Tools</h1>
+                </div>
+
+                <div class="dashboard-row">
+                    <div id="mailinglists" class="assignment-box">
+                        <h2>Mailing Lists</h2>
+
+                        <div id="public">
+                            <h3>Public Mailing List</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
