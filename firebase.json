@@ -14,7 +14,12 @@
         {
           "source": "/join",
           "destination": "/index.html#join",
-          "type": 301
+          "type": 302
+        },
+        {
+          "source": "/at",
+          "destination": "/attendance.html?date=00000000",
+          "type": 302
         }
       ],
       "ignore": [

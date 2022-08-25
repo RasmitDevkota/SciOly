@@ -14,6 +14,7 @@
 
     <script type="module">
         import {
+            googleAuth,
             unAuthenticate as _unAuthenticate
         } from "./scripts/auth.js";
 
@@ -21,6 +22,8 @@
 
         import {
             db,
+            auth,
+            securitycheck
         } from "./scripts/script.js";
 
         import {
@@ -29,6 +32,10 @@
         } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
         window.addEventListener('load', () => {
+            if (auth.currentUser == null) {
+                securitycheck();
+            }
+
             getDocs(collection(db, "mailinglist")).then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
                     document.getElementById("public").innerHTML += `${doc.id} `;

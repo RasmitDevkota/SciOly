@@ -116,3 +116,28 @@ export function sfsciolylog(msg, log = "") {
         console.log(msg);
     }
 }
+
+export async function securitycheck(input) {
+    let attempts = 3;
+
+    while (attempts > 0) {
+        const key = prompt(`Please enter the admin key!`);
+        const keyEncoded = new TextEncoder().encode(key);
+
+        const keyHashed = Array.from(new Uint8Array(await window.crypto.subtle.digest('SHA-512', keyEncoded))).map(b => b.toString(16).padStart(2, '0')).join('');
+
+        if (keyHashed == "23fa162648b894edfcc95b7405ac44f79c1654fb052dcda4777ae0024cf55f9c465b6a560550e7dea47dcbcfeb3608eb74a3b9117508b4bef7fc962019ea04e0") {
+            alert("Access granted!");
+            
+            break;
+        } else {
+            alert(`Key '${key}' incorrect! You have ${--attempts} remaining!`);
+        }
+    }
+
+    if (attempts <= 0) {
+        alert(`Too many incorrect attempts! Please try again later.`);
+
+        return;
+    }
+}

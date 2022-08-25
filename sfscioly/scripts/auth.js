@@ -17,9 +17,9 @@ import {
     setDoc
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
-export function googleAuth() {
-    // return alert("Sorry, this functionality isn't available at this time!");
-
+export async function googleAuth(destination = "dashboard.html") {
+    return alert("Sorry, this functionality isn't available at this time!");
+    
     signInWithPopup(auth, new GoogleAuthProvider()).then((result) => {
         sfsciolylog("Signed in!", `Event=User authenticated with Google&UID=${auth.currentUser.uid}`);
 
@@ -56,7 +56,7 @@ export function googleAuth() {
                     console.log("Docs already exist, skipped writing.");
                 }
             }).then(() => {
-                window.location.href = "dashboard.html";
+                window.location.href = destination;
             });
         });
     }).catch((error) => {
