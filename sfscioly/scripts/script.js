@@ -129,7 +129,7 @@ export async function securitycheck(input) {
         if (keyHashed == "23fa162648b894edfcc95b7405ac44f79c1654fb052dcda4777ae0024cf55f9c465b6a560550e7dea47dcbcfeb3608eb74a3b9117508b4bef7fc962019ea04e0") {
             alert("Access granted!");
             
-            break;
+            return true;
         } else {
             alert(`Key '${key}' incorrect! You have ${--attempts} remaining!`);
         }
@@ -138,6 +138,6 @@ export async function securitycheck(input) {
     if (attempts <= 0) {
         alert(`Too many incorrect attempts! Please try again later.`);
 
-        return;
+        return false;
     }
 }

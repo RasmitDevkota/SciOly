@@ -33,14 +33,14 @@
 
         window.addEventListener('load', () => {
             if (auth.currentUser == null) {
-                securitycheck();
+                if (securitycheck()) {
+                    getDocs(collection(db, "mailinglist")).then((querySnapshot) => {
+                        querySnapshot.forEach((doc) => {
+                            document.getElementById("public").innerHTML += `${doc.id} `;
+                        });
+                    });
+                }
             }
-
-            getDocs(collection(db, "mailinglist")).then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    document.getElementById("public").innerHTML += `${doc.id} `;
-                });
-            });
         });
     </script>
 

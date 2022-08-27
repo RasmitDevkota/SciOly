@@ -29,8 +29,6 @@ export async function googleAuth(destination = "dashboard.html") {
             const username = profile.displayName;
             const email = profile.email;
 
-            const docSnap = await getDoc(userDoc);
-
             getDoc(userDoc).then((_doc) => {
                 if (!_doc.exists()) {
                     setDoc(doc(db, "emails", username), {
