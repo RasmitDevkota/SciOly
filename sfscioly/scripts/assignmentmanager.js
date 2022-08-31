@@ -196,8 +196,7 @@ function loadQuestionUI(questionIndex) {
         </div>
     `;
 
-    const questionPreview = questions[questionIndex].data().text
-        .substring(0, 90).replace(/ /g, "&nbsp;");
+    const questionPreview = questions[questionIndex].data().text.substring(0, 90).replace(/ /g, "&nbsp;");
 
     questionsContainer.innerHTML += `
         <div class="question-list-item list-group-item" style="border: 1px solid black;">
@@ -246,24 +245,30 @@ export function loadQuestionEditor() {
     document.getElementById("questionText").value = questionData.text;
     document.getElementById("questionValue").value = questionData.value;
 
+    for (let type of ["mcq", "msq", "mq", "lrq", "fitb"]) {
+        Array.from(document.getElementsByClassName(`${type}`)).forEach(element => {
+            element.style.display = type == questionData.type ? "flex" : "none";
+        });
+    }
+
     switch (questionData.type) {
         case "mcq":
             document.getElementById("questionType").selectedIndex = 1;
 
             for (let i in questionData.options) {
-                if (i > 4) {
+                if (i > 3) {
                     document.getElementById("mcqOptions").innerHTML += `
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="mcq" id="mcq-option${i}">
 
-                            <label class="form-check-label" for="mcq-option${i}">
-                                <input type="text">
+                            <label class="form-check-label option-text" for="mcq-option${i}">
+                                <input id="mcq-option${i}-text" type="text">
                             </label>
                         </div>
                     `;
                 }
 
-                document.getElementById(`mcq-option${i}`).value = questionData.options[i];
+                document.getElementById(`mcq-option${i}-text`).value = questionData.options[i];
             }
 
             break;
@@ -271,13 +276,13 @@ export function loadQuestionEditor() {
             document.getElementById("questionType").selectedIndex = 2;
 
             for (let i in questionData.options) {
-                if (i > 4) {
+                if (i > 3) {
                     document.getElementById("msqOptions").innerHTML += `
                         <div class="form-check">
                             <input class="form-check-input" type="checkbox" name="msq" id="msq-moption${i}">
 
-                            <label class="form-check-label" for="msq-moption${i}">
-                                <input type="text">
+                            <label class="form-check-label option-text" for="msq-moption${i}">
+                                <input id="msq-moption${i}-text" type="text" value="${questionData.options[i]}">
                             </label>
                         </div>
                     `;
@@ -291,7 +296,7 @@ export function loadQuestionEditor() {
             document.getElementById("questionType").selectedIndex = 3;
 
             for (let i in questionData.optionsA) {
-                if (i > 4) {
+                if (i > 3) {
                     document.getElementById("mqOptionsA").innerHTML += `
                         <div>
                             <input class="form-control mq-input" type="text" name="mq-optionA${i}" id="mq-optionA${i}">
@@ -303,7 +308,7 @@ export function loadQuestionEditor() {
             }
 
             for (let i in questionData.optionsB) {
-                if (i > 4) {
+                if (i > 3) {
                     document.getElementById("mqOptionsB").innerHTML += `
                         <div class="form-control">
                             <input id="mq-optionB${i}" type="text">
@@ -333,7 +338,7 @@ export function setQuestionType() {
 
     for (let type of ["mcq", "msq", "mq", "lrq", "fitb"]) {
         Array.from(document.getElementsByClassName(`${type}`)).forEach(element => {
-           element.style.display = type == questionType ? "flex" : "none"; 
+           element.style.display = type == questionType ? "flex" : "none";
         });
     }
 
@@ -476,7 +481,6 @@ export async function previewAssignment(assignmentId) {
 }
 
 export function manageAssignment(assignmentId) {
-    console.log("hi")
     return window.location.href = `assignmenteditor.html?assignmentId=${assignmentId}`;
 }
 

@@ -41,6 +41,10 @@ if (window.location.href.includes("sfscioly.web.app/test")) {
 
 export function loadAssignments() {
     getDoc(userDoc).then((doc) => {
+        if (!doc.exists()) {
+            console.log("Error!");
+        }
+
         if (doc.data()["assignments"]) {
             Object.keys(doc.data()["assignments"]).forEach((_assignmentId) => {
                 const status = doc.data()["assignments"][_assignmentId];

@@ -10,6 +10,7 @@ import {
     getFirestore,
     collection,
     doc,
+    getDoc,
     enableIndexedDbPersistence
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
@@ -22,7 +23,7 @@ import {
 
 import {
     loadAssignmentsToManage
-} from "./assignmentmanager.js";
+} from './assignmentmanager.js';
 
 const app = initializeApp({
     apiKey: "AIzaSyBw7h-5dzK9tcbKCbzWdo35Dlbi1L7It_M",
@@ -49,42 +50,38 @@ enableIndexedDbPersistence(db).catch((error) => {
 export const users = collection(db, "users");
 export const tests = collection(db, "tests");
 
+window.uid = "";
 window.userDoc = null;
 
 export const auth = getAuth(app);
 setPersistence(auth, browserSessionPersistence);
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        pageLoad(true);
-    } else {
-        pageLoad(false);
-    }
+onAuthStateChanged(auth, () => {
+    pageLoad();
 });
 
-export function pageLoad(user) {
-    if (user) {
-        if (!auth.currentUser) {
-            sfsciolylog("Auth error occurred, pageLoad(true) called even though auth.currentUser is " + auth.currentUser, "Event=False Auth State Change");
-
-            pageLoad(false);
-        }
-
+export function pageLoad() {
+    if (auth.currentUser) {
+        uid = auth.currentUser.uid;
         userDoc = doc(db, "users", auth.currentUser.uid);
 
-        if (window.location.href.split("?")[0].includes("index")) {
+        const page = window.location.href.split("?")[0];
+
+        if (page.includes("index")) {
             window.location.href = "dashboard.html";
-        } else if (window.location.href.split("?")[0].includes("dashboard")) {
+        } else if (page.includes("dashboard")) {
             _("welcome-user").innerHTML = `Welcome, ${auth.currentUser.displayName ?? "User"}!`;
 
             loadAssignments();
-        } else if (window.location.href.split("?")[0].includes("test")) {
+        } else if (page.includes("test")) {
             const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
             const test = urlParams.get('test');
 
             loadAssignment(test);
-        } else if (window.location.href.split("?")[0].includes("assignmentmanager")) {
+        } else if (page.includes("assignmentmanager")) {
             loadAssignmentsToManage();
+        } else if (page.includes("settings")) {
+            loadSettings();
         }
     } else {
         if (window.location.href.split("?")[0].includes("dashboard") || window.location.href.split("?")[0].includes("test")) {
@@ -108,7 +105,7 @@ export function sfsciolylog(msg, log = "") {
         }
 
         const xhttp = new XMLHttpRequest();
-        xhttp.open("GET", `https://sfscioly-discord-bot.dralientech.repl.co/log?${details}`, true);
+        xhttp.open("GET", `https://SFSciOlyBot.dralientech.repl.co/log?${details}`, true);
         xhttp.send();
     } catch (error) {
         console.error("Logging error:", error);

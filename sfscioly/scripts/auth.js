@@ -18,11 +18,18 @@ import {
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
 export async function googleAuth(destination = "dashboard.html") {
-    return alert("Sorry, this functionality isn't available at this time!");
-    
+    if (confirm("Are you an officer? If not, please click 'Cancel' or hit the 'Esc' key to go back!")) {
+        if (!securitycheck()) {
+            return alert("Sorry, this functionality isn't available at this time!");
+        }
+    } else {
+        return alert("Sorry, this functionality isn't available at this time!");
+    }
+
     signInWithPopup(auth, new GoogleAuthProvider()).then((result) => {
         sfsciolylog("Signed in!", `Event=User authenticated with Google&UID=${auth.currentUser.uid}`);
 
+        uid = auth.currentUser.uid;
         userDoc = doc(db, "users", auth.currentUser.uid);
 
         result.user.providerData.forEach(async (profile) => {
@@ -36,19 +43,20 @@ export async function googleAuth(destination = "dashboard.html") {
                         uid: auth.currentUser.uid,
                         name: username
                     }).then(() => {
-                        console.log("Document successfully written!");
+                        console.log("Emails document successfully written!");
                     }).catch((error) => {
-                        console.error("Error writing document: ", error);
+                        console.error("Error writing emails document: ", error);
                     });
 
-                    setDoc(userDoc, {
+                    setDoc(doc(db, "users", auth.currentUser.uid), {
                         displayName: username,
                         email: email,
-                        name: username
+                        name: username,
+                        assignments: {}
                     }).then(() => {
-                        console.log("Document successfully written!");
+                        console.log("Users document successfully written!");
                     }).catch((error) => {
-                        console.error("Error writing document: ", error);
+                        console.error("Error writing users document: ", error);
                     });
                 } else {
                     console.log("Docs already exist, skipped writing.");

@@ -3,7 +3,7 @@ html {
 }
 
 #questionEditor {
-    width: 50vw;
+    width: 90vw;
 }
 
 .question {
@@ -29,5 +29,9 @@ div.form-check-label {
 
 label > .material-icons {
     font-size: 2vw;
+}
+
+.option-text, .option-text > input {
+    width: 100% !important;
 }
 
