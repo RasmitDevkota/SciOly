@@ -21,6 +21,10 @@ let assignmentCollection;
 let assignmentSubmissionDoc;
 
 const questions = new Array();
+let metadata;
+let questionOrder;
+
+const oobLog = new Array();
 
 let time = 3000;
 
@@ -28,8 +32,7 @@ const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 let mode = "";
 
-// @TODO - This piece of code likely does not run, needs to be verified
-if (window.location.href.includes("sfscioly.web.app/test")) {
+if (window.location.href.includes("test")) {
     window.addEventListener('beforeunload', (event) => {
         if (eventName != "None") {
             event.preventDefault();
@@ -37,6 +40,22 @@ if (window.location.href.includes("sfscioly.web.app/test")) {
             event.returnValue = "";
         }
     });
+
+    document.addEventListener("visibilitychange", oobLogger);
+    window.addEventListener("resize", oobLogger);
+    window.addEventListener("focus", oobLogger);
+    window.addEventListener("focusin", oobLogger);
+    window.addEventListener("focusout", oobLogger);
+}
+
+export function oobLogger() {
+    if (document.visibilityState === "visible") {
+        oobLog.push(new Date().getTime())
+    } else {
+        oobLog.push(new Date().getTime());
+    }
+
+    console.log(document.visibilityState, !document.hidden, document.hasFocus());
 }
 
 export function loadAssignments() {
@@ -160,9 +179,6 @@ export async function loadAssignment(_assignmentId) {
     _("details").innerHTML = `UID: ${auth.currentUser.uid} | Time Remaining: 50 minutes and 0 seconds`;
 
     var testContainer = _("test-container");
-
-    let metadata;
-    let questionOrder;
 
     getDocs(assignmentCollection).then((querySnapshot) => {
         const documents = new Map();
@@ -379,7 +395,7 @@ export async function loadAssignment(_assignmentId) {
 
                 // @TODO - Refactor wtih question outputter forEach
                 for (let r = 0; r < submissionResponsesQ.length; r++) {
-                    if (!["time"].includes(submissionResponsesQ[r])) {
+                    if (!["time", "oob"].includes(submissionResponsesQ[r])) {
                         const questionId = submissionResponsesQ[r];
                         const q = questionOrder.indexOf(questionId);
 
@@ -387,6 +403,8 @@ export async function loadAssignment(_assignmentId) {
                         answers.set(submissionResponsesQ[r], answer);
 
                         const qDoc = questions[q];
+
+                        console.log(questionId);
 
                         switch (qDoc.data().type) {
                             case "mcq":
@@ -460,11 +478,15 @@ var saved = false;
 var saveTimestamp = 0;
 
 export function answer(id, answer) {
+    const questionId = questionOrder[Number(id.substr(8, id.indexOf("-") - 8))];
+
+    console.log(id, id.substr(8, id.indexOf("-") - 8));
+
     if (id.includes("optionA")) {
         var answerList = new Array();
 
-        if (answers.get(id.substr(0, id.indexOf("-"))) != undefined) {
-            answerList = answers.get(id.substr(0, id.indexOf("-")));
+        if (answers.get(questionId) != undefined) {
+            answerList = answers.get(questionId);
         }
 
         console.log(id, answer);
@@ -480,12 +502,12 @@ export function answer(id, answer) {
             a++;
         }
 
-        answers.set(id.substr(0, id.indexOf("-")), answerList);
+        answers.set(questionId, answerList);
     } else if (id.includes("moption")) {
         var answerList = new Array();
 
-        if (answers.get(id.substr(0, id.indexOf("-"))) != undefined) {
-            answerList = answers.get(id.substr(0, id.indexOf("-")));
+        if (answers.get(questionId) != undefined) {
+            answerList = answers.get(questionId);
         }
 
         if (_(id).checked) {
@@ -494,9 +516,9 @@ export function answer(id, answer) {
             answerList.splice(answerList.indexOf(answer), 1);
         }
 
-        answers.set(id.substr(0, id.indexOf("-")), answerList);
+        answers.set(questionId, answerList);
     } else {
-        answers.set(id.substr(0, id.indexOf("-")), answer);
+        answers.set(questionId, answer);
     }
 
     console.log("answered", answers);

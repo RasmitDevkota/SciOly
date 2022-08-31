@@ -95,6 +95,8 @@ export function _(id) {
 }
 
 export function sfsciolylog(msg, log = "") {
+    return;
+
     try {
         var details = "";
 
