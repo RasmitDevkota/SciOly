@@ -2,7 +2,8 @@ import {
     db,
     auth,
     _,
-    sfsciolylog
+    sfsciolylog,
+    securitycheck
 } from "./script.js";
 
 import {
