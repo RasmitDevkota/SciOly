@@ -24,7 +24,7 @@ const questions = new Array();
 let metadata;
 let questionOrder;
 
-const oobLog = new Array();
+let oobLog = new Array();
 
 let time = 3000;
 
@@ -49,10 +49,21 @@ if (window.location.href.includes("test")) {
 }
 
 export function oobLogger() {
+
     if (document.visibilityState === "visible") {
         oobLog.push(new Date().getTime())
     } else {
         oobLog.push(new Date().getTime());
+
+        var playPromise = document.querySelector('#surpriseAudio').play();
+
+        if (playPromise !== undefined) {
+            playPromise.then(function () {
+                console.log("played surprise!");
+            }).catch(function (error) {
+                console.error(error);
+            });
+        }
     }
 
     console.log(document.visibilityState, !document.hidden, document.hasFocus());
@@ -395,7 +406,9 @@ export async function loadAssignment(_assignmentId) {
 
                 // @TODO - Refactor wtih question outputter forEach
                 for (let r = 0; r < submissionResponsesQ.length; r++) {
-                    if (!["time", "oob"].includes(submissionResponsesQ[r])) {
+                    if (submissionResponsesQ[r] == "oob") {
+                        oobLog = submissionResponsesA[r];
+                    } else if (!["time"].includes(submissionResponsesQ[r])) {
                         const questionId = submissionResponsesQ[r];
                         const q = questionOrder.indexOf(questionId);
 
@@ -532,8 +545,11 @@ export function saveAnswers(finished = false) {
     const data = {};
 
     answers.forEach((answer, question) => {
-        data[question] = answer; // NOTE: Possible type error when saving/retrieving
+        // @TODO - Possible type error when saving/retrieving, need to test
+        data[question] = answer;
     });
+
+    data["oob"] = oobLog;
 
     setDoc(assignmentSubmissionDoc, data, { merge: true }).then(() => {
         sfsciolylog(`Saved ${assignmentId} answers`, `Event=Saved answers&UID=${auth.currentUser.uid}&AssignmentId=${assignmentId}`);
