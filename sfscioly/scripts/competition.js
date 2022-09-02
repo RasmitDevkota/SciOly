@@ -24,6 +24,7 @@ const questions = new Array();
 let metadata;
 let questionOrder;
 
+let oobState = 1;
 let oobLog = new Array();
 
 let time = 3000;
@@ -41,32 +42,56 @@ if (window.location.href.includes("test")) {
         }
     });
 
+    // @TODO - Move this to after we confirm that OOB is being tracked
+    //         that we don't have issues with non-proctored assignments
+    //         and exits before the assignment has loaded
     document.addEventListener("visibilitychange", oobLogger);
+    document.addEventListener("hide", oobLogger);
     window.addEventListener("resize", oobLogger);
     window.addEventListener("focus", oobLogger);
+    window.addEventListener("blur", oobLogger);
     window.addEventListener("focusin", oobLogger);
     window.addEventListener("focusout", oobLogger);
 }
 
 export function oobLogger() {
+    console.log(oobState);
 
     if (document.visibilityState === "visible") {
-        oobLog.push(new Date().getTime())
+        if (oobState == 2) {
+            oobState = 1;
+        } else if (oobLog.length > 0) {
+            oobLog.push(new Date().getTime());
+
+            alert(
+                "The portal has detected that you've left the tab in some form. Don't go out of the tab or open any popups!\n" +
+                "If you're not sure why you're getting this message, raise your hand high and wait for an officer to come by! " +
+                "Chances are a notification or something of that sort appeared!"
+            );
+
+            oobState = 2;
+        }
     } else {
-        oobLog.push(new Date().getTime());
+        if (oobState == 1) {
+            oobLog.push(new Date().getTime());
 
-        var playPromise = document.querySelector('#surpriseAudio').play();
+            var playPromise = document.querySelector('#surpriseAudio').play();
 
-        if (playPromise !== undefined) {
-            playPromise.then(function () {
-                console.log("played surprise!");
-            }).catch(function (error) {
-                console.error(error);
-            });
+            if (playPromise) {
+                playPromise.then(function () {
+                    console.log("played surprise!");
+                }).catch(function (error) {
+                    console.error(error);
+                });
+            }
+
+            oobState = 0;
+        } else if (oobState == 2) {
+            console.log("ignored alert!");
         }
     }
 
-    console.log(document.visibilityState, !document.hidden, document.hasFocus());
+    console.log(document.visibilityState, window.isActive);
 }
 
 export function loadAssignments() {
@@ -136,11 +161,14 @@ export async function loadAssignment(_assignmentId) {
 
         if (!["admin", "preview"].includes(mode)) {
             if (!data.editableAssignments || !data.editableAssignments.includes(assignmentId)) {
+                // oobState = 3;
+
                 alert(`Sorry, you don't have permission to be in ${mode} mode!`);
 
                 return window.location.href = "dashboard.html";
             } else {
                 if (["admin", "preview"].includes(mode)) {
+                    // @TODO - Replace with securitycheck function
                     let attempts = 3;
                     while (attempts > 0) {
                         const key = prompt(`Please enter the admin key to enter ${mode} mode!`);
@@ -156,6 +184,8 @@ export async function loadAssignment(_assignmentId) {
                     }
 
                     if (attempts <= 0) {
+                        // oobState = 3;
+
                         alert(`Too many incorrect attempts to access ${mode} mode! Please try again later.`);
 
                         return window.location.href = "dashboard.html";
@@ -165,18 +195,26 @@ export async function loadAssignment(_assignmentId) {
         } else if (data["assignments"][assignmentId] == "Completed") {
             alert("Sorry, you already finished this assignment!");
 
+            // oobState = 3;
+
             return window.location.href = "dashboard.html";
         } else if (!Object.keys(data["assignments"]).includes(assignmentId)) {
             alert("Sorry, you don't have this assignment!");
+
+            // oobState = 3;
 
             return window.location.href = "dashboard.html";
         } else {
             data["assignments"][assignmentId] = "Completed";
 
             setDoc(userDoc, data, { merge: true }).then(() => {
+                oobState = 1;
+
                 sfsciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${auth.currentUser.uid}&Event=${test}`);
             }).catch((e) => {
                 sfsciolylog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${auth.currentUser.uid}&Event=${test}`);
+
+                // oobState = 3;
 
                 alert("Error occurred accessing database, please refresh the page and try again!");
             });
@@ -406,9 +444,10 @@ export async function loadAssignment(_assignmentId) {
 
                 // @TODO - Refactor wtih question outputter forEach
                 for (let r = 0; r < submissionResponsesQ.length; r++) {
+                    console.log(submissionResponsesQ[r])
                     if (submissionResponsesQ[r] == "oob") {
                         oobLog = submissionResponsesA[r];
-                    } else if (!["time"].includes(submissionResponsesQ[r])) {
+                    } else if (!["time", "oob"].includes(submissionResponsesQ[r])) {
                         const questionId = submissionResponsesQ[r];
                         const q = questionOrder.indexOf(questionId);
 
@@ -561,6 +600,8 @@ export function saveAnswers(finished = false) {
             eventName = "";
             assignmentName = "";
 
+            // oobState = 3;
+
             window.location.href = "dashboard.html";
         } else {
             saved = true;
@@ -585,9 +626,13 @@ export function manualSave() {
 
 export function submit(confirmed = false) {
     if (!confirmed) {
+        oobState = 2;
+
         if (!confirm("Are you sure you want to submit the test? You won't be able to access it again!")) {
             return;
         }
+
+        oobState = 1;
     }
 
     saveAnswers(true);
@@ -596,6 +641,8 @@ export function submit(confirmed = false) {
 }
 
 export function testRedirect(dest) {
+    oobState = 2;
+
     if (confirm("Are you sure you want to exit the test? If you do, your answers will be saved and submitted!")) {
         submit(true);
 
@@ -607,8 +654,12 @@ export function testRedirect(dest) {
             }
 
             if (!window.location.href.includes("index.html") || window.location.href != "") {
+                // oobState = 3;
+
                 window.location.href = "index.html";
             }
         }
+    } else {
+        oobState = 1;
     }
 }
