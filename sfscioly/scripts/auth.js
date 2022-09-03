@@ -19,11 +19,15 @@ import {
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
 export async function googleAuth(destination = "dashboard.html") {
+    let accessGranted = false;
+
     if (confirm("Are you an officer? If not, please click 'Cancel' or hit the 'Esc' key to go back!")) {
-        if (!securitycheck()) {
-            return alert("Sorry, this functionality isn't available at this time!");
+        if (await securitycheck()) {
+            accessGranted = true;
         }
-    } else {
+    }
+
+    if (!accessGranted) {
         return alert("Sorry, this functionality isn't available at this time!");
     }
 

@@ -84,8 +84,9 @@ export function loadAssignmentsToManage(filter = new Array()) {
                         </div>
 
                         <div id="editAssignmentControls${editableAssignment}" class="editAssignmentControls">
-                            <a class="material-icons" onclick="manageAssignment('${editableAssignment}')">drive_file_rename_outline</a>
-                            <a class="material-icons" onclick="previewAssignment('${editableAssignment}')">visibility</a>
+                            <a class="material-icons" onclick="manageAssignment('${editableAssignment}')">mode</a>
+                            <a class="material-icons" onclick="previewAssignment('${editableAssignment}')">preview</a>
+                            <a class="material-icons" onclick="duplicateAssignment('${editableAssignment}')">content_copy</a>
                             <a class="material-icons" onclick="deleteAssignment('${editableAssignment}')">delete</a>
                         </div>
                     </div>
@@ -469,7 +470,9 @@ export function saveQuestion() {
 export function createAssignment(preset = "blank") {
     switch (preset) {
         case "blank":
-            setDoc(doc(db, ), {}, { merge: true });
+            const newAssignmentId = prompt("Enter a name for the new assignment!");
+
+            setDoc(doc(db, "assignments", newAssignmentId), {}, { merge: true });
             break;
         default:
             alert(`Assignment creation preset "${preset}" implemented yet!`);
@@ -477,11 +480,17 @@ export function createAssignment(preset = "blank") {
 }
 
 export async function previewAssignment(assignmentId) {
-    return window.location.href = `test.html?test=${assignmentId}&mode=preview`;
+    return window.open(`test.html?test=${assignmentId}&mode=preview`, '_blank');
 }
 
 export function manageAssignment(assignmentId) {
     return window.location.href = `assignmenteditor.html?assignmentId=${assignmentId}`;
+}
+
+export function duplicateAssignment(assignmentId) {
+    const newAssignmentId = prompt("Enter a name for the new assignment!");
+
+    return window.location.href = `assignmenteditor.html?assignmentId=${newAssignmentId}`;
 }
 
 // @TODO - Allow for restore functionality within a given time period
@@ -492,14 +501,14 @@ export function deleteAssignment() {
 }
 
 export function editQuestions() {
-    document.getElementById("questionEditor").style.display = "flex";
+    document.getElementById("questionEditor").style.display = "";
 
     document.getElementById("assignmentSettings").style.display = "none";
     document.getElementById("submissionsViewer").style.display = "none";
 }
 
 export function manageAssignmentSettings() {
-    document.getElementById("assignmentSettings").style.display = "flex";
+    document.getElementById("assignmentSettings").style.display = "";
 
     document.getElementById("questionEditor").style.display = "none";
     document.getElementById("submissionsViewer").style.display = "none";

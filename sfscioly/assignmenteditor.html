@@ -27,25 +27,28 @@
         window.unAuthenticate = _unAuthenticate;
 
         import {
-            loadAssignmentToManage as _loadAssignmentToManage,
+            loadAssignmentToManage,
             addQuestion as _addQuestion,
             openQuestionEditorWindow as _openQuestionEditorWindow,
             deleteQuestion as _deleteQuestion,
+            editQuestions as _editQuestions,
             manageAssignmentSettings as _manageAssignmentSettings,
             viewSubmissions as _viewSubmissions,
+            previewAssignment as _previewAssignment,
             toggleOOBTracker as _toggleOOBTracker,
             cancelSettingsChanges as _cancelSettingsChanges,
             saveSettingsChanges as _saveSettingsChanges
         } from "./scripts/assignmentmanager.js";
 
-        window.loadAssignmentToManage = _loadAssignmentToManage;
         window.addQuestion = _addQuestion;
         window.openQuestionEditorWindow = _openQuestionEditorWindow;
         window.deleteQuestion = _deleteQuestion;
         window.openQuestionEditorWindow = _openQuestionEditorWindow;
+        window.editQuestions = _editQuestions;
         window.manageAssignmentSettings = _manageAssignmentSettings;
         window.viewSubmissions = _viewSubmissions;
         window.toggleOOBTracker = _toggleOOBTracker;
+        window.previewAssignment = _previewAssignment;
         window.cancelSettingsChanges = _cancelSettingsChanges;
         window.saveSettingsChanges = _saveSettingsChanges;
 
@@ -58,8 +61,8 @@
             alert(
                 "The OOB (Out-of-Browser) tracker detects whenever the cursor leaves the test" +
                 "page or browser during the test in order to detect cheating.\n\n" +
-                "It is highly recommended that you disable this if you do not need to detect " +
-                "such activity or if external resources are allowed in order to save resources."
+                "It is highly-recommended that you disable this if you do not need to detect " +
+                "such activity or if external resources are allowed, in order to save resources."
             );
         }
     </script>
@@ -75,6 +78,8 @@
         <div id="content">
             <div id="sidebar">
                 <a class="material-icons" href="dashboard.html">home</a>
+
+                <a class="material-icons" href="plaza.html">wysiwyg</a>
 
                 <a class="material-icons" href="assignmentmanager.html">drive_file_rename_outline</a>
 
@@ -192,7 +197,7 @@
                 <div id="submissionsViewer">
                     <div class="assignment-editor-row">
                         <div>
-                
+
                         </div>
                     </div>
                 </div>

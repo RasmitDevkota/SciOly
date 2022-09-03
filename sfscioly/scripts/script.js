@@ -116,7 +116,7 @@ export function sfsciolylog(msg, log = "") {
     }
 }
 
-export async function securitycheck(input) {
+export async function securitycheck() {
     let attempts = 3;
 
     while (attempts > 0) {
