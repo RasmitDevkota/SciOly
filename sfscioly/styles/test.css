@@ -43,25 +43,33 @@
 }
 
 #title-row {
-    height: 6%;
+    height: 5vh;
 }
 
 #details-row {
-    margin-top: 1%;
-    height: 3%;
+    margin-top: 1vh;
+    height: 3vh;
 }
 
 #test-row {
-    height: 80%;
-    padding: 1% 0%;
+    height: 80vh;
+    padding: 1vh 0%;
 }
 
 #test-container {
-    width: 60%;
+    width: 65%;
     height: 100%;
     overflow: auto;
-    padding: 1% 1.2%;
+    padding: 1vh 1vw;
     border: 2px solid black;
+}
+
+#assignmentAlert {
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+    text-align: center;
 }
 
 .answer {
@@ -110,6 +118,10 @@
     background: #555;
 }
 
+#saveStatus {
+    margin-bottom: 1vh;
+}
+
 #saveStatus > a {
     text-decoration: underline;
 }
@@ -119,11 +131,12 @@
 }
 
 #submit-row {
-    height: 6%;
+    height: 4vh;
 }
 
 #submit {
-    height: 2.02vw;
+    height: 100%;
     border: none;
-    background-color: #279af1;
+    background-color: #4facf3;
+    color: white;
 }

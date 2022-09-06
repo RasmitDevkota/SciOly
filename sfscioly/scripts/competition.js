@@ -25,16 +25,36 @@ const questions = new Array();
 let metadata;
 let questionOrder;
 
-let oobState = 1;
-let oobLog = new Array();
+let oobState = -1;
+let oobLog = new Object();
 
-let time = 3000;
+let time = 1800;
 
 const alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
 let mode = "";
 
 if (window.location.href.includes("test")) {
+    const alertSuper = alert;
+    alert = (message = "") => {
+        oobState = 0;
+
+        alertSuper(message);
+
+        oobState = 3;
+    }
+
+    const confirmSuper = confirm;
+    confirm = (message = "") => {
+        oobState = 0;
+
+        const result = confirmSuper(message);
+
+        oobState = 1;
+
+        return result;
+    }
+
     window.addEventListener('beforeunload', (event) => {
         if (eventName != "None") {
             event.preventDefault();
@@ -46,36 +66,68 @@ if (window.location.href.includes("test")) {
     // @TODO - Move this to after we confirm that OOB is being tracked
     //         that we don't have issues with non-proctored assignments
     //         and exits before the assignment has loaded
-    document.addEventListener("visibilitychange", oobLogger);
-    document.addEventListener("hide", oobLogger);
-    window.addEventListener("resize", oobLogger);
-    window.addEventListener("focus", oobLogger);
-    window.addEventListener("blur", oobLogger);
-    window.addEventListener("focusin", oobLogger);
-    window.addEventListener("focusout", oobLogger);
+    document.addEventListener("visibilitychange", (triggerEvent) => { oobLogger(triggerEvent) });
+    document.addEventListener("show", (triggerEvent) => { oobLogger(triggerEvent) });
+    document.addEventListener("hide", (triggerEvent) => { oobLogger(triggerEvent) });
+    document.addEventListener("mouseenter", (triggerEvent) => { oobLogger(triggerEvent) });
+    document.addEventListener("mouseleave", (triggerEvent) => { oobLogger(triggerEvent) });
+    window.addEventListener("resize", (triggerEvent) => { oobLogger(triggerEvent) });
+    window.addEventListener("focus", (triggerEvent) => { oobLogger(triggerEvent) });
+    window.addEventListener("blur", (triggerEvent) => { oobLogger(triggerEvent) });
+
+    document.onkeydown = function (e) {
+        if (
+            e.keyCode == 123 ||
+            e.ctrlKey &&
+                (
+                    (e.shiftKey && e.keyCode == 73) ||
+                    (e.shiftKey && e.keyCode == 67) ||
+                    (e.shiftKey && e.keyCode == 74) ||
+                    (e.keyCode == 85)
+                )
+        ) {
+            oobLogger("peekattempt");
+
+            return false;
+        }
+    }
 }
 
-export function oobLogger() {
-    console.log(oobState);
+export function oobLogger(triggerEvent) {
+    const trigger = (typeof triggerEvent == "string") ? triggerEvent : triggerEvent.type;
 
-    if (document.visibilityState === "visible") {
-        if (oobState == 2) {
-            oobState = 1;
-        } else if (oobLog.length > 0) {
-            oobLog.push(new Date().getTime());
+    console.log(oobState, trigger);
+
+    const documentUnchanged = ["hide", "mouseleave", "blur", "peekattempt"].includes(trigger);
+
+    if (
+        document.visibilityState === "visible" && !documentUnchanged ||
+        (["show", "mouseeenter", "resize", "focus", "peekattempt"].includes(trigger))
+    ) {
+        if (oobState == -1) {
+            return oobState == 1;
+        }
+
+        if (oobState == 2 || ["resize", "peekattempt"].includes(trigger)) {
+            oobLog[new Date().getTime()] = trigger;
 
             alert(
-                "The portal has detected that you've left the tab in some form. Don't go out of the tab or open any popups!\n" +
-                "If you're not sure why you're getting this message, raise your hand high and wait for an officer to come by! " +
-                "Chances are a notification or something of that sort appeared!"
+                "The portal has detected that you've left or attempted to leave the portal in some way. " +
+                "Please do not move your mouse away from the page, open any other tabs, windows, or popups, " +
+                "or leave the tab in any other way!" +
+                "\n\n" +
+                "If you're not sure why you're getting this message, raise your hand high and wait for an officer to come by!"
             );
-
-            oobState = 2;
         }
     } else {
-        if (oobState == 1) {
-            oobLog.push(new Date().getTime());
+        if (oobState == 0) return;
+        if (oobState == 3) return oobState = 1;
 
+        console.log("oob detected!");
+
+        oobLog[new Date().getTime()] = trigger;
+
+        if (document.visibilityState != "visible" || (document.visibilityState == "visible" && !documentUnchanged)) {
             var playPromise = document.querySelector('#surpriseAudio').play();
 
             if (playPromise) {
@@ -85,14 +137,10 @@ export function oobLogger() {
                     console.error(error);
                 });
             }
-
-            oobState = 0;
-        } else if (oobState == 2) {
-            console.log("ignored alert!");
         }
-    }
 
-    console.log(document.visibilityState, window.isActive);
+        oobState = 2;
+    }
 }
 
 export function loadAssignments() {
@@ -160,16 +208,16 @@ export async function loadAssignment(_assignmentId) {
     getDoc(userDoc).then(async (doc) => {
         const data = await doc.data();
 
-        if (!["admin", "preview"].includes(mode)) {
+        if (["admin", "preview"].includes(mode)) {
             if (!data.editableAssignments || !data.editableAssignments.includes(assignmentId)) {
-                // oobState = 3;
-
                 alert(`Sorry, you don't have permission to be in ${mode} mode!`);
 
                 return window.location.href = "dashboard.html";
             } else {
                 if (["admin", "preview"].includes(mode)) {
                     if (securitycheck()) {
+                        oobState = 1;
+
                         return console.log(`Successfully accessed ${mode} mode!`);
                     } else {
                         return window.location.href = "dashboard.html";
@@ -179,17 +227,13 @@ export async function loadAssignment(_assignmentId) {
         } else if (data["assignments"][assignmentId] == "Completed") {
             alert("Sorry, you already finished this assignment!");
 
-            // oobState = 3;
-
             return window.location.href = "dashboard.html";
         } else if (!Object.keys(data["assignments"]).includes(assignmentId)) {
             alert("Sorry, you don't have this assignment!");
 
-            // oobState = 3;
-
             return window.location.href = "dashboard.html";
         } else {
-            data["assignments"][assignmentId] = "Completed";
+            // data["assignments"][assignmentId] = "Completed";
 
             setDoc(userDoc, data, { merge: true }).then(() => {
                 oobState = 1;
@@ -197,8 +241,6 @@ export async function loadAssignment(_assignmentId) {
                 sfsciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${auth.currentUser.uid}&Event=${test}`);
             }).catch((e) => {
                 sfsciolylog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${auth.currentUser.uid}&Event=${test}`);
-
-                // oobState = 3;
 
                 alert("Error occurred accessing database, please refresh the page and try again!");
             });
@@ -228,6 +270,8 @@ export async function loadAssignment(_assignmentId) {
             questions.push(documents.get(questionId));
         }
 
+        let questionNumber = 0;
+
         for (const questionIndex in questions) {
             if (questionIndex != 0) {
                 testContainer.innerHTML += `<hr>`;
@@ -236,9 +280,20 @@ export async function loadAssignment(_assignmentId) {
             const doc = questions[questionIndex];
             const data = doc.data();
 
-            const questionNumber = Number(questionIndex) + 1;
+            questionNumber += data.type == "text" ? 0 : 1;
 
             switch (data.type) {
+                case "text":
+                    var question = `
+                        <div class="question text">
+                            <div class="question-text">
+                                ${data.text}
+                            </div>
+                        </div>
+                    `;
+
+                    testContainer.innerHTML += question;
+                    break;
                 case "mcq":
                     var question = `
                         <div class="question mcq">
@@ -257,7 +312,7 @@ export async function loadAssignment(_assignmentId) {
                     for (let i in data.options) {
                         question += `
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="${doc.id}" id="question${questionIndex}-option${i}" value="${data.options[i]}" onchange="answer(this.id, this.value)">
+                                    <input class="form-check-input" type="radio" name="${doc.id}" id="${doc.id}-option${i}" value="${data.options[i]}" onchange="answer(this.id, this.value)">
 
                                     <label class="form-check-label" for="question${questionIndex}-option${i}">
                                         ${data.options[i]}
@@ -377,7 +432,9 @@ export async function loadAssignment(_assignmentId) {
 
                     question += `
                                 <div class="form-group">
-                                    <textarea class="form-control" id="question${questionIndex}-response" rows="5" onchange="answer(this.id, this.value)"></textarea>
+                                    <textarea class="form-control" id="${doc.id}-response" rows="5" onchange="answer(this.id, this.value)"
+                                        oncopy="return false" oncut="return false" onpaste="return false">
+                                    </textarea>
                                 </div>
                     `;
 
@@ -398,7 +455,8 @@ export async function loadAssignment(_assignmentId) {
                                 ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""})
                                 &nbsp;
                                 <label>${data.text.split("|~~~~|")[0]}</label>
-                                <input type="text" class="fitb-answer" style="height: 30px" id="question${questionIndex}-blank" onchange="answer(this.id, this.value)">
+                                <input type="text" class="fitb-answer" style="height: 30px" id="${doc.id}-blank" onchange="answer(this.id, this.value)"
+                                    oncopy="return false" oncut="return false" onpaste="return false">
                                 <label>${data.text.split("|~~~~|")[1]}</label>
                             </div>
                     `;
@@ -413,6 +471,11 @@ export async function loadAssignment(_assignmentId) {
                     alert("An error occurred preparing the test! Please contact an officer for assistance!");
             }
         }
+
+        for (let questionTextElement of document.querySelectorAll("div.question-text")) {
+            questionTextElement.oncopy = () => { return false };
+            questionTextElement.oncut = () => { return false };
+        }
     }).then(async () => {
         if (["admin", "preview"].includes(mode)) {
             return;
@@ -426,9 +489,8 @@ export async function loadAssignment(_assignmentId) {
                 const submissionResponsesQ = Object.keys(submissionResponses);
                 const submissionResponsesA = Object.values(submissionResponses);
 
-                // @TODO - Refactor wtih question outputter forEach
+                // @TODO - Refactor wtih question outputter forEach if possible
                 for (let r = 0; r < submissionResponsesQ.length; r++) {
-                    console.log(submissionResponsesQ[r])
                     if (submissionResponsesQ[r] == "oob") {
                         oobLog = submissionResponsesA[r];
                     } else if (!["time", "oob"].includes(submissionResponsesQ[r])) {
@@ -440,29 +502,32 @@ export async function loadAssignment(_assignmentId) {
 
                         const qDoc = questions[q];
 
-                        console.log(questionId);
+                        console.log(questionOrder, questionId, questions);
 
+                        // @TODO - MCQ/MSQ/MQ - Account for change in option order
+                        //       - Possible solution: using option ID's
+                        //       - Issue: How can we handle newly-added or deleted options?
                         switch (qDoc.data().type) {
                             case "mcq":
                                 const o = qDoc.data().options.indexOf(answer);
-                                document.getElementById(`question${q}-option${o}`).checked = true;
+                                document.getElementById(`${questionId}-option${o}`).checked = true;
                                 break;
                             case "msq":
                                 for (let o in answer) {
-                                    const optionNumber = qDoc.data().options.indexOf(answer);
-                                    document.getElementById(`question${q}-moption${o}`).checked = true;
+                                    const optionNumber = qDoc.data().options.indexOf(answer[o]);
+                                    document.getElementById(`${questionId}-moption${optionNumber}`).checked = true;
                                 }
                                 break;
                             case "mq":
                                 for (let o in answer) {
-                                    document.getElementById(`question${q}-optionA${o}`).value = answer[o];
+                                    document.getElementById(`${questionId}-optionA${o}`).value = answer[o];
                                 }
                                 break;
                             case "lrq":
-                                document.getElementById(`question${q}-response`).value = answer;
+                                document.getElementById(`${questionId}-response`).value = answer;
                                 break;
                             case "fitb":
-                                document.getElementById(`question${q}-blank`).value = answer;
+                                document.getElementById(`${questionId}-blank`).value = answer;
                                 break;
                         }
                     }
@@ -475,7 +540,7 @@ export async function loadAssignment(_assignmentId) {
 
             setDoc(assignmentSubmissionDoc, {
                 time: startTime
-            }).catch((e) => {
+            }, { merge: true }).catch((e) => {
                 sfsciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}}`);
             });
 
@@ -514,11 +579,26 @@ var saved = false;
 var saveTimestamp = 0;
 
 export function answer(id, answer) {
-    const questionId = questionOrder[Number(id.substr(8, id.indexOf("-") - 8))];
+    const questionId = id.split("-")[0];
 
-    console.log(id, id.substr(8, id.indexOf("-") - 8));
+    if (id.includes("moption")) {
+        var answerList = new Array();
 
-    if (id.includes("optionA")) {
+        if (answers.get(questionId) != undefined) {
+            answerList = answers.get(questionId);
+        }
+
+        if (_(id).checked) {
+            answerList.push(answer);
+        } else {
+            answerList.splice(answerList.indexOf(answer), 1);
+        }
+
+        console.log(answer);
+        console.log(questionId);
+
+        answers.set(questionId, answerList);
+    } else if (id.includes("optionA")) {
         var answerList = new Array();
 
         if (answers.get(questionId) != undefined) {
@@ -536,20 +616,6 @@ export function answer(id, answer) {
             }
 
             a++;
-        }
-
-        answers.set(questionId, answerList);
-    } else if (id.includes("moption")) {
-        var answerList = new Array();
-
-        if (answers.get(questionId) != undefined) {
-            answerList = answers.get(questionId);
-        }
-
-        if (_(id).checked) {
-            answerList.push(answer);
-        } else {
-            answerList.splice(answerList.indexOf(answer), 1);
         }
 
         answers.set(questionId, answerList);
@@ -584,8 +650,6 @@ export function saveAnswers(finished = false) {
             eventName = "";
             assignmentName = "";
 
-            // oobState = 3;
-
             window.location.href = "dashboard.html";
         } else {
             saved = true;
@@ -601,22 +665,20 @@ export function saveAnswers(finished = false) {
 }
 
 export function manualSave() {
-    if ((new Date()).getTime() - saveTimestamp > 30000) {
+    if ((new Date()).getTime() - saveTimestamp > 60000) {
         saveAnswers();
     } else {
-        alert(`Sorry, please wait ${Math.ceil((30000 - ((new Date()).getTime() - saveTimestamp)) / 1000)} more seconds before manually saving again!`);
+        alert(`Sorry, please wait ${Math.ceil((60000 - ((new Date()).getTime() - saveTimestamp)) / 1000)} more seconds before manually saving again!`);
     }
 }
 
-export function submit(confirmed = false) {
-    if (!confirmed) {
-        oobState = 2;
-
-        if (!confirm("Are you sure you want to submit the test? You won't be able to access it again!")) {
+export function submit(preconfirmed = false) {
+    if (!preconfirmed) {
+        if (confirm("Are you sure you want to submit the test? You won't be able to access it again!")) {
             return;
         }
 
-        oobState = 1;
+        oobState = 0;
     }
 
     saveAnswers(true);
@@ -625,7 +687,7 @@ export function submit(confirmed = false) {
 }
 
 export function testRedirect(dest) {
-    oobState = 2;
+    oobState = 0;
 
     if (confirm("Are you sure you want to exit the test? If you do, your answers will be saved and submitted!")) {
         submit(true);
@@ -638,8 +700,6 @@ export function testRedirect(dest) {
             }
 
             if (!window.location.href.includes("index.html") || window.location.href != "") {
-                // oobState = 3;
-
                 window.location.href = "index.html";
             }
         }

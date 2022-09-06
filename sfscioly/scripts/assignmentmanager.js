@@ -11,7 +11,8 @@ import {
     getDoc,
     getDocs,
     setDoc,
-    deleteDoc
+    deleteDoc,
+    arrayUnion
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
 import { Sortable as Sortable } from '../modules/sortable.core.esm.js';
@@ -107,6 +108,10 @@ export async function loadAssignmentToManage(_assignmentId) {
     assignmentName = assignmentDetails[1];
     assignmentSpecifier = assignmentDetails[2];
 
+    console.log(assignmentId);
+
+    console.log(eventName, `${assignmentName}~~${assignmentSpecifier}`)
+
     assignmentCollection = collection(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`);
     metadataDoc = doc(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`, "metadata");
 
@@ -119,6 +124,8 @@ export async function loadAssignmentToManage(_assignmentId) {
         querySnapshot.forEach((doc) => {
             documents.set(doc.id, doc);
         });
+
+        console.log(querySnapshot);
 
         const metadata = documents.get("metadata").data();
         questionOrder = metadata.questionOrder;
@@ -426,6 +433,8 @@ export function saveQuestion() {
             return;
         }
     }
+    
+    console.log(questionData);
 
     switch (questionData.type) {
         case "mcq":
@@ -470,10 +479,59 @@ export function saveQuestion() {
 export function createAssignment(preset = "blank") {
     switch (preset) {
         case "blank":
-            const newAssignmentId = prompt("Enter a name for the new assignment!");
+            let assignmentName = prompt(
+                "Enter a name for the assignment! You can always change it later!"
+            );
 
-            setDoc(doc(db, "assignments", newAssignmentId), {}, { merge: true });
-            break;
+            while (
+                // @TODO - Additional validation conditions for assignmentName
+                assignmentName.length <= 4 ||
+                assignmentName.length >= 64 ||
+                assignmentName.includes("/", "\\") ||
+                [".", ".."].includes(assignmentName)
+            ) {
+                alert("Careful! Assignment name must be between 4-64 characters, consisting only of alphanumeric characters and symbols excluding '/', '\'!");
+
+                assignmentName = prompt(
+                    "Enter a name for the assignment! You can always change it later!"
+                );
+            }
+
+            let assignmentGroup = prompt(
+                "Enter a group to place the assignment under! Leave this blank if you do not want to group the " +
+                "assignment in any way.\n\nGrouping does not affect anything, and you can always change it later!"
+            );
+
+            if (assignmentGroup.length == 0) {
+                assignmentGroup = "Ungrouped Assignments";
+            } else {
+                while (
+                    // @TODO - Additional validation conditions for assignmentGroup
+                    assignmentGroup.length <= 4 ||
+                    assignmentGroup.length >= 64 ||
+                    assignmentGroup.includes("/", "\\") ||
+                    [".", ".."].includes(assignmentGroup)
+                ) {
+                    alert("Careful! Assignment group must be between 8-64 characters, consisting only of alphanumeric characters and symbols excluding '/', '\'!");
+
+                    assignmentGroup = prompt(
+                        "Enter a group to place the assignment under! Leave this blank if you do not want to group the " +
+                        "assignment in any way.\n\n Grouping does not affect anything, and you can always change it later!"
+                    );
+                }
+            }
+
+            const assignmentId = assignmentName + "~~" + Math.random().toPrecision(9).toString().substring(2);
+
+            setDoc(doc(db, "assignments", assignmentGroup, assignmentId, "metadata"), {
+                questionOrder: []
+            }, { merge: true });
+
+            setDoc(userDoc, {
+                editableAssignments: arrayUnion(assignmentGroup + "~~" + assignmentId)
+            }, { merge: true });
+
+            return window.location.href = `assignmenteditor.html?assignmentId=${assignmentId}`
         default:
             alert(`Assignment creation preset "${preset}" implemented yet!`);
     }
