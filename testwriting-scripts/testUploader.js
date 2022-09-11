@@ -177,36 +177,50 @@ async function main() {
         },
         {
             "type": "lrq",
-            "text": "",
-            "value": ,
+            "text": "Skywave propagation is a very useful method of radio propagation.\n\nWhich layer of the atmosphere is used in skywave propagation?",
+            "value": 3,
             "image": "",
             "tiebreaker": false
         },
         {
             "type": "lrq",
-            "text": "",
-            "value": ,
+            "text": "Skywave propagation is a very useful method of radio propagation.\n\nBriefly explain the physics behind how this layer works in skywave propagation.",
+            "value": 4,
             "image": "",
             "tiebreaker": false
         },
         {
             "type": "lrq",
-            "text": "",
-            "value": ,
+            "text": "Skywave propagation is a very useful method of radio propagation.\n\nWhen would skywave propagation be the most optimal propagation method?",
+            "value": 4,
             "image": "",
             "tiebreaker": false
         },
         {
             "type": "lrq",
-            "text": "",
-            "value": ,
+            "text": "Skywave propagation is a very useful method of radio propagation.\n\nWhen would skywave propagation be the least optimal propagation method?",
+            "value": 4,
             "image": "",
             "tiebreaker": false
         },
         {
             "type": "lrq",
-            "text": "",
-            "value": ,
+            "text": "The Fraunhofer distance is an important value in antenna theory which places a limit between the near-field and the far-field regions.\n\nThe far-field region is where diffractive effects of electromagnetic radiation, which occur in the near-field region, stop. What is diffraction in the context of electromagnetic radiation?",
+            "value": 4,
+            "image": "",
+            "tiebreaker": false
+        },
+        {
+            "type": "lrq",
+            "text": "The Fraunhofer distance is an important value in antenna theory which places a limit between the near-field and the far-field regions.\n\nDefine reflection and refraction in terms of electromagnetic radiation.",
+            "value": 4,
+            "image": "",
+            "tiebreaker": false
+        },
+        {
+            "type": "lrq",
+            "text": "The Fraunhofer distance is an important value in antenna theory which places a limit between the near-field and the far-field regions.\n\nThe Fraunhofer distance for an electrically-short antenna is given by the equation below.\n$d=\cfrac{2D^2}{\lambda}$\nIn this equation, $D$ is the maximum diameter and $\lambda$ is the operating wavelength. What is the Fraunhofer distance for an antenna used for 2.4 GHz WiFi which has a maximum diameter of 6 centimeters?",
+            "value": 6,
             "image": "",
             "tiebreaker": false
         },
