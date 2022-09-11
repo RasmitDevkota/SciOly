@@ -76,6 +76,7 @@ if (window.location.href.includes("test")) {
     window.addEventListener("blur", (triggerEvent) => { oobLogger(triggerEvent) });
 
     document.onkeydown = function (e) {
+        return;
         if (
             e.keyCode == 123 ||
             e.ctrlKey &&
@@ -96,7 +97,7 @@ if (window.location.href.includes("test")) {
 export function oobLogger(triggerEvent) {
     const trigger = (typeof triggerEvent == "string") ? triggerEvent : triggerEvent.type;
 
-    console.log(oobState, trigger);
+    return console.log(oobState, trigger);
 
     const documentUnchanged = ["hide", "mouseleave", "blur", "peekattempt"].includes(trigger);
 
@@ -418,27 +419,15 @@ export async function loadAssignment(_assignmentId) {
                 case "lrq":
                     var question = `
                         <div class="question lrq">
-                    `;
-
-                    question += `
                             <div class="question-text">
                                 ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
-                    `;
-
-                    question += `
                             <div class="answer lrq-answer">
-                    `;
-
-                    question += `
                                 <div class="form-group">
                                     <textarea class="form-control" id="${doc.id}-response" rows="5" onchange="answer(this.id, this.value)"
                                         oncopy="return false" oncut="return false" onpaste="return false">
                                     </textarea>
                                 </div>
-                    `;
-
-                    question += `
                             </div>
                         </div>
                     `;
@@ -462,6 +451,78 @@ export async function loadAssignment(_assignmentId) {
                     `;
 
                     question += `
+                        </div>
+                    `;
+
+                    testContainer.innerHTML += question;
+                    break;
+                case "code":
+                    var question = `
+                        <div class="question code">
+                    `;
+
+                    question += `
+                            <div class="question-text">
+                                ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
+                            </div>
+                    `;
+
+                    question += `
+                            <div class="answer">
+                    `;
+
+                    const quote = data.quote;
+                    const quoteArray = quote.split(new RegExp(" ", "g"));
+
+                    for (let i in quoteArray) {
+                        const quoteWord = quoteArray[i];
+
+                        let topRow = ``;
+                        let bottomRow = ``;
+
+                        for (let j in quoteWord) {
+                            let qt = quoteWord[j];
+
+                            if (qt.match(/[a-zA-Z]/i)) {
+                                topRow += `
+                                    <td id="topRow${i}${j}">${qt}</td>
+                                `;
+
+                                bottomRow += `
+                                    <td>
+                                        <input id="${doc.id}-input${i}.${j}" class="code-answer" type="text" name="${doc.id}-input${i}.${j}"
+                                            maxlength="1" autocapitalize="on" onchange="answer(this.id, this.value)">
+                                    </td>
+                                `;
+                            } else {
+                                topRow += `
+                                    <td id="topRow${i}${j}">${qt}</td>
+                                `;
+
+                                bottomRow += `
+                                    <td>
+
+                                    </td>
+                                `;
+                            }
+                        }
+
+                        question += `
+                            <table cellpadding="0" cellspacing="0">
+                                <tbody>
+                                    <tr>
+                                        ${topRow}
+                                    </tr>
+                                    <tr>
+                                        ${bottomRow}
+                                    </tr>
+                                </tbody>
+                            </table>
+                        `;
+                    }
+
+                    question += `
+                            </div>
                         </div>
                     `;
 
@@ -529,6 +590,11 @@ export async function loadAssignment(_assignmentId) {
                             case "fitb":
                                 document.getElementById(`${questionId}-blank`).value = answer;
                                 break;
+                            case "code":
+                                for (let position of Object.keys(answer)) {
+                                    document.getElementById(`${questionId}-input${position}`).value = answer[position];
+                                };
+                                break;
                         }
                     }
                 }
@@ -594,9 +660,6 @@ export function answer(id, answer) {
             answerList.splice(answerList.indexOf(answer), 1);
         }
 
-        console.log(answer);
-        console.log(questionId);
-
         answers.set(questionId, answerList);
     } else if (id.includes("optionA")) {
         var answerList = new Array();
@@ -604,8 +667,6 @@ export function answer(id, answer) {
         if (answers.get(questionId) != undefined) {
             answerList = answers.get(questionId);
         }
-
-        console.log(id, answer);
 
         answerList[id.split("optionA")[1]] = answer;
 
@@ -619,11 +680,29 @@ export function answer(id, answer) {
         }
 
         answers.set(questionId, answerList);
+    } else if (id.includes("input")) {
+        var answerSet = {};
+
+        if (answers.get(questionId) != undefined) {
+            answerSet = answers.get(questionId);
+        }
+
+        answerSet[id.split("input")[1]] = answer;
+
+        // @TODO - Deleted entries must be deleted from Firestore separately
+        for (let unsafePosition of Object.keys(answerSet)) {
+            let unsafeAnswer = answerSet[unsafePosition];
+            if (typeof unsafeAnswer == "undefined" || unsafeAnswer == "") {
+                delete answerSet[unsafePosition];
+            }
+        };
+
+        answers.set(questionId.toString(), answerSet);
     } else {
         answers.set(questionId, answer);
     }
 
-    console.log("answered", answers);
+    console.log("answered", answers, answers[questionId]);
 
     saved = false;
 
@@ -635,6 +714,7 @@ export function saveAnswers(finished = false) {
 
     answers.forEach((answer, question) => {
         // @TODO - Possible type error when saving/retrieving, need to test
+        console.log(question, answer);
         data[question] = answer;
     });
 
@@ -642,6 +722,8 @@ export function saveAnswers(finished = false) {
 
     setDoc(assignmentSubmissionDoc, data, { merge: true }).then(() => {
         sfsciolylog(`Saved ${assignmentId} answers`, `Event=Saved answers&UID=${auth.currentUser.uid}&AssignmentId=${assignmentId}`);
+
+        console.log(answers);
 
         if (finished) {
             alert(`Successfully submitted the test!`);
@@ -665,11 +747,11 @@ export function saveAnswers(finished = false) {
 }
 
 export function manualSave() {
-    if ((new Date()).getTime() - saveTimestamp > 60000) {
+    // if ((new Date()).getTime() - saveTimestamp > 60000) {
         saveAnswers();
-    } else {
-        alert(`Sorry, please wait ${Math.ceil((60000 - ((new Date()).getTime() - saveTimestamp)) / 1000)} more seconds before manually saving again!`);
-    }
+    // } else {
+        // alert(`Sorry, please wait ${Math.ceil((60000 - ((new Date()).getTime() - saveTimestamp)) / 1000)} more seconds before manually saving again!`);
+    // }
 }
 
 export function submit(preconfirmed = false) {

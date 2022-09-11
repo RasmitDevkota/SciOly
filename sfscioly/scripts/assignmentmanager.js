@@ -57,6 +57,14 @@ const questionJson = {
         "image": "",
         "tiebreaker": false
     }
+    ,
+    "code": {
+        "type": "code",
+        "text": "",
+        "value": 0,
+        "image": "",
+        "tiebreaker": false
+    }
 }
 
 let assignmentId;
@@ -253,7 +261,7 @@ export function loadQuestionEditor() {
     document.getElementById("questionText").value = questionData.text;
     document.getElementById("questionValue").value = questionData.value;
 
-    for (let type of ["mcq", "msq", "mq", "lrq", "fitb"]) {
+    for (let type of ["mcq", "msq", "mq", "lrq", "fitb", "code"]) {
         Array.from(document.getElementsByClassName(`${type}`)).forEach(element => {
             element.style.display = type == questionData.type ? "flex" : "none";
         });
@@ -336,6 +344,10 @@ export function loadQuestionEditor() {
             document.getElementById("questionType").selectedIndex = 4;
 
             break;
+        case "code":
+            document.getElementById("questionType").selectedIndex = 5;
+
+            break;
     }
 }
 
@@ -350,18 +362,7 @@ export function setQuestionType() {
         });
     }
 
-    switch (questionType) {
-        case "mcq":
-            break;
-        case "msq":
-            break;
-        case "mq":
-            break;
-        case "lrq":
-            break;
-        case "fitb":
-            break;
-    }
+    // @TODO - Handle individual question type needs
 }
 
 export function addOption() {
