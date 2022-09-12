@@ -1,0 +1,126 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>SFSciOly Tryouts 2023</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <style media="screen">
+        body {
+            background-color: rgb(270, 270, 270);
+            color: black;
+            font-family: Roboto, Helvetica, Arial, sans-serif;
+            margin: 0%;
+            padding: 0%;
+        }
+
+        #eventSelection {
+            background-color: white;
+            width: 30vw;
+            margin: 20vh 35vw 0vh 35vw;
+            padding: 32px 24px;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+        }
+
+        #eventSelection h1 {
+            text-align: center;
+        }
+
+        #tryoutTest {
+            display: none;
+            height: 100vh;
+        }
+
+        #timer {
+            display: none;
+            position: absolute;
+            z-index: 2;
+            padding: 1vh 1vw;
+            font-size: 3vw;
+            color: white;
+            background-color: rgba(255, 0, 0, 0.5);
+            border: 2px solid black;
+        }
+    </style>
+
+    <script type="module">
+        import {
+            retrieveEvent as _retrieveEvent
+        } from "./scripts/tryouts.js";
+
+        window.retrieveEvent = _retrieveEvent;
+    </script>
+</head>
+
+<body>
+    <div id="timer">
+        30:00 left
+    </div>
+
+    <div id="eventSelection">
+        <h1>SFHS SciOly Tryouts 2023</h1>
+
+        <hr>
+
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" class="form-control" id="name" placeholder="Full Name">
+        </div>
+
+        <div class="form-group">
+            <label for="schoolId">School ID/Lunch Number</label>
+            <input type="text" class="form-control" id="schoolId" placeholder="School ID/Lunch Number">
+        </div>
+
+        <div class="form-group">
+            <label for="contactEmail">Contact Email</label>
+            <input type="text" class="form-control" id="contactEmail" placeholder="Contact Email">
+        </div>
+
+        <div class="form-group">
+            <label for="event">Event</label>
+            <select class="form-control" id="event">
+                <option value="">Select Event</option>
+                <option value="ap">Anatomy & Physiology</option>
+                <option value="astro">Astronomy</option>
+                <option value="cellb">Cell Biology</option>
+                <option value="chl">Chemistry Lab</option>
+                <option value="code">Codebusters</option>
+                <option value="db">Detector Building</option>
+                <option value="dd">Disease Detectives</option>
+                <option value="dp">Dynamic Planet</option>
+                <option value="ec">Environmental Chemistry</option>
+                <option value="ed">Experimental Design</option>
+                <option value="fq">Fermi Questions</option>
+                <option value="forens">Forensics</option>
+                <option value="forest">Forestry</option>
+                <option value="gg">Green Generation</option>
+                <option value="rs">Remote Sensing</option>
+                <option value="rm">Rocks & Minerals</option>
+                <option value="iat">It's About Time</option>
+                <option value="wfl">WiFi Lab</option>
+                <option value="build">Build Events</option>
+            </select>
+        </div>
+
+        <input class="btn btn-primary" value="Submit" onclick="retrieveEvent()">
+
+        <br>
+        <br>
+    </div>
+
+    <iframe id="tryoutTest" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0"
+        oncontextmenu="return false" oncopy="return false" oncut="return false" onpaste="return false">
+        Select an event first!
+    </iframe>
+</body>
+
+</html>

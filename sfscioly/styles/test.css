@@ -8,7 +8,7 @@
 #sidebar {
     display: flex;
     flex-direction: column;
-    width: 5.31%;
+    width: 5vw;
     height: 100%;
     background-color: #279af1;
 }
@@ -30,9 +30,10 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    width: 91.69%;
+    width: 95vw;
     height: 100%;
     padding: 1% 2%;
+    margin-left: 5vw;
 }
 
 .content-row {
@@ -102,7 +103,7 @@
     margin: 0% 1%;
 }
 
-.answer {
+.code-answer {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -125,7 +126,7 @@ td {
     border: 0.5px solid black;
 }
 
-td>input {
+td > input {
     width: 100%;
     height: 100%;
     text-align: center;
@@ -170,4 +171,8 @@ td>input {
     border: none;
     background-color: #4facf3;
     color: white;
+}
+
+.ui-dialog-titlebar-toggle:hover {
+    cursor: pointer;
 }

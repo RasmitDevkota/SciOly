@@ -10,6 +10,7 @@
     {
       "site": "sfscioly",
       "public": "sfscioly",
+      "cleanUrls": true,
       "redirects": [
         {
           "source": "/join",

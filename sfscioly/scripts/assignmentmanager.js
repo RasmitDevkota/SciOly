@@ -56,8 +56,7 @@ const questionJson = {
         "value": 0,
         "image": "",
         "tiebreaker": false
-    }
-    ,
+    },
     "code": {
         "type": "code",
         "text": "",
@@ -244,7 +243,7 @@ export function openQuestionEditorWindow(questionId) {
         `left=${window.innerWidth * 0.3},` +
         `top=${window.innerWidth * 0.3},` +
         `resizable = yes, scrollbars = yes, toolbar = yes, menubar = no, location = no, directories = no, status = yes`
-    ;
+        ;
 
     const popupWindow = window.open("./questioneditor.html", 'popUpWindow', questionEditorWindowSettings);
 
@@ -254,12 +253,14 @@ export function openQuestionEditorWindow(questionId) {
 export function loadQuestionEditor() {
     document.getElementById("questionTitle").innerHTML += `${Number(question.index) + 1}`;
 
-    window.questionData = new Map();
+    window.questionData = {
+
+    };
 
     questionData = question.data();
 
-    document.getElementById("questionText").value = questionData.text;
-    document.getElementById("questionValue").value = questionData.value;
+    document.getElementById("questionText").value = questionData["text"];
+    document.getElementById("questionValue").value = questionData["value"];
 
     for (let type of ["mcq", "msq", "mq", "lrq", "fitb", "code"]) {
         Array.from(document.getElementsByClassName(`${type}`)).forEach(element => {
@@ -356,9 +357,9 @@ export function setQuestionType() {
 
     questionData.type = questionType;
 
-    for (let type of ["mcq", "msq", "mq", "lrq", "fitb"]) {
+    for (let type of ["mcq", "msq", "mq", "lrq", "fitb", "code"]) {
         Array.from(document.getElementsByClassName(`${type}`)).forEach(element => {
-           element.style.display = type == questionType ? "flex" : "none";
+            element.style.display = type == questionType ? "flex" : "none";
         });
     }
 
@@ -366,20 +367,22 @@ export function setQuestionType() {
 }
 
 export function addOption() {
-    const type = questionData.type;
+    const type = questionData["type"];
 
     switch (type) {
         case "mcq": case "msq":
             const n = document.getElementById(`${type}Options`).childElementCount - 2;
 
+            // @TODO - Found: ${type == "mcq" ? "" : ("-" + type)} in name attribute
+            //       - Why?
             const newOption = `
                 <div class="form-check">
-                    <input class="form-check-input" type="${type == "mcq" ? "radio" : "checkbox"}"
-                        name="${type}${type == "mcq" ? "" : ("-" + type)}"
-                        id="${type}-option${n}">
+                    <input id="${type}-option${n}" class="form-check-input"
+                        type="${type == "mcq" ? "radio" : "checkbox"}"
+                        name="${type}">
 
                     <label class="form-check-label" for="mcq-option${n}">
-                        <input type="text" onchange="setMcqOption(${n})">
+                        <input type="text" onchange="setOption(this.id, "options", ${n})">
                         <a class="material-icons" onclick="removeOption(${n})">delete</a>
                     </label>
                 </div>
@@ -393,12 +396,13 @@ export function addOption() {
 
             const newOptionA = `
                 <div>
-                    <input class="form-control mq-input" type="text" name="mq-optionA${nA}" id="mq-optionA${nA}">
+                    <input id="mq-optionA${nA}" class="form-control mq-input" type="text" name="mq-optionA${nA}"
+                        onchange="setOption(this.id, "optionsA", ${n})">
                 </div>
             `;
 
             break;
-        case "mqA":
+        case "mqB":
             const nB = document.getElementById(`mqOptionsB`).childElementCount;
 
             if (nB > 52) {
@@ -407,7 +411,7 @@ export function addOption() {
 
             const newOptionB = `
                 <div class="form-control">
-                    <input id="mq-optionB${nB}" type="text">
+                    <input id="mq-optionB${nB}" type="text" onchange="setOption(this.id, "optionsB", ${n})">
                 </div>
             `;
 
@@ -418,24 +422,24 @@ export function addOption() {
     }
 }
 
-export function removeOption(n) {
-    document.getElementById(`${questionData.type}Options`).removeChild(document.getElementById(`question${n}`));
+export function setMCQOption(id, type, optionNumber) {
+    questionData[type][optionNumber] = document.getElementById(id).value;
+}
+
+export function removeOption(id) {
+    document.getElementById(`${questionData.type}Options`).removeChild(document.getElementById(id));
 }
 
 export function saveQuestion() {
     if (questionData.text.includes("|~~~|") && questionData.type != "fitb") {
         if (!confirm("Are you sure you don't want this question to be a Fill-in-the-Blank?"
-                + " The blank filler '|~~~|' is in the queston text, but it won't be"
-                + " replaced with a blank unless 'Question Type' is set to"
-                + " 'Fill-in-the-Blank'!\n"
-
-                + " Select 'OK' to continue and save the question or press 'Cancel' to"
-                + " cancel the save and set the question type to 'Fill-in-the-Blank'.")) {
+            + " The blank filler '|~~~|' is in the queston text, but it won't be"
+            + " replaced with a blank unless 'Question Type' is set to 'Fill-in-the-Blank'!\n\n"
+            + " Press 'OK' to continue and save the question or press 'Cancel' to"
+            + " cancel the save.")) {
             return;
         }
     }
-    
-    console.log(questionData);
 
     switch (questionData.type) {
         case "mcq":
@@ -470,8 +474,8 @@ export function saveQuestion() {
             break;
     }
 
-    setDoc(doc(db, ...question.ref.path.split("/")), questionData, { merge: true }).then(() => {
-
+    setDoc(doc(db, ...question.ref.path.split("/")), JSON.parse(JSON.stringify(questionData)), { merge: true }).then(() => {
+        console.log("Saved question data!", questionData);
     }).catch((e) => {
         console.log(e);
     });
@@ -621,8 +625,8 @@ export function saveSettingsChanges() {
 
     if (new Date(closingDate).getTime() < new Date(openingDate).getTime()) {
         return alert("Make sure the Closing Date is after the Opening Date!\n\n"
-                   + "If you would like for the assignment to last indefinitely, "
-                   + "you can set the Closing Date to a very distant date.");
+            + "If you would like for the assignment to last indefinitely, "
+            + "you can set the Closing Date to a very distant date.");
     }
 
     if (
@@ -677,12 +681,12 @@ export function autogradeSubmission(submission) {
                     break;
                 case "msq":
                     pointsEarned = Math.max(
-                    (
-                        responses.reduce((pointsEarnedTemp, currentAnswer) => {
-                            return pointsEarnedTemp +
-                                (correctResponses.includes(currentAnswer) ? 1 : -1);
-                        }, 0)
-                    ), 0);
+                        (
+                            responses.reduce((pointsEarnedTemp, currentAnswer) => {
+                                return pointsEarnedTemp +
+                                    (correctResponses.includes(currentAnswer) ? 1 : -1);
+                            }, 0)
+                        ), 0);
                     break;
                 case "mq":
 

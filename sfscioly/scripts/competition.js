@@ -264,6 +264,38 @@ export async function loadAssignment(_assignmentId) {
         });
 
         metadata = documents.get("metadata").data();
+
+        if (metadata.referenceSheet) {
+            const dialog = document.querySelector(".ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable");
+
+            document.getElementById("referenceSheetDoc").src = metadata.referenceSheet;
+
+            document.getElementById("referenceSheet").style.margin = "0%";
+            document.getElementById("referenceSheet").style.padding = "0%";
+
+            document.querySelector(".ui-dialog-titlebar-close").outerHTML = `<a type="a" class="ui-dialog-titlebar-toggle">Hide</a>`;
+
+            $(".ui-dialog-titlebar-toggle").click(function () {
+                $("#referenceSheetDoc").toggle();
+
+                if (document.getElementById("referenceSheetDoc").style.display == "none") {
+                    dialog.style.height = "0%";
+
+                    document.querySelector(".ui-dialog-titlebar-toggle").innerHTML = `Show`;
+                } else {
+                    dialog.style.height = "";
+
+                    document.querySelector(".ui-dialog-titlebar-toggle").innerHTML = `Hide`;
+                }
+            });
+
+            document.getElementById("referenceSheetDoc").style.width = "99%";
+            document.getElementById("referenceSheetDoc").style.height = "99%";
+        } else {
+            document.querySelector(".ui-dialog-titlebar-close").click();
+            document.getElementById("referenceSheet").style.display = "none";
+        }
+
         questionOrder = metadata.questionOrder;
 
         for (let questionIdN in questionOrder) {
@@ -468,7 +500,7 @@ export async function loadAssignment(_assignmentId) {
                     `;
 
                     question += `
-                            <div class="answer">
+                            <div class="answer code-answer">
                     `;
 
                     const quote = data.quote;
@@ -491,7 +523,7 @@ export async function loadAssignment(_assignmentId) {
                                 bottomRow += `
                                     <td>
                                         <input id="${doc.id}-input${i}.${j}" class="code-answer" type="text" name="${doc.id}-input${i}.${j}"
-                                            maxlength="1" autocapitalize="on" onchange="answer(this.id, this.value)">
+                                            maxlength="1" autocapitalize="word" onchange="answer(this.id, this.value)">
                                     </td>
                                 `;
                             } else {
@@ -508,21 +540,67 @@ export async function loadAssignment(_assignmentId) {
                         }
 
                         question += `
-                            <table cellpadding="0" cellspacing="0">
-                                <tbody>
-                                    <tr>
-                                        ${topRow}
-                                    </tr>
-                                    <tr>
-                                        ${bottomRow}
-                                    </tr>
-                                </tbody>
-                            </table>
+                                <table cellpadding="0" cellspacing="0">
+                                    <tbody>
+                                        <tr>
+                                            ${topRow}
+                                        </tr>
+                                        <tr>
+                                            ${bottomRow}
+                                        </tr>
+                                    </tbody>
+                                </table>
                         `;
                     }
 
                     question += `
                             </div>
+                    `;
+
+                    console.log(data.cipher);
+
+                    if (["aristocrat", "patristocrat", "xenocrypt", "affine-encode", "affine-decode"].includes(data.cipher)) {
+                        let topRow = `<td style="padding: 0vh 0.5vw;">Letter</td>`;
+                        let middleRow = `<td style="padding: 0vh 0.5vw;">Substitution</td>`;
+                        let bottomRow = `<td style="padding: 0vh 0.5vw;">Frequency</td>`;
+
+                        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+                        for (let l in alphabet) {
+                            const letter = alphabet[l];
+                            const freq = (quote.match(new RegExp(letter, "gi"))).length;
+
+                            topRow += `<td>${letter}</td>`
+
+                            middleRow += `
+                                <td>
+                                    <input class="code-answer" type="text" maxlength="1" autocapitalize="word">
+                                </td>
+                            `
+
+                            bottomRow += `<td>${freq}</td>`;
+                        }
+
+                        question+= `
+                            <div style="display: flex; justify-content: center;">
+                                <table cellpadding="0" cellspacing="0">
+                                    <tbody>
+                                        <tr>
+                                        ${topRow}
+                                        </tr>
+                                        <tr>
+                                        ${middleRow}
+                                        </tr>
+                                        <tr>
+                                        ${bottomRow}
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        `;
+                    }
+
+                    question += `
                         </div>
                     `;
 
