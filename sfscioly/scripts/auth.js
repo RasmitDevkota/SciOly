@@ -41,8 +41,9 @@ export async function googleAuth(destination = "dashboard.html") {
             const username = profile.displayName;
             const email = profile.email;
 
-            getDoc(userDoc).then((_doc) => {
+            await getDoc(userDoc).then((_doc) => {
                 if (!_doc.exists()) {
+                    console.log("hi");
                     setDoc(doc(db, "emails", username), {
                         email: email,
                         uid: auth.currentUser.uid,
@@ -57,17 +58,21 @@ export async function googleAuth(destination = "dashboard.html") {
                         displayName: username,
                         email: email,
                         name: username,
-                        assignments: {}
+                        assignments: {
+                            "Tryouts 2023~~Codebusters~~0546609279": "Active"
+                        }
                     }).then(() => {
                         console.log("Users document successfully written!");
+
+                        window.location.href = destination;
                     }).catch((error) => {
                         console.error("Error writing users document: ", error);
                     });
                 } else {
                     console.log("Docs already exist, skipped writing.");
+
+                    window.location.href = destination;
                 }
-            }).then(() => {
-                window.location.href = destination;
             });
         });
     }).catch((error) => {

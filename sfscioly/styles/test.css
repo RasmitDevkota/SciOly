@@ -173,6 +173,12 @@ td > input {
     color: white;
 }
 
-.ui-dialog-titlebar-toggle:hover {
+.ui-dialog-toggle:hover {
     cursor: pointer;
+}
+
+latex-js {
+    display: flex;
+    justify-content: center;
+    text-align: center;
 }

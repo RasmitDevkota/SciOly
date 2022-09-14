@@ -14,6 +14,13 @@ import {
     setDoc
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
+import {
+    signOut
+} from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js';
+
+import { LaTeXJSComponent } from "https://cdn.jsdelivr.net/npm/latex.js/dist/latex.mjs";
+customElements.define("latex-js", LaTeXJSComponent);
+
 let assignmentId;
 let eventName;
 let assignmentName;
@@ -64,7 +71,7 @@ if (window.location.href.includes("test")) {
     });
 
     // @TODO - Move this to after we confirm that OOB is being tracked
-    //         that we don't have issues with non-proctored assignments
+    //         so that we don't have issues with non-proctored assignments
     //         and exits before the assignment has loaded
     document.addEventListener("visibilitychange", (triggerEvent) => { oobLogger(triggerEvent) });
     document.addEventListener("show", (triggerEvent) => { oobLogger(triggerEvent) });
@@ -76,7 +83,6 @@ if (window.location.href.includes("test")) {
     window.addEventListener("blur", (triggerEvent) => { oobLogger(triggerEvent) });
 
     document.onkeydown = function (e) {
-        return;
         if (
             e.keyCode == 123 ||
             e.ctrlKey &&
@@ -97,7 +103,7 @@ if (window.location.href.includes("test")) {
 export function oobLogger(triggerEvent) {
     const trigger = (typeof triggerEvent == "string") ? triggerEvent : triggerEvent.type;
 
-    return console.log(oobState, trigger);
+    console.log(oobState, trigger);
 
     const documentUnchanged = ["hide", "mouseleave", "blur", "peekattempt"].includes(trigger);
 
@@ -105,7 +111,7 @@ export function oobLogger(triggerEvent) {
         document.visibilityState === "visible" && !documentUnchanged ||
         (["show", "mouseeenter", "resize", "focus", "peekattempt"].includes(trigger))
     ) {
-        if (oobState == -1) {
+        if (oobState == -2) {
             return oobState == 1;
         }
 
@@ -147,7 +153,20 @@ export function oobLogger(triggerEvent) {
 export function loadAssignments() {
     getDoc(userDoc).then((doc) => {
         if (!doc.exists()) {
-            console.log("Error!");
+            const defaultAssignments = {
+                "Tryouts 2023~~Codebusters~~0546609279": "Active"
+            };
+
+            setDoc(doc(db, "users", auth.currentUser.uid), {
+                name: auth.currentUser.providerData[0].displayName,
+                displayName: auth.currentUser.displayName,
+                email: auth.currentUser.email,
+                assignments: defaultAssignments
+            }, { merge: true }).then(() => {
+                console.log("Successfully added Codebusters Tryout!");
+            }).catch((error) => {
+                console.error("Error writing users document: ", error);
+            });
         }
 
         if (doc.data()["assignments"]) {
@@ -188,7 +207,7 @@ export function loadAssignments() {
 }
 
 export function confirmOpenAssignment(assignmentId) {
-    // @TODO - Check if test is mandatory
+    // @TODO - Check if test is time-limited
     if (confirm("Are you sure you want to begin this event? Once you start, the timer will start and you won't be able to pause or come back later!")) {
         window.location.href = `test.html?test=${assignmentId}`;
     }
@@ -209,50 +228,72 @@ export async function loadAssignment(_assignmentId) {
     getDoc(userDoc).then(async (doc) => {
         const data = await doc.data();
 
-        if (["admin", "preview"].includes(mode)) {
-            if (!data.editableAssignments || !data.editableAssignments.includes(assignmentId)) {
-                alert(`Sorry, you don't have permission to be in ${mode} mode!`);
+        if (true) {
+            if (data["assignments"][assignmentId] == "Completed") {
+                alert("Sorry, you already finished this assignment!");
 
                 return window.location.href = "dashboard.html";
             } else {
-                if (["admin", "preview"].includes(mode)) {
-                    if (securitycheck()) {
-                        oobState = 1;
+                // data["assignments"][assignmentId] = "Completed"; // COMMENT THIS OUT TO DEACTIVATE ASSIGNMENT LOCK-IN
 
-                        return console.log(`Successfully accessed ${mode} mode!`);
-                    } else {
-                        return window.location.href = "dashboard.html";
+                setDoc(userDoc, data, { merge: true }).then(() => {
+                    oobState = 1;
+
+                    sfsciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${auth.currentUser.uid}&Event=${test}`);
+                }).catch((e) => {
+                    sfsciolylog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${auth.currentUser.uid}&Event=${test}`);
+
+                    alert("Error occurred accessing database, please refresh the page and try again!");
+                });
+            }
+        } else {
+            if (["admin", "preview"].includes(mode)) {
+                if (!data.editableAssignments || !data.editableAssignments.includes(assignmentId)) {
+                    alert(`Sorry, you don't have permission to be in ${mode} mode!`);
+
+                    return window.location.href = "dashboard.html";
+                } else {
+                    if (["admin", "preview"].includes(mode)) {
+                        if (securitycheck()) {
+                            oobState = 1;
+
+                            return console.log(`Successfully accessed ${mode} mode!`);
+                        } else {
+                            return window.location.href = "dashboard.html";
+                        }
                     }
                 }
+            } else if (data["assignments"][assignmentId] == "Completed") {
+                alert("Sorry, you already finished this assignment!");
+
+                return window.location.href = "dashboard.html";
+            } else if (!Object.keys(data["assignments"]).includes(assignmentId)) {
+                alert("Sorry, you don't have this assignment!");
+
+                return window.location.href = "dashboard.html";
+            } else {
+                data["assignments"][assignmentId] = "Completed";
+
+                setDoc(userDoc, data, { merge: true }).then(() => {
+                    oobState = 1;
+
+                    sfsciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${auth.currentUser.uid}&Event=${test}`);
+                }).catch((e) => {
+                    sfsciolylog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${auth.currentUser.uid}&Event=${test}`);
+
+                    alert("Error occurred accessing database, please refresh the page and try again!");
+                });
             }
-        } else if (data["assignments"][assignmentId] == "Completed") {
-            alert("Sorry, you already finished this assignment!");
-
-            return window.location.href = "dashboard.html";
-        } else if (!Object.keys(data["assignments"]).includes(assignmentId)) {
-            alert("Sorry, you don't have this assignment!");
-
-            return window.location.href = "dashboard.html";
-        } else {
-            // data["assignments"][assignmentId] = "Completed";
-
-            setDoc(userDoc, data, { merge: true }).then(() => {
-                oobState = 1;
-
-                sfsciolylog(`Successfully locked user in!`, `Event=User locked into test&UID=${auth.currentUser.uid}&Event=${test}`);
-            }).catch((e) => {
-                sfsciolylog(`Error occurred locking user into test: ${e}`, `Event=Error occurred locking user into test&Error=${e}&UID=${auth.currentUser.uid}&Event=${test}`);
-
-                alert("Error occurred accessing database, please refresh the page and try again!");
-            });
         }
     });
+
+    oobState = -1;
 
     assignmentCollection = collection(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`);
     assignmentSubmissionDoc = doc(db, "users", auth.currentUser.uid, "assignments", assignmentId);
 
     _("title").innerHTML = assignmentName;
-    _("details").innerHTML = `UID: ${auth.currentUser.uid} | Time Remaining: 50 minutes and 0 seconds`;
+    _("details").innerHTML = `UID: ${auth.currentUser.uid} | Time Remaining: 30 minutes and 0 seconds`;
 
     var testContainer = _("test-container");
 
@@ -266,34 +307,45 @@ export async function loadAssignment(_assignmentId) {
         metadata = documents.get("metadata").data();
 
         if (metadata.referenceSheet) {
-            const dialog = document.querySelector(".ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable");
+            $(async () => {
+                await $("#referenceSheet").toggle();
+
+                await $("#referenceSheet").dialog();
+
+                const dialog = document.querySelector(".ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable");
+
+                $("#referenceSheet").mouseover((() => {
+                    oobState = 0;
+                }));
+
+                $("#referenceSheet").mouseout((() => {
+                    oobState = 1;
+                }));
+
+                document.querySelector(".ui-dialog-titlebar-close").outerHTML = `<a type="a" class="ui-dialog-toggle">Hide</a>`;
+
+                await $(".ui-dialog-toggle").click(() => {
+                    $("#referenceSheetDoc").toggle();
+
+                    if (document.getElementById("referenceSheetDoc").style.display == "none") {
+                        dialog.style.height = "0%";
+
+                        document.querySelector(".ui-dialog-toggle").innerHTML = `Show`;
+                    } else {
+                        dialog.style.height = "";
+
+                        document.querySelector(".ui-dialog-toggle").innerHTML = `Hide`;
+                    }
+                });
+            });
 
             document.getElementById("referenceSheetDoc").src = metadata.referenceSheet;
 
             document.getElementById("referenceSheet").style.margin = "0%";
             document.getElementById("referenceSheet").style.padding = "0%";
 
-            document.querySelector(".ui-dialog-titlebar-close").outerHTML = `<a type="a" class="ui-dialog-titlebar-toggle">Hide</a>`;
-
-            $(".ui-dialog-titlebar-toggle").click(function () {
-                $("#referenceSheetDoc").toggle();
-
-                if (document.getElementById("referenceSheetDoc").style.display == "none") {
-                    dialog.style.height = "0%";
-
-                    document.querySelector(".ui-dialog-titlebar-toggle").innerHTML = `Show`;
-                } else {
-                    dialog.style.height = "";
-
-                    document.querySelector(".ui-dialog-titlebar-toggle").innerHTML = `Hide`;
-                }
-            });
-
             document.getElementById("referenceSheetDoc").style.width = "99%";
             document.getElementById("referenceSheetDoc").style.height = "99%";
-        } else {
-            document.querySelector(".ui-dialog-titlebar-close").click();
-            document.getElementById("referenceSheet").style.display = "none";
         }
 
         questionOrder = metadata.questionOrder;
@@ -318,7 +370,7 @@ export async function loadAssignment(_assignmentId) {
             switch (data.type) {
                 case "text":
                     var question = `
-                        <div class="question text">
+                        <div class="question text" oncopy="return false" oncut="return false" onpaste="return false" onselect="return false">
                             <div class="question-text">
                                 ${data.text}
                             </div>
@@ -329,7 +381,7 @@ export async function loadAssignment(_assignmentId) {
                     break;
                 case "mcq":
                     var question = `
-                        <div class="question mcq">
+                        <div class="question mcq" oncopy="return false" oncut="return false" onpaste="return false" onselect="return false">
                     `;
 
                     question += `
@@ -363,7 +415,7 @@ export async function loadAssignment(_assignmentId) {
                     break;
                 case "msq":
                     var question = `
-                        <div class="question msq">
+                        <div class="question msq" oncopy="return false" oncut="return false" onpaste="return false" onselect="return false">
                     `;
 
                     question += `
@@ -397,7 +449,7 @@ export async function loadAssignment(_assignmentId) {
                     break;
                 case "mq":
                     var question = `
-                        <div class="question mq">
+                        <div class="question mq" oncopy="return false" oncut="return false" onpaste="return false" onselect="return false">
                     `;
 
                     question += `
@@ -450,14 +502,13 @@ export async function loadAssignment(_assignmentId) {
                     break;
                 case "lrq":
                     var question = `
-                        <div class="question lrq">
+                        <div class="question lrq" oncopy="return false" oncut="return false" onpaste="return false" onselect="return false">
                             <div class="question-text">
                                 ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""}) ${data.text}
                             </div>
                             <div class="answer lrq-answer">
                                 <div class="form-group">
-                                    <textarea class="form-control" id="${doc.id}-response" rows="5" onchange="answer(this.id, this.value)"
-                                        oncopy="return false" oncut="return false" onpaste="return false">
+                                    <textarea class="form-control" id="${doc.id}-response" rows="5" onchange="answer(this.id, this.value)">
                                     </textarea>
                                 </div>
                             </div>
@@ -468,7 +519,7 @@ export async function loadAssignment(_assignmentId) {
                     break;
                 case "fitb":
                     var question = `
-                        <div class="question fitb">
+                        <div class="question fitb"oncopy="return false" oncut="return false" onpaste="return false" onselect="return false">
                     `;
 
                     question += `
@@ -476,8 +527,7 @@ export async function loadAssignment(_assignmentId) {
                                 ${questionNumber}. (${data.value} point${(data.value != 1) ? "s" : ""})
                                 &nbsp;
                                 <label>${data.text.split("|~~~~|")[0]}</label>
-                                <input type="text" class="fitb-answer" style="height: 30px" id="${doc.id}-blank" onchange="answer(this.id, this.value)"
-                                    oncopy="return false" oncut="return false" onpaste="return false">
+                                <input type="text" class="fitb-answer" style="height: 30px" id="${doc.id}-blank" onchange="answer(this.id, this.value)">
                                 <label>${data.text.split("|~~~~|")[1]}</label>
                             </div>
                     `;
@@ -490,7 +540,7 @@ export async function loadAssignment(_assignmentId) {
                     break;
                 case "code":
                     var question = `
-                        <div class="question code">
+                        <div class="question code" oncopy="return false" oncut="return false" onpaste="return false" onselect="return false">
                     `;
 
                     question += `
@@ -557,18 +607,16 @@ export async function loadAssignment(_assignmentId) {
                             </div>
                     `;
 
-                    console.log(data.cipher);
-
-                    if (["aristocrat", "patristocrat", "xenocrypt", "affine-encode", "affine-decode"].includes(data.cipher)) {
+                    if (["aristocrat", "patristocrat", "xenocrypt"].includes(data.cipher)) {
                         let topRow = `<td style="padding: 0vh 0.5vw;">Letter</td>`;
                         let middleRow = `<td style="padding: 0vh 0.5vw;">Substitution</td>`;
                         let bottomRow = `<td style="padding: 0vh 0.5vw;">Frequency</td>`;
 
-                        const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+                        const alphabet = `ABCDEFGHIJKLMN${data.cipher == "xenocrypt" ? "Ñ" : ""}OPQRSTUVWXYZ`;
 
                         for (let l in alphabet) {
                             const letter = alphabet[l];
-                            const freq = (quote.match(new RegExp(letter, "gi"))).length;
+                            const freq = (quote.match(new RegExp(letter, "gi")) ?? "").length;
 
                             topRow += `<td>${letter}</td>`
 
@@ -621,6 +669,9 @@ export async function loadAssignment(_assignmentId) {
         }
 
         await getDoc(assignmentSubmissionDoc).then((submissionDoc) => {
+            let startTime = 0;
+            const currentTime = new Date().getTime();
+
             if (submissionDoc.exists() && Object.keys(submissionDoc.data()).length > 1) {
                 // @TODO - Display deadline
 
@@ -632,6 +683,10 @@ export async function loadAssignment(_assignmentId) {
                 for (let r = 0; r < submissionResponsesQ.length; r++) {
                     if (submissionResponsesQ[r] == "oob") {
                         oobLog = submissionResponsesA[r];
+                    } else if (submissionResponsesQ[r] == "time") {
+                        startTime = submissionResponsesA[r];
+                        console.log(currentTime, startTime, currentTime-startTime);
+                        time = Math.ceil((1800000 - (currentTime - startTime))/1000);
                     } else if (!["time", "oob"].includes(submissionResponsesQ[r])) {
                         const questionId = submissionResponsesQ[r];
                         const q = questionOrder.indexOf(questionId);
@@ -680,13 +735,15 @@ export async function loadAssignment(_assignmentId) {
 
             // @TODO - Don't display time information if time is unlimited
 
-            let startTime = (new Date()).getTime();
+            if (startTime == 0) {
+                startTime = new Date().getTime();
 
-            setDoc(assignmentSubmissionDoc, {
-                time: startTime
-            }, { merge: true }).catch((e) => {
-                sfsciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}}`);
-            });
+                setDoc(assignmentSubmissionDoc, {
+                    time: startTime
+                }, { merge: true }).catch((e) => {
+                    sfsciolylog(`Error occurred creating user answer sheet: ${e}`, `Event=Error occurred creating user answer sheet&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}}`);
+                });
+            }
 
             setTimeout(() => {
                 timer();
@@ -820,16 +877,18 @@ export function saveAnswers(finished = false) {
     }).catch((e) => {
         sfsciolylog(`Error occurred saving ${assignmentId} answers: ${e}`, `Event=Error occurred saving answers&Error=${e}&UID=${auth.currentUser.uid}&AssignmentID=${assignmentId}`);
 
-        alert("Error occurred saving answers, please refresh the page and try again!");
+        console.error(e);
+
+        alert("Error occurred saving answers, please contact an officer!");
     });
 }
 
 export function manualSave() {
-    // if ((new Date()).getTime() - saveTimestamp > 60000) {
+    if ((new Date()).getTime() - saveTimestamp > 60000) {
         saveAnswers();
-    // } else {
-        // alert(`Sorry, please wait ${Math.ceil((60000 - ((new Date()).getTime() - saveTimestamp)) / 1000)} more seconds before manually saving again!`);
-    // }
+    } else {
+        alert(`Sorry, please wait ${Math.ceil((60000 - ((new Date()).getTime() - saveTimestamp)) / 1000)} more seconds before manually saving again!`);
+    }
 }
 
 export function submit(preconfirmed = false) {
@@ -851,6 +910,8 @@ export function testRedirect(dest) {
 
     if (confirm("Are you sure you want to exit the test? If you do, your answers will be saved and submitted!")) {
         submit(true);
+
+        window.onbeforeunload = () => { };
 
         if (dest == "dashboard") {
             window.location.href = "dashboard.html";
