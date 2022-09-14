@@ -12,44 +12,9 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <style media="screen">
-        body {
-            background-color: rgb(270, 270, 270);
-            color: black;
-            font-family: Roboto, Helvetica, Arial, sans-serif;
-            margin: 0%;
-            padding: 0%;
-        }
-
-        #eventSelection {
-            background-color: white;
-            width: 30vw;
-            margin: 20vh 35vw 0vh 35vw;
-            padding: 32px 24px;
-            border-radius: 3px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
-        }
-
-        #eventSelection h1 {
-            text-align: center;
-        }
-
-        #tryoutTest {
-            display: none;
-            height: 100vh;
-        }
-
-        #timer {
-            display: none;
-            position: absolute;
-            z-index: 2;
-            padding: 1vh 1vw;
-            font-size: 3vw;
-            color: white;
-            background-color: rgba(255, 0, 0, 0.5);
-            border: 2px solid black;
-        }
-    </style>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
 
     <script type="module">
         import {
@@ -58,15 +23,49 @@
 
         window.retrieveEvent = _retrieveEvent;
     </script>
+
+    <link rel="stylesheet" href="./styles/tryouts.css">
 </head>
 
 <body>
     <div id="timer">
-        30:00 left
+        30m 30s left
+    </div>
+
+    <div id="referenceSheet" class="ui-dialog-content ui-widget-content" title="Reference Sheet" style="display: none;">
+        <iframe id="referenceSheetDoc"></iframe>
     </div>
 
     <div id="eventSelection">
         <h1>SFHS SciOly Tryouts 2023</h1>
+
+        <hr>
+
+        <div id="instructions">
+            <h3><b style="text-decoration: underline">READ THIS FIRST!</b></h3>
+            Please review the rules for each of your events in the
+            <a href="https://docs.google.com/document/d/1G2P_YT32bMcgmyWwYpE6pO6bNClTgae-9Fy65wkXrdw/edit?usp=sharing">
+                Tryouts Master Guide
+            </a>
+            prior to starting your tests!
+
+            <br>
+            <br>
+
+            <h5>Notes Policy</h5>
+            <ul>
+                <li>As a reminder - Binder events may have digital notes but they must be saved offline on your computer, not on Google Drive, Microsoft Office Online, or any other online platform. PDF files may be opened on your browser permitted they are saved as a file, not online links.</li>
+            </ul>
+
+            <br>
+
+            <h5>Event-Specific Information:</h5>
+            <ul>
+                <li>Tryouts Application - Due Friday, 9/16 @ 11:59 PM</li>
+                <li>Build Design Proposals - Due Friday, 9/16 @ 11:59 PM</li>
+                <li>Codebusters - Taken on the SFSciOly website. Selecting this event in the form below will send you to the site in another tab, where you should click "Login" on the top right corner and log in with your SCHOOL Google account. Once you have done so, you will see an assignments page where you can select "Tryouts 2023 - Codebusters" to begin the tryout.</li>
+            </ul>
+        </div>
 
         <hr>
 
@@ -89,6 +88,7 @@
             <label for="event">Event</label>
             <select class="form-control" id="event">
                 <option value="">Select Event</option>
+                <option value="app">Tryouts Application</option>
                 <option value="ap">Anatomy & Physiology</option>
                 <option value="astro">Astronomy</option>
                 <option value="cellb">Cell Biology</option>
@@ -111,7 +111,7 @@
             </select>
         </div>
 
-        <input class="btn btn-primary" value="Submit" onclick="retrieveEvent()">
+        <button class="btn btn-primary" onclick="retrieveEvent()">Select</button>
 
         <br>
         <br>

@@ -21,30 +21,38 @@ let oobLog = new Object();
 const rtdb = getDatabase();
 
 export function retrieveEvent() {
-    const name = document.getElementById("name").value;
-    const schoolId = document.getElementById("schoolId").value;
-    const contactEmail = document.getElementById("contactEmail").value;
     const event = document.getElementById("event").value;
 
+    if (event == "") {
+        return alert("Please select an event!");
+    } else if (event == "app") {
+        return window.open("https://forms.gle/k5RXi1xDPYdrwEz26", "_blank");
+    } else if (event == "code") {
+        return window.open("https://sfscioly.web.app/", "_blank");
+    } else if (event == "fermi") {
+        return window.open("https://sfscioly.web.app/", "_blank");
+    } else if (event == "builds") {
+        return window.open("https://docs.google.com/document/d/1mo84btfpGLDAPJccACUtpevv9WXVACVuGVYEXvuF2bA/edit?usp=sharing", "_blank");
+    }
+
+    const name = document.getElementById("name").value;
     if (name == "" || name.split(" ").length < 2) {
         return alert("Please make sure you enter your full name (first and last)!");
     }
 
+    const schoolId = document.getElementById("schoolId").value;
     if (!(new RegExp(`^[0-9]{6}$`).test(schoolId))) {
         return alert("Please make sure you enter your six-digit School ID! "
             + "This is the same as your lunch number and the number in your email!");
     }
 
+    const contactEmail = document.getElementById("contactEmail").value;
     if (!(new RegExp(`.*@.*\..*`).test(contactEmail))) {
         return alert("Please make sure you've entered a valid email!");
     }
 
     if (contactEmail.includes("@forsyth")) {
         return alert("Sorry, you can't use your school email for the Contact Email! Please enter a personal email!");
-    }
-
-    if (event == "") {
-        return alert("Please select an event!");
     }
 
     setDoc(doc(db, "tryoutsSubmissions2023", contactEmail), {
@@ -55,6 +63,11 @@ export function retrieveEvent() {
                 if (snapshot.exists()) {
                     const link = snapshot.val();
 
+                    const timeSeedCode = prompt(
+                        "Enter the current 6-digit seed code. If you are taking this during the regular tryouts at the Dining Hall, it should be on the board. " +
+                        "If you are taking this during an alternative block, ask an officer for the seed code."
+                    );
+
                     const userInputtedTime = prompt("Enter the current time according to your device (ex. 4:30 PM). Don't lie—we can check!");
                     const systemTime = new Date().getTime();
 
@@ -62,6 +75,7 @@ export function retrieveEvent() {
 
                     const data = new Object();
                     data[submissionId] = new Object();
+                    data[submissionId]["timeSeedCode"] = timeSeedCode;
                     data[submissionId]["userInputtedTime"] = userInputtedTime;
                     data[submissionId]["systemTime"] = systemTime;
 
@@ -72,7 +86,43 @@ export function retrieveEvent() {
                         document.getElementById("tryoutTest").style.display = "flex";
                         document.getElementById("tryoutTest").src = link;
 
-                        document.onkeydown = function (e) {
+                        document.getElementById("timer").style.display = "flex";
+
+                        if (event == "chl") {
+                            $(async () => {
+                                await $("#referenceSheet").toggle();
+
+                                await $("#referenceSheet").dialog();
+
+                                const dialog = document.querySelector(".ui-dialog.ui-corner-all.ui-widget.ui-widget-content.ui-front.ui-draggable.ui-resizable");
+
+                                document.querySelector(".ui-dialog-titlebar-close").outerHTML = `<a type="a" class="ui-dialog-toggle">Hide</a>`;
+
+                                await $(".ui-dialog-toggle").click(() => {
+                                    $("#referenceSheetDoc").toggle();
+
+                                    if (document.getElementById("referenceSheetDoc").style.display == "none") {
+                                        dialog.style.height = "0%";
+
+                                        document.querySelector(".ui-dialog-toggle").innerHTML = `Show`;
+                                    } else {
+                                        dialog.style.height = "";
+
+                                        document.querySelector(".ui-dialog-toggle").innerHTML = `Hide`;
+                                    }
+                                });
+                            });
+
+                            document.getElementById("referenceSheetDoc").src = "https://firebasestorage.googleapis.com/v0/b/sfhsscioly.appspot.com/o/chemlabreferencesheet.pdf?alt=media&token=4ab3e014-ac10-466b-90fc-5f1b5d0e4509";
+
+                            document.getElementById("referenceSheet").style.margin = "0%";
+                            document.getElementById("referenceSheet").style.padding = "0%";
+
+                            document.getElementById("referenceSheetDoc").style.width = "99%";
+                            document.getElementById("referenceSheetDoc").style.height = "99%";
+                        }
+
+                        window.onkeydown = (e) => {
                             if (
                                 e.keyCode == 123 ||
                                 e.ctrlKey &&
@@ -83,7 +133,7 @@ export function retrieveEvent() {
                                     (e.keyCode == 85)
                                 )
                             ) {
-                                oobLog[new Date().getTime()] = trigger;
+                                oobLog[new Date().getTime()] = e.keyCode;
 
                                 alert(
                                     "The portal has detected that you've attempted to view the page source in some way! " +
@@ -98,6 +148,7 @@ export function retrieveEvent() {
                         }
 
                         const startTime = new Date().getTime();
+                        data[submissionId]["timerStartTime"] = startTime;
 
                         setInterval(() => {
                             const updateTime = new Date().getTime()
@@ -119,6 +170,24 @@ export function retrieveEvent() {
                                 });
                             }
                         }, 1000);
+
+                        const earlyExitAttempts = new Array();
+
+                        window.addEventListener("beforeunload", (event) => {
+                            event.preventDefault();
+
+                            const newEarlyExitAttempt = new Date().getTime();
+                            earlyExitAttempts.push(newEarlyExitAttempt);
+                            data[submissionId][`earlyExitAttempt`] = earlyExitAttempts;
+
+                            data[submissionId]["oobLog"] = oobLog;
+
+                            setDoc(doc(db, "tryoutsSubmissions2023", contactEmail), data, { merge: true }).then(() => {
+                                console.log("Saved earlyExitAttempt timestamp");
+                            });
+
+                            event.returnValue = "Leaving this page will submit your test. Are you sure you want to do this?";
+                        });
                     }).catch((error) => {
                         console.error("Error writing document: ", error);
 

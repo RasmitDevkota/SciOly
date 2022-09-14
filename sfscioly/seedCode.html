@@ -1,0 +1,38 @@
+<html>
+
+<head>
+    <title>SFSciOly Seed Code</title>
+
+    <script type="module">
+        import { securitycheck } from "./scripts/script.js";
+
+        window.addEventListener("load", () => {
+            if (securitycheck()) {
+                const key = prompt("Enter a 6-digit numerical key!").toString();
+
+                let seedCodes = "";
+
+                generateSeedCode();
+
+                setInterval(() => {
+                    generateSeedCode();
+                }, 30000);
+
+                function generateSeedCode() {
+                    const seedNum = ((new Date().getTime()) * key ** 2).toString().split("e")[0];
+                    const seedCode = seedNum.substr(seedNum.length - 6, seedNum.length);
+                    seedCodes += `${seedCode},`;
+
+                    window.localStorage.setItem("seedCodes", seedCodes);
+                    document.getElementById("seedCode").innerHTML = seedCode;
+                }
+            }
+        });
+    </script>
+</head>
+
+<body>
+    <div id="seedCode" style="width: 100vw; font-size: 25vw; text-align: center"></div>
+</body>
+
+</html>
