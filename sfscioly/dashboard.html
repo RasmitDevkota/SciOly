@@ -18,11 +18,11 @@
       window.unAuthenticate = _unAuthenticate;
 
       import {
-        loadAssignments as _loadAssignments,
+        loadDashboard as _loadDashboard,
         confirmOpenAssignment as _confirmOpenAssignment
       } from "./scripts/competition.js";
 
-      window.loadAssignments = _loadAssignments;
+      window.loadDashboard = _loadDashboard;
       window.confirmOpenAssignment = _confirmOpenAssignment;
     </script>
 
@@ -53,20 +53,22 @@
           </div>
 
           <div class="dashboard-row">
-            <div id="assignments" class="assignment-box">
+            <div class="dashboard-content-box">
               <h2>My Assignments</h2>
-            </div>
-          </div>
+              <div id="assignments" class="assignment-container"></div>
 
-          <div class="dashboard-row">
-            <div id="assignmentsUpcoming" class="assignment-box">
               <h2>Upcoming Assignments</h2>
+              <div id="assignmentsUpcoming" class="assignment-container"></div>
+
+              <h2>Graded Assignments</h2>
+              <div id="assignmentsGraded" class="assignment-container"></div>
             </div>
           </div>
 
           <div class="dashboard-row">
-            <div id="assignmentsGraded" class="assignment-box">
-              <h2>Graded Assignments</h2>
+            <div class="dashboard-content-box">
+              <h2>Competitions</h2>
+              <div id="competitions" class="competition-container"></div>
             </div>
           </div>
         </div>

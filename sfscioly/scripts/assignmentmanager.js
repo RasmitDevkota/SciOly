@@ -12,6 +12,9 @@ import {
     getDocs,
     setDoc,
     deleteDoc,
+    query,
+    where,
+    FieldPath,
     arrayUnion
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
@@ -117,8 +120,6 @@ export async function loadAssignmentToManage(_assignmentId) {
 
     console.log(assignmentId);
 
-    console.log(eventName, `${assignmentName}~~${assignmentSpecifier}`)
-
     assignmentCollection = collection(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`);
     metadataDoc = doc(db, "assignments", eventName, `${assignmentName}~~${assignmentSpecifier}`, "metadata");
 
@@ -131,8 +132,6 @@ export async function loadAssignmentToManage(_assignmentId) {
         querySnapshot.forEach((doc) => {
             documents.set(doc.id, doc);
         });
-
-        console.log(querySnapshot);
 
         const metadata = documents.get("metadata").data();
         questionOrder = metadata.questionOrder;
@@ -481,7 +480,7 @@ export function saveQuestion() {
     });
 }
 
-export function createAssignment(preset = "blank") {
+export function createAssignment(preset = "blank", file) {
     switch (preset) {
         case "blank":
             let assignmentName = prompt(
@@ -536,8 +535,10 @@ export function createAssignment(preset = "blank") {
                 editableAssignments: arrayUnion(assignmentGroup + "~~" + assignmentId)
             }, { merge: true });
 
-            return window.location.href = `assignmenteditor.html?assignmentId=${assignmentId}`
-        default:
+            window.location.href = `assignmenteditor.html?assignmentId=${assignmentId}`
+
+            break;
+            default:
             alert(`Assignment creation preset "${preset}" implemented yet!`);
     }
 }
@@ -655,11 +656,31 @@ export function toggleOOBTracker() {
     document.getElementById("toggleOOBTrackerButton").innerHTML = oobTrackerCurrentState ? "OFF" : "ON";
 }
 
-export function viewSubmissions(params) {
-    document.getElementById("submissionsViewer").style.display = "flex";
+export function viewSubmissions() {
+    document.getElementById("submissionsViewer").style.display = "";
 
     document.getElementById("questionEditor").style.display = "none";
     document.getElementById("assignmentSettings").style.display = "none";
+
+    getDocs(query(collection(db, "users"), where(new FieldPath(`assignments`, assignmentId), "==", "Completed"))).then((querySnapshot) => {
+        querySnapshot.forEach((doc) => {
+            document.getElementById("submissionsContainer").innerHTML += `
+                <div>
+                    ${doc.data().displayName}
+                    -
+                    <a onclick="viewSubmission('${doc.id}')">
+                        View Submission
+                    </a>
+                </div>
+
+                <br>
+            `;
+        });
+    });
+}
+
+export function viewSubmission(uid) {
+    return window.open(`test.html?test=${assignmentId}&mode=submission&uid=${uid}`, '_blank');
 }
 
 export function autogradeSubmission(submission) {

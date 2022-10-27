@@ -19,17 +19,17 @@ import {
 } from 'https://www.gstatic.com/firebasejs/9.8.2/firebase-firestore.js';
 
 export async function googleAuth(destination = "dashboard.html") {
-    let accessGranted = false;
+    // let accessGranted = false;
 
-    if (confirm("Are you an officer? If not, please click 'Cancel' or hit the 'Esc' key to go back!")) {
-        if (await securitycheck()) {
-            accessGranted = true;
-        }
-    }
+    // if (confirm("Are you an officer? If not, please click 'Cancel' or hit the 'Esc' key to go back!")) {
+    //     if (await securitycheck()) {
+    //         accessGranted = true;
+    //     }
+    // }
 
-    if (!accessGranted) {
-        return alert("Sorry, this functionality isn't available at this time!");
-    }
+    // if (!accessGranted) {
+    //     return alert("Sorry, this functionality isn't available at this time!");
+    // }
 
     signInWithPopup(auth, new GoogleAuthProvider()).then((result) => {
         sfsciolylog("Signed in!", `Event=User authenticated with Google&UID=${auth.currentUser.uid}`);

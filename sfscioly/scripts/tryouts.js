@@ -21,6 +21,8 @@ let oobLog = new Object();
 const rtdb = getDatabase();
 
 export function retrieveEvent() {
+    // return alert("Tryouts are over! Please contact an officer if you have any concerns!");
+
     const event = document.getElementById("event").value;
 
     if (event == "") {
@@ -164,7 +166,7 @@ export function retrieveEvent() {
                                 data[submissionId]["oobLog"] = oobLog;
 
                                 setDoc(doc(db, "tryoutsSubmissions2023", contactEmail), data, { merge: true }).then(() => {
-                                    alert("Test over! Good job!");
+                                    alert("Test over! Good job!\n\nIf you didn't click Submit on the form yet, press Enter or click Ok until you see the message confirming that your submission has been submitted.\n\nTo take another test, refresh the page.");
 
                                     window.location.href = "tryouts.html";
                                 });

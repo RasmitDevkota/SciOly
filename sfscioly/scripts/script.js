@@ -24,6 +24,7 @@ import {
 import {
     loadAssignmentsToManage
 } from './assignmentmanager.js';
+import { loadCompetition, loadDashboard } from "./competition.js";
 
 const app = initializeApp({
     apiKey: "AIzaSyBw7h-5dzK9tcbKCbzWdo35Dlbi1L7It_M",
@@ -72,10 +73,17 @@ export function pageLoad() {
         } else if (page.includes("dashboard")) {
             _("welcome-user").innerHTML = `Welcome, ${auth.currentUser.displayName ?? "User"}!`;
 
-            loadAssignments();
+            loadDashboard();
+        } else if (page.includes("competition")) {
+            const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
+            const competition = urlParams.get("competition");
+
+            _("competitionHeader").innerHTML = competition;
+
+            loadCompetition();
         } else if (page.includes("test")) {
             const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
-            const test = urlParams.get('test');
+            const test = urlParams.get("test");
 
             loadAssignment(test);
         } else if (page.includes("assignmentmanager")) {

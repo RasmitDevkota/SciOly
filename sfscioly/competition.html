@@ -1,0 +1,87 @@
+<html>
+
+<head>
+    <title>SciOly Test Portal</title>
+
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <script src="https://code.jquery.com/jquery-3.5.1.js"
+        integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <script src="https://apis.google.com/js/api:client.js"></script>
+
+    <script type="module">
+        import {
+            unAuthenticate as _unAuthenticate
+        } from "./scripts/auth.js";
+
+        window.unAuthenticate = _unAuthenticate;
+
+        import {
+            loadDashboard as _loadDashboard,
+            confirmOpenAssignment as _confirmOpenAssignment
+        } from "./scripts/competition.js";
+
+        window.loadDashboard = _loadDashboard;
+        window.confirmOpenAssignment = _confirmOpenAssignment;
+    </script>
+
+    <link rel="stylesheet" href="styles/style.css">
+    <link rel="stylesheet" href="styles/competition.css">
+
+    <link rel="icon" href="images/favicon.ico">
+</head>
+
+<body>
+    <div id="main">
+        <div id="content">
+            <div id="sidebar">
+                <a class="material-icons">home</a>
+
+                <a class="material-icons" href="plaza.html">wysiwyg</a>
+
+                <a class="material-icons" href="assignmentmanager.html">drive_file_rename_outline</a>
+
+                <a class="material-icons" href="settings.html">settings</a>
+
+                <a class="material-icons" onclick="unAuthenticate()">logout</a>
+            </div>
+
+            <div id="competition">
+                <div class="competition-row">
+                    <h1 id="competitionHeader"></h1>
+                </div>
+
+                <div class="competition-row">
+                    <div class="competition-content-box">
+                        <div id="informationContainer">
+                            <h2 id="competitionInformationName">Name: </h2>
+                            <h2 id="competitionInformationFormat">Format: </h2>
+                            <h2 id="competitionInformationDate">Date: </h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="competition-row">
+                    <div id="rosterContainer" class="competition-content-box">
+                        <iframe id="roster"></iframe>
+                    </div>
+                </div>
+
+                <div id="selfScheduleRow" class="competition-row">
+                    <div class="competition-content-box">
+                        <h2>Self-Schedule</h2>
+
+                        <div id="selfScheduler">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

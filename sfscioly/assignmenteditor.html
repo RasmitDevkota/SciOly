@@ -34,6 +34,7 @@
             editQuestions as _editQuestions,
             manageAssignmentSettings as _manageAssignmentSettings,
             viewSubmissions as _viewSubmissions,
+            viewSubmission as _viewSubmission,
             previewAssignment as _previewAssignment,
             toggleOOBTracker as _toggleOOBTracker,
             cancelSettingsChanges as _cancelSettingsChanges,
@@ -47,6 +48,7 @@
         window.editQuestions = _editQuestions;
         window.manageAssignmentSettings = _manageAssignmentSettings;
         window.viewSubmissions = _viewSubmissions;
+        window.viewSubmission = _viewSubmission;
         window.toggleOOBTracker = _toggleOOBTracker;
         window.previewAssignment = _previewAssignment;
         window.cancelSettingsChanges = _cancelSettingsChanges;
@@ -196,7 +198,7 @@
 
                 <div id="submissionsViewer">
                     <div class="assignment-editor-row">
-                        <div>
+                        <div id="submissionsContainer">
 
                         </div>
                     </div>

@@ -1,4 +1,4 @@
-#dashboard {
+#competition {
     display: flex;
     flex-direction: column;
     width: 100%;
@@ -7,13 +7,13 @@
     padding-top: 2%;
 }
 
-.dashboard-row {
+.competition-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
 }
 
-.dashboard-content-box {
+.competition-content-box {
     width: 40vw;
     height: min-content;
     margin: 2vh 0vw 3vh 0vw;
@@ -21,31 +21,39 @@
     background-color: #b5dfff;
 }
 
-.dashboard-content-box h2 {
+.competition-content-box h2 {
     margin: 2vh 0vw 0vh 0vw;
     font-size: 1.5vw;
 }
 
-.dashboard-content-box h4 {
+.competition-content-box h4 {
     margin: 0% 0% 0% 0.5%;
 }
 
-.dashboard-content-box div {
+.competition-content-box div {
     margin: 2vh 0vw 3vh 0vw;
 }
 
-.dashboard-content-box a {
+.competition-content-box a {
     color: #172435;
     text-decoration: none;
 }
 
-.dashboard-content-box a:hover {
+.competition-content-box a:hover {
     cursor: pointer;
     text-decoration: underline;
 }
 
-#welcome-user {
-    text-align: center;
-    font-size: 3vw;
-    margin-top: 5%;
+#rosterContainer {
+    width: 80vw;
+    height: 80vh;
+    margin: 0%;
+    padding: 0%;
+}
+
+#roster {
+    width: inherit;
+    height: inherit;
+    background-color: #b5dfff;
+    border: 1px solid black;
 }

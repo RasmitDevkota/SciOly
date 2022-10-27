@@ -40,7 +40,7 @@
     font-size: 1.5vw;
 }
 
-#questionNumbersContainer {
+#questionNumbersContainer, #submissionsContainer {
     display: flex;
     flex-direction: column;
     width: max-content;

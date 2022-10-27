@@ -1,1 +1,20 @@
-Hello world
+<script type="module">
+    export function attendance() {
+        const id = _("attendance").value;
+
+        setDoc(doc(db, "attendance", id), {
+            attendance: arrayUnion([`
+                ${new Date().toTimeString()},
+            `])
+        }).then(() => {
+            alert("Hooray! You're now in our mailing list!");
+
+            document.getElementById("mailingListEmailInput").value = "";
+            document.getElementById("mailingListNameInput").value = "";
+        }).catch((error) => {
+            console.error("Error writing document: ", error);
+
+            alert("Sorry, an error occurred so we couldn't add you to our mailing list. Please try again later!");
+        });
+    }
+</script>
