@@ -775,6 +775,8 @@ export async function loadAssignment(_assignmentId) {
                 setInterval(() => {
                     saveAnswers();
                 }, 30 * 1000);
+
+                return;
             }
 
             if (startTime == 0) {
