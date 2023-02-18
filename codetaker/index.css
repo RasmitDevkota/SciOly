@@ -1,0 +1,189 @@
+* {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 1vw;
+}
+
+html {
+    overflow-x: hidden;
+}
+
+body {
+    margin: 0%;
+    padding: 1.5vh 1vw;
+    width: 100%;
+}
+
+h1 {
+    font-size: 2vw;
+}
+
+#main {
+    display: flex;
+    flex-direction: row;
+    /* justify-content: center; */
+    width: 100%;
+    height: 100%;
+}
+
+#generatePresetTest {
+    max-width: 100vw;
+}
+
+#generateCodebuilderTest > span {
+    width: 20vw;
+    padding: 0.1vw 0.2vw;
+    border: solid 0.1vw black;
+}
+
+#loadToebesTest>button,
+#generateCodebuilderTest>button {
+    border: solid 0.1vw black;
+}
+
+#loadToebesTest>button:hover,
+#generateCodebuilderTest>button:hover {
+    background-color: rgb(235, 235, 235);
+}
+
+#content {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+}
+
+#test {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 95vw;
+    height: 100%;
+    padding: 1% 2%;
+    margin-left: 5vw;
+}
+
+.content-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+}
+
+#title-row {
+    height: 5vh;
+}
+
+#details-row {
+    margin-top: 1vh;
+    height: 3vh;
+}
+
+#test-row {
+    height: 80vh;
+    padding: 1vh 0%;
+}
+
+#test-container {
+    width: 65%;
+    height: 100%;
+    overflow: auto;
+    padding: 1vh 1vw;
+    border: 2px solid black;
+}
+
+#assignmentAlert {
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: darkgray;
+    text-align: center;
+}
+
+.question-text {
+    overflow-wrap: break-word;
+}
+
+.answer {
+    margin-top: 1%;
+    margin-left: 1.02%;
+}
+
+.code-answer {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+table {
+    margin: 1%;
+    table-layout: fixed;
+    box-sizing: border-box;
+    border: 0.5px solid black;
+    background-color: rgb(209, 209, 209);
+}
+
+td {
+    width: 1.5vw;
+    height: 100%;
+    padding: 0%;
+    font-size: 1.5vw;
+    text-align: center;
+    border: 0.5px solid black;
+}
+
+td>input {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    border: none;
+    outline: none;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f100;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+#saveStatus {
+    margin-bottom: 1vh;
+}
+
+#saveStatus>a {
+    text-decoration: underline;
+}
+
+#saveStatus>a:hover {
+    cursor: pointer;
+}
+
+#submit-row {
+    height: 4vh;
+}
+
+#submit {
+    height: 100%;
+    border: none;
+    background-color: #4facf3;
+    color: white;
+}
+
+.ui-dialog-toggle:hover {
+    cursor: pointer;
+}
+
+latex-js {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}

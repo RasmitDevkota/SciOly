@@ -67,3 +67,4 @@ node_modules/
 
 # Toebes JSON file
 testwriting-scripts/toebes.json
+testwriting-scripts/payload.json

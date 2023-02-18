@@ -19,8 +19,7 @@ main = () => {
             return console.log(err);
         }
 
-        const payloadMath = new Array();
-        const payloadNonMath = new Array();
+        const payload = new Array();
 
         const toebes = JSON.parse(data);
 
@@ -55,18 +54,10 @@ main = () => {
                     }
                     break;
                 case "patristocrat":
-                    if (qText.includes("xenocrypt")) {
-                        for (let pt of value.cipherString.toUpperCase()) {
-                            const i = esAlphabet.indexOf(pt);
-                            qQuote += (i == -1) ? pt : value.alphabetDest[i];
-                        }
-                    } else {
-                        for (let pt of value.cipherString.toUpperCase()) {
-                            const i = enAlphabet.indexOf(pt);
-                            qQuote += (i == -1) ? pt : value.alphabetDest[i];
-                        }
+                    for (let pt of value.cipherString.toUpperCase()) {
+                        const i = enAlphabet.indexOf(pt);
+                        qQuote += (i == -1) ? pt : value.alphabetDest[i];
                     }
-                    break;
                     break;
                 case "hill":
                     qCipher += `-${value.operation}`;
@@ -118,41 +109,47 @@ main = () => {
                     break;
             }
 
-            if (["aristocrat", "patristocrat", "morbit", "pollux"].includes(value.cipherType)) {
-                payloadNonMath.push({
-                    "text": qText,
-                    "cipher": qCipher,
-                    "quote": qQuote,
-                    "type": qType,
-                    "value": qValue,
-                    "image": qImage,
-                    "tiebreaker": qTiebreaker,
-                });
-            } else {
-                payloadMath.push({
-                    "text": qText,
-                    "cipher": qCipher,
-                    "quote": qQuote,
-                    "type": qType,
-                    "value": qValue,
-                    "image": qImage,
-                    "tiebreaker": qTiebreaker,
-                });
-            }
+            payload.push({
+                "text": qText,
+                "cipher": qCipher,
+                "quote": qQuote,
+                "type": qType,
+                "value": qValue,
+                "image": qImage,
+                "tiebreaker": qTiebreaker,
+            });
         });
 
-        // fs.writeFile("./payload.json", JSON.stringify(payload), (e) => { console.error(e); });
+        fs.writeFile("./payload.json", JSON.stringify(payload), (e) => { console.error(e); });
 
-        const questionOrder = [];
-
-        uploadQuestions(payloadNonMath, "Non-Math");
-        uploadQuestions(payloadMath, "Math");
+        uploadQuestions(payload);
     });
 };
 
-uploadQuestions = async (payload, label) => {
-    const eventName = "October-November Homework 2023";
-    const assignmentName = `Codebusters (${label})~~1666542049`;
+// const payload = [
+//     {
+//         "text": "Solve this quote which has been encoded with a K1 aristocrat.",
+//         "cipher": "aristocrat",
+//         "quote": "XLIVI EVI XLVII XLMRKW CSY GER HS MR E FEWIFEPP KEQI. CSY GER AMR, SV CSY GER PSWI, SV MX GER VEMR.",
+//         "type": "code",
+//         "value": 250,
+//         "image": "",
+//         "tiebreaker": false,
+//     },
+//     {
+//         "text": "Solve this quote which has been encoded with a K2 aristocrat.",
+//         "cipher": "aristocrat",
+//         "quote": "QPS SPNH WPEETD IC TKTGNCDT, QJI LWTD CDT WPEETDH IC NCJ, YJHI ZTTE SCXDV NCJG QTHI PDS DTKTG BTI P QPS SPN APZT NCJ UTTB QPS PQCJI NCJGHTBU.",
+//         "type": "code",
+//         "value": 250,
+//         "image": "",
+//         "tiebreaker": false,
+//     }
+// ];
+
+uploadQuestions = async (payload) => {
+    const eventName = "Codebusters";
+    const assignmentName = `Weekly Practice - February 15th - Parth~~2359893458`;
 
     const questionOrder = [];
 
@@ -172,7 +169,7 @@ uploadQuestions = async (payload, label) => {
     const metadataDocRef = db.doc(`assignments/${eventName}/${assignmentName}/metadata`);
 
     metadataDocRef.set({
-        questionOrder: questionOrder
+        questionOrder: questionOrder,
     }).then(() => {
         console.log("Set metadata document!");
     }).catch((e) => {

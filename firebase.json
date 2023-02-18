@@ -28,6 +28,16 @@
         "**/.*",
         "**/node_modules/**"
       ]
+    },
+    {
+      "site": "codetaker",
+      "public": "codetaker",
+      "cleanUrls": true,
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ]
     }
   ],
   "storage": {
