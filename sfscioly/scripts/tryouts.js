@@ -30,9 +30,9 @@ export function retrieveEvent() {
     } else if (event == "app") {
         return window.open("https://forms.gle/k5RXi1xDPYdrwEz26", "_blank");
     } else if (event == "code") {
-        return window.open("https://sfscioly.web.app/", "_blank");
+        return window.open("https://sofoscioly.web.app/", "_blank");
     } else if (event == "fermi") {
-        return window.open("https://sfscioly.web.app/", "_blank");
+        return window.open("https://sofoscioly.web.app/", "_blank");
     } else if (event == "builds") {
         return window.open("https://docs.google.com/document/d/1mo84btfpGLDAPJccACUtpevv9WXVACVuGVYEXvuF2bA/edit?usp=sharing", "_blank");
     }

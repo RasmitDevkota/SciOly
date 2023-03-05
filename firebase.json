@@ -8,7 +8,7 @@
   },
   "hosting": [
     {
-      "site": "sfscioly",
+      "site": "sofoscioly",
       "public": "sfscioly",
       "cleanUrls": true,
       "redirects": [
