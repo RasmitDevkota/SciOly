@@ -372,7 +372,24 @@ export async function processToebesPayload(testName, toebesPayload) {
                 }
                 break;
             case "railfence":
-                qText += `${encodeRailfence(value.rails, value.cipherString)}`;
+                let quote = value.cipherString.toUpperCase().replace(/[^A-Z]/g, "");
+
+                const railsArray = new Array(value.rails).fill("");
+
+                let rowDirection = 1;
+                const row = 0;
+
+                for (let i = 0; i < quote.length; i++) {
+                    railsArray[row] += value.cipherString[i];
+
+                    row += rowDirection;
+
+                    if ((i != 0 && row == 0) || row == value.rails - 1) {
+                        rowDirection *= -1;
+                    }
+                }
+
+                qText += railsArray.join("");
 
                 qType = "lrq";
                 break;
@@ -646,21 +663,21 @@ export async function loadTest(testName, payload) {
                     }
 
                     question += `
-                            <table cellpadding="0" cellspacing="0">
-                                <tbody>
-                                    <tr>
-                                        ${topRow}
-                                    </tr>
-                                    <tr>
-                                        ${bottomRow}
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <table cellpadding="0" cellspacing="0">
+                            <tbody>
+                                <tr>
+                                    ${topRow}
+                                </tr>
+                                <tr>
+                                    ${bottomRow}
+                                </tr>
+                            </tbody>
+                        </table>
                     `;
                 }
 
                 question += `
-                        </div>
+                    </div>
                 `;
 
                 if (["aristocrat", "patristocrat", "xenocrypt"].includes(data.cipher)) {
@@ -762,30 +779,6 @@ const encodeHill = (key, quote) => {
         cipherString += qt0;
         cipherString += qt1;
     }
-
-    return cipherString;
-};
-
-const encodeRailfence = (key, quote) => {
-    quote = quote.toUpperCase().replace(/[^A-Z]/g, "");
-
-    const rails = new Array(key).fill("");
-
-    let rowDirection = 1;
-    let row = 0;
-
-    for (let i = 0; i < quote.length; i++) {
-        rails[row] += quote[i];
-
-
-        row += rowDirection;
-
-        if ((i != 0 && row == 0) || row == key - 1) {
-            rowDirection *= -1;
-        }
-    }
-
-    let cipherString = rails.join("");
 
     return cipherString;
 };

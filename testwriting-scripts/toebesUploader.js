@@ -107,6 +107,12 @@ main = () => {
 
                     qType = "lrq";
                     break;
+                case "columnar":
+                    // qText += `<br>${encodeColumnar(value.rails, value.cipherString)}`;
+                    qText += `<br>${value.cipherString}`;
+
+                    qType = "lrq";
+                    break;
             }
 
             payload.push({
@@ -149,7 +155,7 @@ main = () => {
 
 uploadQuestions = async (payload) => {
     const eventName = "Codebusters";
-    const assignmentName = `Weekly Practice - February 15th - Parth~~2359893458`;
+    const assignmentName = `Practice - Roshni~~1678582100`;
 
     const questionOrder = [];
 
