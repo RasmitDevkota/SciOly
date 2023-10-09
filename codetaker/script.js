@@ -113,7 +113,8 @@ const fracMorse = {
     "X": "–••–",
     "Y": "–•––",
     "Z": "––••"
-}
+};
+const nihilistAlphabet = "ABCDEFGHIKLMNOPQRSTUVWXYZ";
 
 export function importToebesTest() {
     if (generated) {
@@ -121,78 +122,6 @@ export function importToebesTest() {
     } else {
         generated = true;
     }
-
-    let toebesPayload = {
-        "TEST.0": {
-            "timed": 0,
-            "count": 1,
-            "questions": [
-                1
-            ],
-            "title": "try",
-            "useCustomHeader": false,
-            "customHeader": "",
-            "testtype": "cstate"
-        },
-        "CIPHER.0": {
-            "cipherString": "If you were just intent on killing people you could do better with a bomb made of agricultural fertiliser.",
-            "encodeType": "random",
-            "offset": 1,
-            "shift": 1,
-            "offset2": 1,
-            "keyword": "",
-            "keyword2": "",
-            "alphabetSource": "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            "alphabetDest": "ZQGSWKMPXVUITFBNJEOHLDCYAR",
-            "curlang": "en",
-            "replacement": {
-                "A": "Z",
-                "B": "Q",
-                "C": "G",
-                "D": "S",
-                "E": "W",
-                "F": "K",
-                "G": "M",
-                "H": "P",
-                "I": "X",
-                "J": "V",
-                "K": "U",
-                "L": "I",
-                "M": "T",
-                "N": "F",
-                "O": "B",
-                "P": "N",
-                "Q": "J",
-                "R": "E",
-                "S": "O",
-                "T": "H",
-                "U": "L",
-                "V": "D",
-                "W": "C",
-                "X": "Y",
-                "Y": "A",
-                "Z": "R"
-            },
-            "editEntry": "0",
-            "cipherType": "aristocrat",
-            "question": "<p>Solve this aristocrat.</p>",
-            "points": 250
-        },
-        "CIPHER.1": {
-            "cipherString": "The winner ain't the one with the fastest car it's the one who refuses to lose.",
-            "cipherType": "compcolumnar",
-            "rails": 7,
-            "keyword": "TATTOO",
-            "railOffset": 0,
-            "isRailRange": true,
-            "replacement": {},
-            "curlang": "en",
-            "points": 150,
-            "question": "<p>A quote has been encoded using the Complete Columnar Transposition Cipher for you to decode. You are told that 7 columns were used to encode it.</p>",
-            "editEntry": "0",
-            "specialbonus": false
-        }
-    };
 
     const toebesFile = document.getElementById("toebesFile").files[0];
     const fileReader = new FileReader();
@@ -466,9 +395,6 @@ export async function processToebesPayload(testName, toebesPayload) {
                 qType = "lrq";
                 break;
             case "compcolumnar":
-                value.cipherString = "mynameisrasmit";
-                value.keyword = "hello";
-
                 qQuote = value.cipherString.toUpperCase().replace(/[^A-Z]/g, "");
                 value.keyword = value.keyword.toUpperCase();
 
@@ -494,6 +420,44 @@ export async function processToebesPayload(testName, toebesPayload) {
                 qText += ciphertext;
 
                 qType = "lrq";
+                break;
+            case "nihilistsub":
+                let polybiusSquareString = value.polybiusKey;
+                for (let abc of nihilistAlphabet) {
+                    if (!value.polybiusKey.includes(abc)) {
+                        polybiusSquareString += abc;
+                    }
+                }
+
+                let polybiusSquareArray = polybiusSquareString.split("");
+                let polybiusSquareMatrix = new Array();
+                while (polybiusSquareArray.length) polybiusSquareMatrix.push(polybiusSquareArray.splice(0,5));
+
+                const polybiusSquare = {};
+                for (let i = 0; i < 5; i++) {
+                    let row = i + 1;
+
+                    for (let j = 0; j < 5; j++) {
+                        let column = j + 1;
+
+                        polybiusSquare[polybiusSquareMatrix[i][j]] = Number(`${row}${column}`);
+                    }
+                }
+
+                let k = 0;
+                for (let pt of value.cipherString) {
+                    let ptNum = polybiusSquare[pt];
+                    let keywordNum = polybiusSquare[value.keyword[k]];
+                    let sum = ptNum + keywordNum
+                    qQuote += `${sum}`;
+
+                    k = (k + 1) % value.keyword.length;
+                }
+
+                qText += qQuote;
+
+                qType = "lrq";
+
                 break;
             case "atbash":
                 for (let pt of value.cipherString.toUpperCase()) {
