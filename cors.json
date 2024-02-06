@@ -1,0 +1,44 @@
+[
+    {
+        "origin": [
+            "https://sofoscioly.web.app"
+        ],
+        "responseHeader": [
+            "Content-Type"
+        ],
+        "method": [
+            "GET",
+            "HEAD",
+            "DELETE"
+        ],
+        "maxAgeSeconds": 7200
+    },
+    {
+        "origin": [
+            "https://localhost:5000"
+        ],
+        "responseHeader": [
+            "Content-Type"
+        ],
+        "method": [
+            "GET",
+            "HEAD",
+            "DELETE"
+        ],
+        "maxAgeSeconds": 7200
+    },
+    {
+        "origin": [
+            "http://127.0.0.1:5501"
+        ],
+        "responseHeader": [
+            "Content-Type"
+        ],
+        "method": [
+            "GET",
+            "HEAD",
+            "DELETE"
+        ],
+        "maxAgeSeconds": 7200
+    }
+]

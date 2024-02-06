@@ -21,20 +21,14 @@ let oobLog = new Object();
 const rtdb = getDatabase();
 
 export function retrieveEvent() {
-    // return alert("Tryouts are over! Please contact an officer if you have any concerns!");
+    // return alert("State quizzes are over! Please contact an officer if you have any concerns!");
 
     const event = document.getElementById("event").value;
 
     if (event == "") {
         return alert("Please select an event!");
-    } else if (event == "app") {
-        return window.open("https://forms.gle/k5RXi1xDPYdrwEz26", "_blank");
     } else if (event == "code") {
         return window.open("https://sofoscioly.web.app/", "_blank");
-    } else if (event == "fermi") {
-        return window.open("https://sofoscioly.web.app/", "_blank");
-    } else if (event == "builds") {
-        return window.open("https://docs.google.com/document/d/1mo84btfpGLDAPJccACUtpevv9WXVACVuGVYEXvuF2bA/edit?usp=sharing", "_blank");
     }
 
     const name = document.getElementById("name").value;
@@ -42,33 +36,15 @@ export function retrieveEvent() {
         return alert("Please make sure you enter your full name (first and last)!");
     }
 
-    const schoolId = document.getElementById("schoolId").value;
-    if (!(new RegExp(`^[0-9]{6}$`).test(schoolId))) {
-        return alert("Please make sure you enter your six-digit School ID! "
-            + "This is the same as your lunch number and the number in your email!");
-    }
+    const identifier = `${name.split(" ")[1].toUpperCase()}_${name.split(" ")[0].toUpperCase() }`;
 
-    const contactEmail = document.getElementById("contactEmail").value;
-    if (!(new RegExp(`.*@.*\..*`).test(contactEmail))) {
-        return alert("Please make sure you've entered a valid email!");
-    }
-
-    if (contactEmail.includes("@forsyth")) {
-        return alert("Sorry, you can't use your school email for the Contact Email! Please enter a personal email!");
-    }
-
-    setDoc(doc(db, "tryoutsSubmissions2023", contactEmail), {
-        contactEmail: contactEmail,
+    setDoc(doc(db, "stateQuizzesSubmissions2023", identifier), {
+        identifier: identifier,
     }, { merge: true }).then(() => {
         if (confirm("Are you ready to start this test? You are allowed to cancel!")) {
-            get(child(ref(rtdb), `tryoutTestLink_${event}`)).then((snapshot) => {
+            get(child(ref(rtdb), `stateQuizLink_${event}`)).then((snapshot) => {
                 if (snapshot.exists()) {
                     const link = snapshot.val();
-
-                    const timeSeedCode = prompt(
-                        "Enter the current 6-digit seed code. If you are taking this during the regular tryouts at the Dining Hall, it should be on the board. " +
-                        "If you are taking this during an alternative block, ask an officer for the seed code."
-                    );
 
                     const userInputtedTime = prompt("Enter the current time according to your device (ex. 4:30 PM). Don't lie—we can check!");
                     const systemTime = new Date().getTime();
@@ -77,16 +53,15 @@ export function retrieveEvent() {
 
                     const data = new Object();
                     data[submissionId] = new Object();
-                    data[submissionId]["timeSeedCode"] = timeSeedCode;
                     data[submissionId]["userInputtedTime"] = userInputtedTime;
                     data[submissionId]["systemTime"] = systemTime;
 
-                    setDoc(doc(db, "tryoutsSubmissions2023", contactEmail), data, { merge: true }).then(() => {
+                    setDoc(doc(db, "stateQuizzesSubmissions2023", identifier), data, { merge: true }).then(() => {
                         console.log("Began test!");
 
                         document.getElementById("eventSelection").style.display = "none";
-                        document.getElementById("tryoutTest").style.display = "flex";
-                        document.getElementById("tryoutTest").src = link;
+                        document.getElementById("stateQuiz").style.display = "flex";
+                        document.getElementById("stateQuiz").src = link;
 
                         document.getElementById("timer").style.display = "flex";
 
@@ -152,26 +127,30 @@ export function retrieveEvent() {
                         const startTime = new Date().getTime();
                         data[submissionId]["timerStartTime"] = startTime;
 
-                        setInterval(() => {
+                        const timer = () => {
                             const updateTime = new Date().getTime()
-                            const timeLeft = 1830000 - (updateTime - startTime);
+                            const timeLeft = 1530000 - (updateTime - startTime);
 
                             if (timeLeft > 0) {
                                 const minutesLeft = Math.floor((timeLeft % 3600000) / 60000);
                                 const secondsLeft = Math.floor((timeLeft % 60000) / 1000);
 
                                 document.getElementById("timer").innerHTML = `${minutesLeft}m ${secondsLeft}s left!`;
+
+                                setTimeout(timer, 1000);
                             } else {
                                 data[submissionId]["completionTime"] = updateTime;
                                 data[submissionId]["oobLog"] = oobLog;
 
-                                setDoc(doc(db, "tryoutsSubmissions2023", contactEmail), data, { merge: true }).then(() => {
-                                    alert("Test over! Good job!\n\nIf you didn't click Submit on the form yet, press Enter or click Ok until you see the message confirming that your submission has been submitted.\n\nTo take another test, refresh the page.");
+                                setDoc(doc(db, "stateQuizzesSubmissions2023", identifier), data, { merge: true }).then(() => {
+                                    alert("The test is over! Good job!\n\nIf you didn't click Submit on the form yet, please do so now. You may NOT modify any of your answers at this time (we can compare your actual finish time to your form submission time if needed).\n\nTo take another test, refresh the page.");
 
-                                    window.location.href = "tryouts.html";
+                                    // window.location.href = "tryouts.html";
                                 });
                             }
-                        }, 1000);
+                        }
+
+                        setTimeout(timer, 1000);
 
                         const earlyExitAttempts = new Array();
 
@@ -184,11 +163,11 @@ export function retrieveEvent() {
 
                             data[submissionId]["oobLog"] = oobLog;
 
-                            setDoc(doc(db, "tryoutsSubmissions2023", contactEmail), data, { merge: true }).then(() => {
+                            setDoc(doc(db, "stateQuizzesSubmissions2023", identifier), data, { merge: true }).then(() => {
                                 console.log("Saved earlyExitAttempt timestamp");
                             });
 
-                            event.returnValue = "Leaving this page will submit your test. Are you sure you want to do this?";
+                            event.returnValue = "Leaving this page may lead to a loss of answers. Are you sure you want to do this?";
                         });
                     }).catch((error) => {
                         console.error("Error writing document: ", error);

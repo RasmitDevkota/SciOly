@@ -22,7 +22,10 @@
     
     <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    
+
+    <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.3/core.css">
+    <script type="module" src="https://pyscript.net/releases/2024.1.3/core.js"></script>
+
     <script>
         window.MathJax = {
             tex: {
@@ -63,7 +66,13 @@
 
             <div id="generateCodebuilderTest">
                 <span id="preset" contenteditable="true">Replace this text with a Codebuilder preset</span>
-                <button onclick="genCodebuilderTest()">Generate Test Using Preset</button>
+
+                <!-- <button onclick="genCodebuilderTest()">Generate Test Using Preset</button> -->
+
+                <button py-click="main">Generate Test Using Preset</button>
+                <!-- <script type="py" src="./codebuilder.py" config='{"packages":["json5","re","random"]}'></script> -->
+                <script type="py" src="./codebuilder.py"></script>
+                <div id="testText">No test generated!</div>
             </div>
 
             <div id="test" style="display: none">

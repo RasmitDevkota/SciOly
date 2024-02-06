@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>SFSciOly Tryouts 2023</title>
+    <title>SFSciOly State Quizzes 2023</title>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
         integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
@@ -29,7 +29,7 @@
 
 <body>
     <div id="timer">
-        30m 30s left
+        25 min 30s left
     </div>
 
     <div id="referenceSheet" class="ui-dialog-content ui-widget-content" title="Reference Sheet" style="display: none;">
@@ -37,39 +37,23 @@
     </div>
 
     <div id="eventSelection">
-        <h1>SFHS SciOly Tryouts 2023</h1>
+        <h1>SFHS SciOly State Quizzes 2023</h1>
 
         <hr>
 
         <div id="instructions">
             <h3><b style="text-decoration: underline">READ THIS FIRST!</b></h3>
-            Please review the rules for each of your events in the
-            <a href="https://docs.google.com/document/d/1G2P_YT32bMcgmyWwYpE6pO6bNClTgae-9Fy65wkXrdw/edit?usp=sharing">
-                Tryouts Master Guide
-            </a>
-            prior to starting your tests!
 
-            <br>
-            <br>
-
-            <h5>Notes Policy</h5>
+            <h5>Rules</h5>
             <ul>
                 <li>
-                    As a reminder - Binder events may have digital notes but they must be saved offline on your computer, not on Google Drive, Microsoft Office Online, or any other online platform. PDF files may be opened on your browser permitted they are saved as a file, not online links.
-                    Prepare your notes prior to starting the test.
+                    Tests must be taken alone without the help of a partner.
                 </li>
-            </ul>
-
-            <br>
-
-            <h5>Event-Specific Information:</h5>
-            <ul>
-                <li>Tryouts Application - Due Friday, 9/16 @ 11:59 PM</li>
-                <li>Build Design Proposals - Due Friday, 9/16 @ 11:59 PM</li>
                 <li>
-                    Codebusters - Taken on the SFSciOly website. Selecting this event in the form below will send you to the site in another tab, where you should click "Login" on the top right corner and log in with your SCHOOL Google account. Once you have done so, you will see an assignments page where you can select "Tryouts 2023 - Codebusters" to begin the test.
-                    <br>
-                    A reference sheet is available within the test but you may use your own PRINTED copy if you'd like. Do not move your mouse outside of the page area as the portal will warn you to not leave the page.2
+                    You may only have one set of notes, one set being whatever is listed in the rules.
+                </li>
+                <li>
+                    Cheatsheets and binders must be printed (except for Astronomy).
                 </li>
             </ul>
         </div>
@@ -82,20 +66,9 @@
         </div>
 
         <div class="form-group">
-            <label for="schoolId">School ID/Lunch Number</label>
-            <input type="text" class="form-control" id="schoolId" placeholder="School ID/Lunch Number">
-        </div>
-
-        <div class="form-group">
-            <label for="contactEmail">Contact Email</label>
-            <input type="text" class="form-control" id="contactEmail" placeholder="Contact Email">
-        </div>
-
-        <div class="form-group">
             <label for="event">Event</label>
             <select class="form-control" id="event">
                 <option value="">Select Event</option>
-                <option value="app">Tryouts Application</option>
                 <option value="ap">Anatomy & Physiology</option>
                 <option value="astro">Astronomy</option>
                 <option value="cellb">Cell Biology</option>
@@ -105,7 +78,6 @@
                 <option value="dd">Disease Detectives</option>
                 <option value="dp">Dynamic Planet</option>
                 <option value="ec">Environmental Chemistry</option>
-                <option value="ed">Experimental Design</option>
                 <option value="fq">Fermi Questions</option>
                 <option value="forens">Forensics</option>
                 <option value="forest">Forestry</option>
@@ -114,7 +86,6 @@
                 <option value="rm">Rocks & Minerals</option>
                 <option value="iat">It's About Time</option>
                 <option value="wfl">WiFi Lab</option>
-                <option value="build">Build Events</option>
             </select>
         </div>
 
@@ -128,7 +99,7 @@
         <br>
     </div>
 
-    <iframe id="tryoutTest" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0"
+    <iframe id="stateQuiz" width="100%" height="100%" frameborder="0" marginheight="0" marginwidth="0"
         oncontextmenu="return false" oncopy="return false" oncut="return false" onpaste="return false">
         Select an event first!
     </iframe>

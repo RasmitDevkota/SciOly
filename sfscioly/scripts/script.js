@@ -24,7 +24,7 @@ import {
 import {
     loadAssignmentsToManage
 } from './assignmentmanager.js';
-import { loadCompetition, loadDashboard } from "./competition.js";
+import { importToebesTest, loadCompetition, loadDashboard } from "./competition.js";
 
 const app = initializeApp({
     apiKey: "AIzaSyBw7h-5dzK9tcbKCbzWdo35Dlbi1L7It_M",
@@ -84,8 +84,13 @@ export function pageLoad() {
         } else if (page.includes("test")) {
             const urlParams = new URLSearchParams(decodeURIComponent(window.location.search));
             const test = urlParams.get("test");
+            const source = urlParams.get("source");
 
-            loadAssignment(test);
+            if (source == "toebes") {
+                importToebesTest(test);
+            } else {
+                loadAssignment(test);
+            }
         } else if (page.includes("assignmentmanager")) {
             loadAssignmentsToManage();
         } else if (page.includes("settings")) {
